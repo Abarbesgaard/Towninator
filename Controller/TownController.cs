@@ -13,7 +13,6 @@ namespace TowninatorCLI
     {
         private readonly TownRepository _townRep;
         private readonly TownViewModel _townVM;
-        private readonly TownsfolkView _townsfolkView;
         private readonly MapController _mapController;
         private readonly MapUtilities _mapUtilities;
 
@@ -21,7 +20,6 @@ namespace TowninatorCLI
         {
             _townRep = townRep;
             _townVM = new TownViewModel(townRep);
-            _townsfolkView = new TownsfolkView();
             _mapController = mapController;
             _mapUtilities = new MapUtilities(dbFileName);
 
@@ -151,7 +149,6 @@ namespace TowninatorCLI
             _townVM.ViewTown(id);
 
             // Display townsfolk details using TownsfolkView
-            _townsfolkView.ViewAllTownsfolk(town);
         }
     }
 }

@@ -43,6 +43,7 @@ namespace TowninatorCLI
         public bool IsAlive { get; set; }
         public string? Description { get; set; }
         public bool IsMarried { get; set; }
+        public int TownId { get; set; }
 
         public Townsfolk()
         {

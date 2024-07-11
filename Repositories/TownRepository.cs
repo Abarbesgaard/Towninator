@@ -61,6 +61,7 @@ namespace TowninatorCLI
 
         public Town? GetLatestTown()
         {
+            Console.WriteLine($"GetLatestTown from {_connectionString}");
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
@@ -115,27 +116,34 @@ namespace TowninatorCLI
             VALUES (@Name, @Culture, @Education, @Health, @Military, @Order, @Production, @Recreation, @Trade, @Wealth, @Worship, @MainDescription,
                     @NorthDescription, @SouthDescription, @EastDescription, @WestDescription);
         ";
-
-                using (var command = new SqliteCommand(query, connection))
+                try
                 {
-                    command.Parameters.AddWithValue("@Name", town.Name);
-                    command.Parameters.AddWithValue("@Culture", town.Culture);
-                    command.Parameters.AddWithValue("@Education", town.Education);
-                    command.Parameters.AddWithValue("@Health", town.Health);
-                    command.Parameters.AddWithValue("@Military", town.Military);
-                    command.Parameters.AddWithValue("@Order", town.Order);
-                    command.Parameters.AddWithValue("@Production", town.Production);
-                    command.Parameters.AddWithValue("@Recreation", town.Recreation);
-                    command.Parameters.AddWithValue("@Trade", town.Trade);
-                    command.Parameters.AddWithValue("@Wealth", town.Wealth);
-                    command.Parameters.AddWithValue("@Worship", town.Worship);
-                    command.Parameters.AddWithValue("@MainDescription", town.MainDescription);
-                    command.Parameters.AddWithValue("@NorthDescription", town.NorthDescription);
-                    command.Parameters.AddWithValue("@SouthDescription", town.SouthDescription);
-                    command.Parameters.AddWithValue("@EastDescription", town.EastDescription);
-                    command.Parameters.AddWithValue("@WestDescription", town.WestDescription);
+                    using (var command = new SqliteCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@Name", town.Name ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@Culture", town.Culture);
+                        command.Parameters.AddWithValue("@Education", town.Education);
+                        command.Parameters.AddWithValue("@Health", town.Health);
+                        command.Parameters.AddWithValue("@Military", town.Military);
+                        command.Parameters.AddWithValue("@Order", town.Order);
+                        command.Parameters.AddWithValue("@Production", town.Production);
+                        command.Parameters.AddWithValue("@Recreation", town.Recreation);
+                        command.Parameters.AddWithValue("@Trade", town.Trade);
+                        command.Parameters.AddWithValue("@Wealth", town.Wealth);
+                        command.Parameters.AddWithValue("@Worship", town.Worship);
+                        command.Parameters.AddWithValue("@MainDescription", town.MainDescription ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@NorthDescription", town.NorthDescription ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@SouthDescription", town.SouthDescription ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@EastDescription", town.EastDescription ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@WestDescription", town.WestDescription ?? (object)DBNull.Value);
 
-                    command.ExecuteNonQuery();
+                        int rowsAffected = command.ExecuteNonQuery();
+                        Console.WriteLine($"Rows affected: {rowsAffected}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An error occurred: {ex.Message}");
                 }
 
                 connection.Close();

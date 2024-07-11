@@ -20,6 +20,7 @@ namespace TowninatorCLI
 
             var townController = new TownController(townRepository, mapController, dbFileName); // Pass mapController here
 
+
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(options =>
                 {
@@ -42,6 +43,8 @@ namespace TowninatorCLI
                     {
                         mapController.DisplayMapLegend();
                     }
+
+
                 });
 
             // Console.WriteLine("Operations completed successfully.");
@@ -61,6 +64,8 @@ namespace TowninatorCLI
 
         [Option('l', "MapLegend", HelpText = "View map legend.")]
         public bool MapLengend { get; set; }
+
+
 
 
     }
