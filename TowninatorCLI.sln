@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TowninatorCLI", "TowninatorCLI.csproj", "{91FD4A0C-F0F1-4F10-956E-EF739F515004}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91FD4A0C-F0F1-4F10-956E-EF739F515004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91FD4A0C-F0F1-4F10-956E-EF739F515004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91FD4A0C-F0F1-4F10-956E-EF739F515004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91FD4A0C-F0F1-4F10-956E-EF739F515004}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F080A9D4-DDFA-407B-8641-4D0FA33FF089}
+	EndGlobalSection
+EndGlobal
