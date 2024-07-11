@@ -50,3 +50,4 @@
 /home/andreas/Projects/TowninatorCLI/obj/Debug/net8.0/TowninatorCLI.pdb
 /home/andreas/Projects/TowninatorCLI/obj/Debug/net8.0/TowninatorCLI.genruntimeconfig.cache
 /home/andreas/Projects/TowninatorCLI/obj/Debug/net8.0/ref/TowninatorCLI.dll
+/home/andreas/Projects/TowninatorCLI/obj/Debug/net8.0/TowninatorCLI.sourcelink.json
