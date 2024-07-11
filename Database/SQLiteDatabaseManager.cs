@@ -7,7 +7,6 @@ namespace TowninatorCLI
         private string connectionString;
         public SQLiteDatabaseManager(string dbFileName)
         {
-            Console.WriteLine($"Using database file at: {dbFileName}");
             connectionString = $"Data Source={dbFileName}";
         }
 
@@ -28,7 +27,23 @@ namespace TowninatorCLI
                 ";
 
                 ExecuteNonQ(connection, dropTableQuery);
+                string createTownsFolkTable = @"
+                              CREATE TABLE Townsfolk (
+                                  Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                  Age INTEGER NOT NULL,
+                                  FirstName TEXT,
+                                  LastName TEXT,
+                                  Gender INTEGER NOT NULL,
+                                  Profession INTEGER NOT NULL,
+                                  SkillLevel INTEGER NOT NULL,
+                                  IsAlive INTEGER NOT NULL,
+                                  Description TEXT,
+                                  IsMarried INTEGER NOT NULL,
+                                  TownId INTEGER NOT NULL,
+                                  FOREIGN KEY (TownId) REFERENCES Town (Id)
+                              );";
 
+                ExecuteNonQ(connection, createTownsFolkTable);
 
                 string createTableQuery = @"
                         CREATE TABLE Towns (

@@ -15,6 +15,8 @@ namespace TowninatorCLI
         private readonly TownViewModel _townVM;
         private readonly MapController _mapController;
         private readonly MapUtilities _mapUtilities;
+        private readonly TownsfolkRepository townsfolkRepository;
+        Random random = new Random();
 
         public TownController(TownRepository townRep, MapController mapController, string dbFileName)
         {
@@ -22,6 +24,8 @@ namespace TowninatorCLI
             _townVM = new TownViewModel(townRep);
             _mapController = mapController;
             _mapUtilities = new MapUtilities(dbFileName);
+            townsfolkRepository = new TownsfolkRepository(dbFileName);
+
 
         }
 
@@ -29,7 +33,7 @@ namespace TowninatorCLI
         {
             Town randomTown = GenerateTown.GenerateRandomTown();
 
-            Map map = _mapController.GenerateMap(townId, 20, 20); // Assuming a 20x20 map for example
+            Map map = _mapController.GenerateMap(townId, 20, 20);
 
             // TODO: Move this logic to a separate class
             // Determine town coordinates, for example, the center of the map
@@ -52,10 +56,23 @@ namespace TowninatorCLI
             randomTown.SouthDescription = southDescription;
             randomTown.EastDescription = eastDescription;
             randomTown.WestDescription = westDescription;
+            int numberOfTownsfolk = random.Next(30, 56);
 
+            // Generate and add townsfolk to the town
+            for (int i = 0; i < numberOfTownsfolk; i++)
+            {
+                Townsfolk townsfolk = TownsfolkGenerator.GenerateRandomTownsfolk();
+                townsfolk.TownId = townId; // Assign the townId to each townsfolk
+                                           // Add townsfolk to the database via the repository
+                townsfolkRepository.Add(townsfolk);
+            }
             // Create and save town with descriptions
             _townRep.AddTown(randomTown);
         }
+
+
+
+
         // TODO: Move this method to a separate class
         private string GetDirectionalTownDescriptionFromTerrain(MainTerrainType? terrain, Direction direction, Map map, int townX, int townY)
         {

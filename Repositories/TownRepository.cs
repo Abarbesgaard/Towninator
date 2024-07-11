@@ -1,4 +1,3 @@
-
 using Microsoft.Data.Sqlite;
 
 namespace TowninatorCLI
@@ -61,7 +60,6 @@ namespace TowninatorCLI
 
         public Town? GetLatestTown()
         {
-            Console.WriteLine($"GetLatestTown from {_connectionString}");
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
@@ -138,7 +136,6 @@ namespace TowninatorCLI
                         command.Parameters.AddWithValue("@WestDescription", town.WestDescription ?? (object)DBNull.Value);
 
                         int rowsAffected = command.ExecuteNonQuery();
-                        Console.WriteLine($"Rows affected: {rowsAffected}");
                     }
                 }
                 catch (Exception ex)
