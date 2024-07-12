@@ -12,8 +12,6 @@ namespace TowninatorCLI
             _connectionString = $"Data Source={dbFileName}";
         }
 
-
-
         public Town? GetTownById(int id)
         {
             using (var connection = new SqliteConnection(_connectionString))
@@ -56,8 +54,6 @@ namespace TowninatorCLI
 
             return null;
         }
-
-
 
         public Town GetLatestTown()
         {
@@ -104,7 +100,40 @@ namespace TowninatorCLI
             return town;
         }
 
+        public void UpdateTownDescriptions(Town town)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
 
+                string updateQuery = @"
+                    UPDATE Towns
+                    SET MainDescription = @MainDescription,
+                        NorthDescription = @NorthDescription,
+                        SouthDescription = @SouthDescription,
+                        EastDescription = @EastDescription,
+                        WestDescription = @WestDescription
+                    WHERE Id = @Id;
+                ";
+
+                using (var command = new SqliteCommand(updateQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@MainDescription", town.MainDescription);
+                    command.Parameters.AddWithValue("@NorthDescription", town.NorthDescription);
+                    command.Parameters.AddWithValue("@SouthDescription", town.SouthDescription);
+                    command.Parameters.AddWithValue("@EastDescription", town.EastDescription);
+                    command.Parameters.AddWithValue("@WestDescription", town.WestDescription);
+                    command.Parameters.AddWithValue("@Id", town.Id);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    Console.WriteLine($"Updated {rowsAffected} row(s) in Towns table.");
+
+                    // Optionally, you can handle error checking or logging here
+                }
+
+                connection.Close();
+            }
+        }
 
 
         public int AddTown(Town town)
@@ -144,7 +173,8 @@ namespace TowninatorCLI
                         command.Parameters.AddWithValue("@WestDescription", town.WestDescription ?? (object)DBNull.Value);
 
                         long newTownId = (long)command.ExecuteScalar();
-                        Console.WriteLine($"New town ID: {newTownId}");
+                        town.Id = (int)newTownId;
+                        Console.WriteLine($"TownRepository.AddTown. Params: town: {town.Id} {town.Name}");
                         return (int)newTownId; // Cast to int and return the new town ID
                     }
                 }

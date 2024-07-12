@@ -10,11 +10,10 @@ namespace TowninatorCLI
         {
             mapRepository = new MapRepository(dbFileName);
         }
-        public void GenerateMap(Map map, int townX, int townY)
+        public Map GenerateMap(int townX, int townY, int width, int height)
         {
             Console.WriteLine($"[Method]: MapUtilities.GenerateMap. Params: townX: {townX}, townY: {townY}.");
-            int width = map.Width;
-            int height = map.Height;
+            Map map = new Map(width, height);
             MapTile[,] _mapTiles = map.GetTiles();
 
             float[,] noiseMap = _noiseMap.GenerateNoiseMap(width, height, 0.3f, 5);
@@ -39,6 +38,8 @@ namespace TowninatorCLI
                 int y = _random.Next(height);
                 _mapTiles[x, y].Event = new MapEvent("A mysterious encounter");
             }
+            return map;
+
         }
 
         private MainTerrainType? GetTerrainFromNoiseValue(float noiseValue)
@@ -99,33 +100,15 @@ namespace TowninatorCLI
         }
 
 
-        public MainTerrainType? GetTerrainOfAdjacentTile(Map map, Direction direction)
+
+
+
+        public MainTerrainType? GetTerrainOfAdjacentTile(Map map, Direction direction, int townX, int townY)
         {
             if (map == null)
             {
-                throw new ArgumentNullException("Map is null.");
+                throw new ArgumentNullException(nameof(map), "Map is null.");
             }
-
-            if (mapRepository == null)
-            {
-                throw new ArgumentNullException("Map repository is null.");
-            }
-
-            // Retrieve town coordinates from the repository
-            var townPosition = mapRepository.GetTownPosition();
-            if (townPosition == null)
-            {
-                throw new Exception("Town position not found in repository.");
-            }
-
-
-            if (townPosition == null)
-            {
-                throw new Exception("Town position not found in repository.");
-            }
-
-            int townX = townPosition.X;
-            int townY = townPosition.Y;
 
             // Adjust coordinates based on direction
             int adjX = townX, adjY = townY;
@@ -143,19 +126,26 @@ namespace TowninatorCLI
                 case Direction.West:
                     adjX -= 1;
                     break;
+                default:
+                    throw new ArgumentException($"Unsupported direction: {direction}", nameof(direction));
             }
 
             // Check if the adjusted coordinates are within bounds
             if (adjX < 0 || adjX >= map.Width || adjY < 0 || adjY >= map.Height)
             {
-                throw new ArgumentOutOfRangeException("Direction leads to a tile outside the map boundaries.");
+                throw new ArgumentOutOfRangeException($"Adjusted coordinates ({adjX}, {adjY}) are outside map boundaries.");
             }
 
-            // Retrieve terrain type from the map
-            MainTerrainType? terrain = map._mapTiles[adjX, adjY]?.Terrain;
+            // Retrieve terrain type from the map tile
+            MapTile? tile = map.GetTile(adjX, adjY);
+            if (tile == null)
+            {
+                throw new Exception($"Tile at ({adjX}, {adjY}) not found in the map.");
+            }
 
-            return terrain;
+            return tile.Terrain;
         }
+
 
 
         public void AddTownToMap(int x, int y, MapTile[,] _mapTiles)

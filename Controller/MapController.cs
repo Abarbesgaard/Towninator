@@ -5,6 +5,8 @@ namespace TowninatorCLI
         private readonly MapRepository mapRepository;
         private readonly string dbFileName;
         private MapUtilities mapUtilities;
+        private TownRepository townRepository;
+
 
 
         public MapController(string dbFileName)
@@ -12,17 +14,17 @@ namespace TowninatorCLI
             this.dbFileName = dbFileName;
             this.mapRepository = new MapRepository(this.dbFileName);
             mapUtilities = new MapUtilities(this.dbFileName);
+            townRepository = new TownRepository(this.dbFileName);
+
         }
 
-        public Map GenerateMap(int townId, int width, int height)
+        public Map GenerateMap(int width, int height)
         {
-            Console.WriteLine($"[Method]: GenerateMap. Params: townId: {townId}, width: {width}, height {height}.");
+            Console.WriteLine($"[Method]: GenerateMap. Params: width: {width}, height {height}.");
 
-            Map map = new Map(width, height); // Assuming Map constructor accepts width and height
             int townX = width / 2;
             int townY = height / 2;
-            mapUtilities.GenerateMap(map, townX, townY); // Pass town coordinates
-                                                         // Save map with associated townId
+            Map map = mapUtilities.GenerateMap(townX, townY, width, height); // Pass town coordinates
 
             return map;
         }
@@ -30,6 +32,8 @@ namespace TowninatorCLI
         public void SaveMap(Map map, int townId)
         {
             Console.WriteLine($"[Method]: SaveMap. Params: map {map}, town id {townId}.");
+            Town town = townRepository.GetLatestTown();
+            town.Id = townId;
             mapRepository.SaveMap(map, townId);
         }
 
@@ -47,6 +51,22 @@ namespace TowninatorCLI
             mapView.DisplayMap(mapId);
         }
 
+
+        public Map? GetMapForTown(int townId)
+        {
+            Console.WriteLine($"[Method]: MapController.GetMapForTown. Params: townId: {townId}.");
+
+            // Implement the logic to fetch map by town ID from your database or repository
+            Map map = mapRepository.GetMapByTownId(townId); // Example method to fetch map
+
+            if (map == null)
+            {
+                Console.WriteLine($"Map not found for town ID {townId}. Returning null.");
+            }
+
+
+            return map;
+        }
         public void DisplayMapLegend()
         {
             MapView mapView = new MapView(mapRepository);

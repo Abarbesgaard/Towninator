@@ -3,6 +3,7 @@ namespace TowninatorCLI
 
     public static class TownsfolkGenerator
     {
+
         public static Townsfolk GenerateRandomTownsfolk()
         {
             Random random = new Random();

@@ -2,6 +2,7 @@ namespace TowninatorCLI
 {
     public class Map
     {
+        public int Id { get; set; }
         public MapTile[,] _mapTiles;
         public int Width { get; }
         public int Height { get; }
@@ -28,6 +29,17 @@ namespace TowninatorCLI
             {
                 yield return tile;
             }
+        }
+
+        public MapTile? GetTile(int x, int y)
+        {
+            // Check if (x, y) are within bounds
+            if (x < 0 || x >= Width || y < 0 || y >= Height)
+            {
+                return null; // Return null or throw exception based on your design
+            }
+
+            return _mapTiles[x, y];
         }
 
     }

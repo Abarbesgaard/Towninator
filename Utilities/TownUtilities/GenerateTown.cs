@@ -1,9 +1,10 @@
 namespace TowninatorCLI
 {
-    public static class GenerateTown
+    public class GenerateTown
     {
-        public static Town GenerateRandomTown()
+        public Town GenerateRandomTown()
         {
+            Console.WriteLine($"[Method]: GenerateTown.GenerateRandomTown");
             return new Town
             {
                 Name = TownNameGenerator.GenerateName(),

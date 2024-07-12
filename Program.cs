@@ -26,9 +26,14 @@ namespace TowninatorCLI
                     if (options.Town)
                     {
                         Console.WriteLine("Town options selected");
+                        Map map = mapController.GenerateMap(20, 20);
+                        Town town = townController.GenerateTown();
 
-                        townController.AddTown(1);
+                        townController.SaveTown(town, map);
+                        mapController.SaveMap(map, town.Id); // Assuming town.Id is available after saving town
+                        townController.UpdateTown(town);
                         townController.ViewLatestTown();
+
                     }
                     else if (options.TownWithTownsfolk)
                     {
@@ -45,6 +50,7 @@ namespace TowninatorCLI
                 });
         }
     }
+
     public class Options
     {
         [Option('t', "Town", HelpText = "View town information.")]
@@ -58,9 +64,6 @@ namespace TowninatorCLI
 
         [Option('l', "MapLegend", HelpText = "View map legend.")]
         public bool MapLengend { get; set; }
-
-
-
 
     }
 }

@@ -13,9 +13,11 @@ namespace TowninatorCLI
     {
         private readonly TownRepository _townRep;
         private readonly TownViewModel _townVM;
-        private readonly MapController _mapController;
         private readonly MapUtilities _mapUtilities;
         private readonly TownsfolkRepository townsfolkRepository;
+        private readonly GenerateTown _generateTown;
+        private readonly TownDescriptionUpdater _townDescriptionUpdater;
+        private readonly MapController _mapController;
         Random random = new Random();
 
         public TownController(TownRepository townRep, MapController mapController, string dbFileName)
@@ -25,46 +27,73 @@ namespace TowninatorCLI
             _mapController = mapController;
             _mapUtilities = new MapUtilities(dbFileName);
             townsfolkRepository = new TownsfolkRepository(dbFileName);
+            _townDescriptionUpdater = new TownDescriptionUpdater(dbFileName);
+            _generateTown = new GenerateTown();
+        }
 
+        public Town GenerateTown()
+        {
+            Console.WriteLine($"[Method]: TownController.GenerateTown.");
+
+            Town randomTown = _generateTown.GenerateRandomTown();
+            return randomTown;
 
         }
 
-        public void AddTown(int townId)
+
+        public void SaveTown(Town town, Map map)
         {
-            Console.WriteLine($"[Method]: AddTown. Params: townId: {townId}.");
-            Town randomTown = GenerateTown.GenerateRandomTown();
+            Console.WriteLine($"[Method]: TownController.SaveTown. Params: town: {town}");
+            _townRep.AddTown(town);
 
-            Map map = _mapController.GenerateMap(townId, 20, 20);
-            // TODO: Move this logic to a separate class
-            // Determine town coordinates, for example, the center of the map
-            int townX = map.Width / 2;
-            int townY = map.Height / 2;
+            // Gem kortet med det korrekte townId
+        }
 
-            _mapController.SaveMap(map, townId);
-            // Get terrain type at town location
-            MainTerrainType? terrain = _mapUtilities.GetTerrainAt(townX, townY, map.Height, map.Width, map.GetTiles());
-            // TODO: move this logic to a separate class
-            string mainDescription = _mapUtilities.GetTownDescriptionBasedOnTerrain(terrain);
-            string northDescription = GetDirectionalTownDescriptionFromTerrain(terrain, Direction.North, map, townX, townY);
-            string southDescription = GetDirectionalTownDescriptionFromTerrain(terrain, Direction.South, map, townX, townY);
-            string eastDescription = GetDirectionalTownDescriptionFromTerrain(terrain, Direction.East, map, townX, townY);
-            string westDescription = GetDirectionalTownDescriptionFromTerrain(terrain, Direction.West, map, townX, townY);
 
-            // Assign generated values to the randomTown object
-            //
-            randomTown.MainDescription = mainDescription;
-            randomTown.NorthDescription = northDescription;
-            randomTown.SouthDescription = southDescription;
-            randomTown.EastDescription = eastDescription;
-            randomTown.WestDescription = westDescription;
+
+        public void UpdateTown(Town town)
+        {
+            Console.WriteLine($"[Method]: TownController.UpdateTown. Params: townid: {town.Id}, town Name: {town.Name}");
+            Town newTown = _townRep.GetLatestTown();
+            newTown = town;
+            _townDescriptionUpdater.UpdateTownDescriptions(town);
+
             try
             {
-                _townRep.AddTown(randomTown);
+                // Update town in the database with new descriptions
+                _townRep.UpdateTownDescriptions(town);
+                Console.WriteLine("Town directional descriptions updated successfully.");
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine($"Failed to update town directional descriptions: {e.Message}");
             }
+        }
+
+        public void ViewLatestTown()
+        {
+            _townVM.ViewLatestTown();
+        }
+
+        public void ViewTownWithTownsfolk(int id)
+        {
+            // Get the town from repository
+            Town? town = _townRep.GetTownById(id);
+
+            if (town == null)
+            {
+                Console.WriteLine($"Town with ID {id} not found.");
+                return;
+            }
+
+            // Display town details
+            _townVM.ViewLatestTown();
+
+            // Display townsfolk details using TownsfolkView
+        }
+        // TODO: below is old
+        public void UpdateTown(Town town, int id)
+        {
             try
             {
                 Town? latestTown = _townRep.GetLatestTown();
@@ -76,7 +105,7 @@ namespace TowninatorCLI
             }
             // Create and save town with descriptions
             int numberOfTownsfolk = random.Next(30, 56);
-            GenerateFamilies(20, townId);
+            GenerateFamilies(20, town.Id);
 
             try
             {
@@ -85,8 +114,8 @@ namespace TowninatorCLI
                 {
 
                     Townsfolk townsfolk = TownsfolkGenerator.GenerateRandomTownsfolk();
-                    townsfolk.TownId = townId; // Assign the townId to each townsfolk
-                                               // Add townsfolk to the database via the repository
+                    townsfolk.TownId = town.Id; // Assign the townId to each townsfolk
+                                                // Add townsfolk to the database via the repository
                     townsfolkRepository.Add(townsfolk);
                 }
             }
@@ -133,7 +162,7 @@ namespace TowninatorCLI
             }
 
             // Get terrain type of adjacent tile
-            MainTerrainType? adjacentTerrain = _mapUtilities.GetTerrainOfAdjacentTile(map, direction);
+            MainTerrainType? adjacentTerrain = _mapUtilities.GetTerrainOfAdjacentTile(map, direction, townX, townY);
 
             // Determine direction description based on direction enum
             string directionDescription = direction switch
@@ -191,27 +220,6 @@ namespace TowninatorCLI
         }
 
 
-        public void ViewLatestTown()
-        {
-            _townVM.ViewLatestTown();
-        }
-
-        public void ViewTownWithTownsfolk(int id)
-        {
-            // Get the town from repository
-            Town? town = _townRep.GetTownById(id);
-
-            if (town == null)
-            {
-                Console.WriteLine($"Town with ID {id} not found.");
-                return;
-            }
-
-            // Display town details
-            _townVM.ViewLatestTown();
-
-            // Display townsfolk details using TownsfolkView
-        }
     }
 }
 

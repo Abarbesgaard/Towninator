@@ -15,51 +15,6 @@ namespace TowninatorCLI
 
 
 
-        public MainTerrainType? GetTerrainOfAdjacentTile(Map map, Direction direction, int x, int y)
-        {
-            int adjacentX = x;
-            int adjacentY = y;
-
-            switch (direction)
-            {
-                case Direction.North:
-                    adjacentY--;
-                    break;
-                case Direction.South:
-                    adjacentY++;
-                    break;
-                case Direction.East:
-                    adjacentX++;
-                    break;
-                case Direction.West:
-                    adjacentX--;
-                    break;
-                default:
-                    throw new ArgumentException($"Unsupported direction: {direction}");
-            }
-
-            using (var connection = new SqliteConnection(_connectionString))
-            {
-                connection.Open();
-
-                var command = new SqliteCommand("SELECT MainTerrain FROM MapTile WHERE MapId = @MapId AND X = @X AND Y = @Y", connection);
-                command.Parameters.AddWithValue("@MapId", map.Id);
-                command.Parameters.AddWithValue("@X", adjacentX);
-                command.Parameters.AddWithValue("@Y", adjacentY);
-
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        return Enum.Parse<MainTerrainType>(reader.GetString(0));
-                    }
-                    else
-                    {
-                        return null; // Or handle the case where the adjacent tile is not found
-                    }
-                }
-            }
-        }
 
         public void SaveMap(Map map, int townId)
         {

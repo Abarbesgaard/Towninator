@@ -22,6 +22,7 @@ namespace TowninatorCLI
         public int Wealth { get; set; }
         public int Worship { get; set; }
         public List<Townsfolk>? Townsfolk { get; set; }
+        public Map? Map { get; set; }
         public Town() { }
         // Constructor with parameters
         public Town(int id, string name, string mainDescription, string northDescription, string southDescription,
