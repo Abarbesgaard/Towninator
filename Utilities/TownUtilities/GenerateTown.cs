@@ -6,7 +6,6 @@ namespace TowninatorCLI
         {
             return new Town
             {
-                // Don't set the Id here; it will be set by the TownRepository
                 Name = TownNameGenerator.GenerateName(),
                 Culture = new Random().Next(1, 5),
                 Education = new Random().Next(1, 5),
@@ -18,8 +17,8 @@ namespace TowninatorCLI
                 Trade = new Random().Next(1, 5),
                 Wealth = new Random().Next(1, 5),
                 Worship = new Random().Next(1, 5),
-                Townsfolk = new List<Townsfolk>() // Generate townsfolk if needed
             };
+
         }
     }
 }

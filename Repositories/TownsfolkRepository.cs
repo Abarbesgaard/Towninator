@@ -13,11 +13,27 @@ namespace TowninatorCLI
             _connectionString = $"Data Source={dbFileName}";
         }
 
+
+
         public void Add(Townsfolk townsfolk)
         {
+
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
+
+                // Check if TownId exists in Towns table
+                using (var checkCommand = connection.CreateCommand())
+                {
+                    checkCommand.CommandText = "SELECT COUNT(*) FROM Towns WHERE Id = @TownId";
+                    checkCommand.Parameters.AddWithValue("@TownId", townsfolk.TownId);
+
+                    long count = (long)checkCommand.ExecuteScalar();
+                    if (count == 0)
+                    {
+                        throw new Exception($"Foreign key constraint failed: TownId {townsfolk.TownId} does not exist in Towns table.");
+                    }
+                }
 
                 // Create a command to insert townsfolk
                 var command = connection.CreateCommand();

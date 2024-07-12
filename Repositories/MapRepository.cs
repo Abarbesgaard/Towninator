@@ -12,71 +12,89 @@ namespace TowninatorCLI
         }
 
 
+
+
         public void SaveMap(Map map, int townId)
         {
+            Console.WriteLine($"Saving map to database... TownId: {townId} ");
+
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
 
                 using (var transaction = connection.BeginTransaction())
                 {
+                    // Verify that the TownId exists in the Towns table
+                    var verifyTownCmd = connection.CreateCommand();
+                    verifyTownCmd.CommandText = "SELECT COUNT(*) FROM Towns WHERE Id = @TownId";
+                    verifyTownCmd.Parameters.AddWithValue("@TownId", townId);
+
+                    long townCount = (long)verifyTownCmd.ExecuteScalar();
+
+                    if (townCount == 0)
+                    {
+                        throw new Exception($"TownId {townId} does not exist in the Towns table.");
+                    }
+
                     // Insert or replace map record
                     var insertMapCmd = connection.CreateCommand();
                     insertMapCmd.CommandText = @"
-                INSERT OR REPLACE INTO Map (Id, Width, Height, TownId)
-                VALUES (@Id, @Width, @Height, @TownId)";
-                    insertMapCmd.Parameters.AddWithValue("@Id", townId);
+                INSERT OR REPLACE INTO Map (Width, Height, TownId)
+                VALUES (@Width, @Height, @TownId);
+                SELECT last_insert_rowid();"; // Retrieve the last inserted row id
+
                     insertMapCmd.Parameters.AddWithValue("@Width", map.Width);
                     insertMapCmd.Parameters.AddWithValue("@Height", map.Height);
                     insertMapCmd.Parameters.AddWithValue("@TownId", townId);
-                    insertMapCmd.ExecuteNonQuery();
 
-                    // Delete existing map tiles for the given mapId
-                    var deleteMapTilesCmd = connection.CreateCommand();
-                    deleteMapTilesCmd.CommandText = @"
-                DELETE FROM MapTile WHERE MapId = @MapId";
-                    deleteMapTilesCmd.Parameters.AddWithValue("@MapId", townId);
-                    deleteMapTilesCmd.ExecuteNonQuery();
-
-                    // Insert new map tiles
-                    var insertTileCmd = connection.CreateCommand();
-                    insertTileCmd.CommandText = @"
-                INSERT INTO MapTile (MapId, X, Y, MainTerrain, SecondaryTerrain, Event, HasTown, IsNorthOfTown, IsSouthOfTown, IsEastOfTown, IsWestOfTown)
-                VALUES (@MapId, @X, @Y, @MainTerrain, @SecondaryTerrain, @Event, @HasTown, @IsNorthOfTown, @IsSouthOfTown, @IsEastOfTown, @IsWestOfTown)";
-                    insertTileCmd.Parameters.AddWithValue("@MapId", townId);
-                    insertTileCmd.Parameters.AddWithValue("@X", 0);
-                    insertTileCmd.Parameters.AddWithValue("@Y", 0);
-                    insertTileCmd.Parameters.AddWithValue("@MainTerrain", string.Empty);
-                    insertTileCmd.Parameters.AddWithValue("@SecondaryTerrain", string.Empty);
-                    insertTileCmd.Parameters.AddWithValue("@Event", string.Empty);
-                    insertTileCmd.Parameters.AddWithValue("@HasTown", false);
-                    insertTileCmd.Parameters.AddWithValue("@IsNorthOfTown", false);
-                    insertTileCmd.Parameters.AddWithValue("@IsSouthOfTown", false);
-                    insertTileCmd.Parameters.AddWithValue("@IsEastOfTown", false);
-                    insertTileCmd.Parameters.AddWithValue("@IsWestOfTown", false);
-
-                    foreach (var tile in map.GetAllTiles())
+                    try
                     {
-                        insertTileCmd.Parameters["@X"].Value = tile.X;
-                        insertTileCmd.Parameters["@Y"].Value = tile.Y;
-                        insertTileCmd.Parameters["@MainTerrain"].Value = tile.Terrain.ToString();
-                        insertTileCmd.Parameters["@SecondaryTerrain"].Value = tile.SecondaryTerrain.ToString();
-                        insertTileCmd.Parameters["@Event"].Value = tile.Event?.Description ?? string.Empty;
-                        insertTileCmd.Parameters["@HasTown"].Value = tile.HasTown ? 1 : 0; // SQLite boolean mapping
-                        insertTileCmd.Parameters["@IsNorthOfTown"].Value = tile.IsNorthOfTown ? 1 : 0; // SQLite boolean mapping
-                        insertTileCmd.Parameters["@IsSouthOfTown"].Value = tile.IsSouthOfTown ? 1 : 0; // SQLite boolean mapping
-                        insertTileCmd.Parameters["@IsEastOfTown"].Value = tile.IsEastOfTown ? 1 : 0; // SQLite boolean mapping
-                        insertTileCmd.Parameters["@IsWestOfTown"].Value = tile.IsWestOfTown ? 1 : 0; // SQLite boolean mapping
+                        long mapId = (long)insertMapCmd.ExecuteScalar();
 
-                        insertTileCmd.ExecuteNonQuery();
+                        // Delete existing map tiles for the map
+                        var deleteMapTilesCmd = connection.CreateCommand();
+                        deleteMapTilesCmd.CommandText = "DELETE FROM MapTile WHERE MapId = @MapId";
+                        deleteMapTilesCmd.Parameters.AddWithValue("@MapId", mapId);
+                        deleteMapTilesCmd.ExecuteNonQuery();
+
+                        // Insert new map tiles
+                        var insertTileCmd = connection.CreateCommand();
+                        insertTileCmd.CommandText = @"
+                    INSERT INTO MapTile (MapId, X, Y, MainTerrain, SecondaryTerrain, Event, HasTown, IsNorthOfTown, IsSouthOfTown, IsEastOfTown, IsWestOfTown)
+                    VALUES (@MapId, @X, @Y, @MainTerrain, @SecondaryTerrain, @Event, @HasTown, @IsNorthOfTown, @IsSouthOfTown, @IsEastOfTown, @IsWestOfTown)";
+
+                        foreach (var tile in map.GetAllTiles())
+                        {
+                            insertTileCmd.Parameters.Clear();
+                            insertTileCmd.Parameters.AddWithValue("@MapId", mapId); // Use the retrieved mapId here
+                            insertTileCmd.Parameters.AddWithValue("@X", tile.X);
+                            insertTileCmd.Parameters.AddWithValue("@Y", tile.Y);
+                            insertTileCmd.Parameters.AddWithValue("@MainTerrain", tile.Terrain.ToString());
+                            insertTileCmd.Parameters.AddWithValue("@SecondaryTerrain", tile.SecondaryTerrain.ToString());
+                            insertTileCmd.Parameters.AddWithValue("@Event", tile.Event?.Description ?? string.Empty);
+                            insertTileCmd.Parameters.AddWithValue("@HasTown", tile.HasTown ? 1 : 0);
+                            insertTileCmd.Parameters.AddWithValue("@IsNorthOfTown", tile.IsNorthOfTown ? 1 : 0);
+                            insertTileCmd.Parameters.AddWithValue("@IsSouthOfTown", tile.IsSouthOfTown ? 1 : 0);
+                            insertTileCmd.Parameters.AddWithValue("@IsEastOfTown", tile.IsEastOfTown ? 1 : 0);
+                            insertTileCmd.Parameters.AddWithValue("@IsWestOfTown", tile.IsWestOfTown ? 1 : 0);
+
+                            insertTileCmd.ExecuteNonQuery();
+                        }
+
+                        transaction.Commit();
                     }
-
-                    transaction.Commit();
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        transaction.Rollback();
+                        throw;
+                    }
                 }
 
                 connection.Close();
             }
         }
+
 
         public MainTerrainType GetTerrainAtCoordinate(long mapId, int x, int y)
         {

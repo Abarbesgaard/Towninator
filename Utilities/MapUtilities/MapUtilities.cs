@@ -12,6 +12,7 @@ namespace TowninatorCLI
         }
         public void GenerateMap(Map map, int townX, int townY)
         {
+            Console.WriteLine($"[Method]: MapUtilities.GenerateMap. Params: townX: {townX}, townY: {townY}.");
             int width = map.Width;
             int height = map.Height;
             MapTile[,] _mapTiles = map.GetTiles();
@@ -159,6 +160,7 @@ namespace TowninatorCLI
 
         public void AddTownToMap(int x, int y, MapTile[,] _mapTiles)
         {
+            Console.WriteLine($"[Method]: MapUtilities.AddTownToMap. Params: x: {x}, y: {y}.");
             MainTerrainType? terrain = _mapTiles[x, y].Terrain;
             string description = GetTownDescriptionBasedOnTerrain(terrain);
 

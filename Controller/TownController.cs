@@ -31,15 +31,16 @@ namespace TowninatorCLI
 
         public void AddTown(int townId)
         {
+            Console.WriteLine($"[Method]: AddTown. Params: townId: {townId}.");
             Town randomTown = GenerateTown.GenerateRandomTown();
 
             Map map = _mapController.GenerateMap(townId, 20, 20);
-
             // TODO: Move this logic to a separate class
             // Determine town coordinates, for example, the center of the map
             int townX = map.Width / 2;
             int townY = map.Height / 2;
 
+            _mapController.SaveMap(map, townId);
             // Get terrain type at town location
             MainTerrainType? terrain = _mapUtilities.GetTerrainAt(townX, townY, map.Height, map.Width, map.GetTiles());
             // TODO: move this logic to a separate class
@@ -50,27 +51,71 @@ namespace TowninatorCLI
             string westDescription = GetDirectionalTownDescriptionFromTerrain(terrain, Direction.West, map, townX, townY);
 
             // Assign generated values to the randomTown object
-            randomTown.Id = townId;
+            //
             randomTown.MainDescription = mainDescription;
             randomTown.NorthDescription = northDescription;
             randomTown.SouthDescription = southDescription;
             randomTown.EastDescription = eastDescription;
             randomTown.WestDescription = westDescription;
-            int numberOfTownsfolk = random.Next(30, 56);
-
-            // Generate and add townsfolk to the town
-            for (int i = 0; i < numberOfTownsfolk; i++)
+            try
             {
-                Townsfolk townsfolk = TownsfolkGenerator.GenerateRandomTownsfolk();
-                townsfolk.TownId = townId; // Assign the townId to each townsfolk
-                                           // Add townsfolk to the database via the repository
-                townsfolkRepository.Add(townsfolk);
+                _townRep.AddTown(randomTown);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            try
+            {
+                Town? latestTown = _townRep.GetLatestTown();
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
             // Create and save town with descriptions
-            _townRep.AddTown(randomTown);
+            int numberOfTownsfolk = random.Next(30, 56);
+            GenerateFamilies(20, townId);
+
+            try
+            {
+                // Generate and add townsfolk to the town
+                for (int i = 0; i < numberOfTownsfolk; i++)
+                {
+
+                    Townsfolk townsfolk = TownsfolkGenerator.GenerateRandomTownsfolk();
+                    townsfolk.TownId = townId; // Assign the townId to each townsfolk
+                                               // Add townsfolk to the database via the repository
+                    townsfolkRepository.Add(townsfolk);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
 
+        private void GenerateFamilies(int numberOfFamilies, int townId)
+        {
+            Random random = new Random();
+
+            for (int i = 0; i < numberOfFamilies; i++)
+            {
+                int familySize = random.Next(2, 5); // Family size between 2 and 4
+                string lastName = TownsfolkNameGenerator.GenerateLastName(); // Generate a last name for the family
+
+                for (int j = 0; j < familySize; j++)
+                {
+                    Townsfolk townsfolk = TownsfolkGenerator.GenerateRandomTownsfolk();
+                    townsfolk.TownId = townId;
+                    townsfolk.LastName = lastName; // Assign the same last name to all family members
+                                                   // Add townsfolk to the database via the repository
+                    townsfolkRepository.Add(townsfolk);
+                }
+            }
+        }
 
 
         // TODO: Move this method to a separate class
@@ -146,9 +191,9 @@ namespace TowninatorCLI
         }
 
 
-        public void ViewTown(int id)
+        public void ViewLatestTown()
         {
-            _townVM.ViewTown(id);
+            _townVM.ViewLatestTown();
         }
 
         public void ViewTownWithTownsfolk(int id)
@@ -163,7 +208,7 @@ namespace TowninatorCLI
             }
 
             // Display town details
-            _townVM.ViewTown(id);
+            _townVM.ViewLatestTown();
 
             // Display townsfolk details using TownsfolkView
         }

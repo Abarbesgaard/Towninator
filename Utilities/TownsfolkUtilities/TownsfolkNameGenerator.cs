@@ -31,6 +31,21 @@ namespace TowninatorCLI
             return name;
         }
 
+        public static string GenerateLastName()
+        {
+            Random random = new Random();
+            int RandomNumber(int min, int max)
+            {
+                return random.Next(min, max);
+            }
+            // Generate a random last name
+            String[] prefix = { "Black", "Storm", "Raven", "Night", "Iron", "Frost", "Thorn", "Blood", "Grim" };
+            String[] suffix = { "rider", "shadow", "bane", "born", "blade", "soul", "fang", "claw", "spire", "wolf" };
+            string name = prefix[RandomNumber(0, prefix.Length)] + suffix[RandomNumber(0, suffix.Length)];
+            return name;
+
+        }
+
     }
 
 }

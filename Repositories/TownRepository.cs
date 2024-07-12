@@ -58,52 +58,59 @@ namespace TowninatorCLI
         }
 
 
-        public Town? GetLatestTown()
+
+        public Town GetLatestTown()
         {
+            Town town = new Town();
+
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
 
-                using (var command = connection.CreateCommand())
-                {
-                    // Query to get the town with the highest ID
-                    command.CommandText = "SELECT * FROM Towns ORDER BY Id DESC LIMIT 1";
+                string query = "SELECT * FROM Towns ORDER BY Id DESC LIMIT 1;";
 
+                using (var command = new SqliteCommand(query, connection))
+                {
                     using (var reader = command.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            return new Town
-                            {
-                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                Name = reader.GetString(reader.GetOrdinal("Name")),
-                                Culture = reader.GetInt32(reader.GetOrdinal("Culture")),
-                                Education = reader.GetInt32(reader.GetOrdinal("Education")),
-                                Health = reader.GetInt32(reader.GetOrdinal("Health")),
-                                Military = reader.GetInt32(reader.GetOrdinal("Military")),
-                                Order = reader.GetInt32(reader.GetOrdinal("Order")),
-                                Production = reader.GetInt32(reader.GetOrdinal("Production")),
-                                Recreation = reader.GetInt32(reader.GetOrdinal("Recreation")),
-                                Trade = reader.GetInt32(reader.GetOrdinal("Trade")),
-                                Wealth = reader.GetInt32(reader.GetOrdinal("Wealth")),
-                                Worship = reader.GetInt32(reader.GetOrdinal("Worship")),
-                                // Add mappings for other properties as needed
-                                MainDescription = reader.GetString(reader.GetOrdinal("MainDescription")),
-                                NorthDescription = reader.GetString(reader.GetOrdinal("NorthDescription")),
-                                SouthDescription = reader.GetString(reader.GetOrdinal("SouthDescription")),
-                                EastDescription = reader.GetString(reader.GetOrdinal("EastDescription")),
-                                WestDescription = reader.GetString(reader.GetOrdinal("WestDescription")),
-                            };
+                            town.Id = reader.GetInt32(reader.GetOrdinal("Id"));
+                            town.Name = reader.IsDBNull(reader.GetOrdinal("Name")) ? null : reader.GetString(reader.GetOrdinal("Name"));
+                            town.Culture = reader.GetInt32(reader.GetOrdinal("Culture"));
+                            town.Education = reader.GetInt32(reader.GetOrdinal("Education"));
+                            town.Health = reader.GetInt32(reader.GetOrdinal("Health"));
+                            town.Military = reader.GetInt32(reader.GetOrdinal("Military"));
+                            town.Order = reader.GetInt32(reader.GetOrdinal("Order"));
+                            town.Production = reader.GetInt32(reader.GetOrdinal("Production"));
+                            town.Recreation = reader.GetInt32(reader.GetOrdinal("Recreation"));
+                            town.Trade = reader.GetInt32(reader.GetOrdinal("Trade"));
+                            town.Wealth = reader.GetInt32(reader.GetOrdinal("Wealth"));
+                            town.Worship = reader.GetInt32(reader.GetOrdinal("Worship"));
+                            town.MainDescription = reader.IsDBNull(reader.GetOrdinal("MainDescription")) ? null : reader.GetString(reader.GetOrdinal("MainDescription"));
+                            town.NorthDescription = reader.IsDBNull(reader.GetOrdinal("NorthDescription")) ? null : reader.GetString(reader.GetOrdinal("NorthDescription"));
+                            town.SouthDescription = reader.IsDBNull(reader.GetOrdinal("SouthDescription")) ? null : reader.GetString(reader.GetOrdinal("SouthDescription"));
+                            town.EastDescription = reader.IsDBNull(reader.GetOrdinal("EastDescription")) ? null : reader.GetString(reader.GetOrdinal("EastDescription"));
+                            town.WestDescription = reader.IsDBNull(reader.GetOrdinal("WestDescription")) ? null : reader.GetString(reader.GetOrdinal("WestDescription"));
+
+                            // Add mappings for other properties as needed
                         }
                     }
                 }
+
+                connection.Close();
             }
 
-            return null;
+            return town;
         }
 
-        public void AddTown(Town town)
+
+
+
+        public int AddTown(Town town)
         {
+            Console.WriteLine($"[Method]: TownRepository.AddTown. Params: town: {town.Id} {town.Name}.");
+
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
@@ -113,7 +120,8 @@ namespace TowninatorCLI
                                NorthDescription, SouthDescription, EastDescription, WestDescription)
             VALUES (@Name, @Culture, @Education, @Health, @Military, @Order, @Production, @Recreation, @Trade, @Wealth, @Worship, @MainDescription,
                     @NorthDescription, @SouthDescription, @EastDescription, @WestDescription);
-        ";
+            SELECT last_insert_rowid();"; // Retrieve the last inserted row id
+
                 try
                 {
                     using (var command = new SqliteCommand(query, connection))
@@ -135,17 +143,23 @@ namespace TowninatorCLI
                         command.Parameters.AddWithValue("@EastDescription", town.EastDescription ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@WestDescription", town.WestDescription ?? (object)DBNull.Value);
 
-                        int rowsAffected = command.ExecuteNonQuery();
+                        long newTownId = (long)command.ExecuteScalar();
+                        Console.WriteLine($"New town ID: {newTownId}");
+                        return (int)newTownId; // Cast to int and return the new town ID
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"An error occurred: {ex.Message}");
+                    throw;
                 }
-
-                connection.Close();
+                finally
+                {
+                    connection.Close();
+                }
             }
         }
+
 
     }
 }

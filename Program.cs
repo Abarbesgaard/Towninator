@@ -8,28 +8,27 @@ namespace TowninatorCLI
             string dbFileName = Path.Combine(AppContext.BaseDirectory, "town.sqlite");
             SQLiteDatabaseManager database = new SQLiteDatabaseManager(dbFileName);
             bool databaseExists = File.Exists(dbFileName);
+
             if (!databaseExists)
             {
                 database.CreateDatabase();
+                Console.WriteLine("New database created.");
             }
 
             var townRepository = new TownRepository(dbFileName);
             var mapRepository = new MapRepository(dbFileName);
-
             var mapController = new MapController(dbFileName);
-
-            var townController = new TownController(townRepository, mapController, dbFileName); // Pass mapController here
-
+            var townController = new TownController(townRepository, mapController, dbFileName);
 
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(options =>
                 {
                     if (options.Town)
                     {
-                        townController.AddTown(1);
-                        townController.ViewTown(1);
-                        mapController.GenerateMap(1, 20, 20);
+                        Console.WriteLine("Town options selected");
 
+                        townController.AddTown(1);
+                        townController.ViewLatestTown();
                     }
                     else if (options.TownWithTownsfolk)
                     {
@@ -43,13 +42,8 @@ namespace TowninatorCLI
                     {
                         mapController.DisplayMapLegend();
                     }
-
-
                 });
-
-            // Console.WriteLine("Operations completed successfully.");
         }
-
     }
     public class Options
     {

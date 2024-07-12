@@ -16,13 +16,21 @@ namespace TowninatorCLI
 
         public Map GenerateMap(int townId, int width, int height)
         {
+            Console.WriteLine($"[Method]: GenerateMap. Params: townId: {townId}, width: {width}, height {height}.");
+
             Map map = new Map(width, height); // Assuming Map constructor accepts width and height
             int townX = width / 2;
             int townY = height / 2;
             mapUtilities.GenerateMap(map, townX, townY); // Pass town coordinates
-            // Save map with associated townId
-            mapRepository.SaveMap(map, townId);
+                                                         // Save map with associated townId
+
             return map;
+        }
+
+        public void SaveMap(Map map, int townId)
+        {
+            Console.WriteLine($"[Method]: SaveMap. Params: map {map}, town id {townId}.");
+            mapRepository.SaveMap(map, townId);
         }
 
         public void DisplayMap(long mapId)

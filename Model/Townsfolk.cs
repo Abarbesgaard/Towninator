@@ -44,10 +44,12 @@ namespace TowninatorCLI
         public string? Description { get; set; }
         public bool IsMarried { get; set; }
         public int TownId { get; set; }
-        // TODO : Add position on map via Maptile id in db, Add Origin, Add Region, Add Country, Add
+        public string? Origin { get; set; }
+        public string? Region { get; set; }
+        public string? Country { get; set; }
+        // TODO : Add position on map via Maptile id in db, 
         public Townsfolk()
         {
-            // Default constructor
         }
 
         public Townsfolk(int id, string firstName, string lastName, int age, Gender gender, Profession profession, ProfessionSkillLevel skillLevel)

@@ -9,12 +9,12 @@ namespace TowninatorCLI
             _townRepository = townRep;
         }
 
-        public void ViewTown(int id)
+        public void ViewLatestTown()
         {
             Town? town = _townRepository.GetLatestTown();
             if (town == null)
             {
-                Console.WriteLine($"Town with ID {id} not found.");
+                Console.WriteLine($"Town not found.");
                 return;
             }
             Console.Write($"Welcome to the town of ");
