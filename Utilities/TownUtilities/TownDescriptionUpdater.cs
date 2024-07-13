@@ -21,8 +21,6 @@ namespace TowninatorCLI
 
         public void UpdateTownDescriptions(Town town)
         {
-            Console.WriteLine($"[Method]: TownDescriptionUpdater.UpdateTownDescriptions. Params: townid: {town.Id}, town Name: {town.Name}");
-
             try
             {
 
@@ -44,10 +42,10 @@ namespace TowninatorCLI
 
                 // Get the terrain at the town's position
                 MainTerrainType townTerrain = _mapRepository.GetTerrainAtCoordinate(map.Id, townMapTile.X, townMapTile.Y);
-                Console.WriteLine($"Town position found. X: {townMapTile.X}, Y: {townMapTile.Y}, Terrain: {townTerrain}");
 
                 // Update town descriptions based on terrain
                 town.MainDescription = _mapUtilities.GetTownDescriptionBasedOnTerrain(townTerrain);
+                // TODO : Denne kommer med forkerte adjacent terrains
 
                 // Get adjacent terrains
                 MainTerrainType? northTerrain = _mapRepository.GetTerrainOfAdjacentTile(map, Direction.North, townMapTile.X, townMapTile.Y);
@@ -74,22 +72,57 @@ namespace TowninatorCLI
         {
             // Implement your logic to get directional descriptions based on terrain and direction
             // Example logic:
+
+
             switch (direction)
             {
                 case Direction.North:
                     // Implement logic to get description north of town
-                    return $"North of town: {terrain?.ToString()}";
+                    return $"North of town: {AddTerrainDescription(terrain)}";
                 case Direction.South:
                     // Implement logic to get description south of town
-                    return $"South of town: {terrain?.ToString()}";
+                    return $"South of town: {AddTerrainDescription(terrain)}";
                 case Direction.East:
                     // Implement logic to get description east of town
-                    return $"East of town: {terrain?.ToString()}";
+                    return $"East of town: {AddTerrainDescription(terrain)}";
                 case Direction.West:
                     // Implement logic to get description west of town
-                    return $"West of town: {terrain?.ToString()}";
+                    return $"West of town: {AddTerrainDescription(terrain)}";
                 default:
                     throw new ArgumentException($"Unsupported direction: {direction}");
+            }
+        }
+        private string AddTerrainDescription(MainTerrainType? terrain)
+        {
+            Adj_Grassland adj_Grassland = new Adj_Grassland();
+            Adj_LowMountain adj_lowMountain = new Adj_LowMountain();
+            Adj_MediumMountain adj_MediumMountain = new Adj_MediumMountain();
+            Adj_HighMountain adj_HighMountain = new Adj_HighMountain();
+            Adj_Forest adj_Forest = new Adj_Forest();
+            Adj_Ocean adj_Ocean = new Adj_Ocean();
+            Adj_Swamp adj_Swamp = new Adj_Swamp();
+            Adj_Hill adj_Hill = new Adj_Hill();
+            switch (terrain)
+            {
+                case MainTerrainType.HighMountain:
+                    return adj_HighMountain.DescriptionGenerator();
+                case MainTerrainType.MediumMountain:
+                    return adj_MediumMountain.DescriptionGenerator();
+                case MainTerrainType.LowMountain:
+                    return adj_lowMountain.DescriptionGenerator();
+                case MainTerrainType.Forest:
+                    return adj_Forest.DescriptionGenerator();
+                case MainTerrainType.Ocean:
+                    return adj_Ocean.DescriptionGenerator();
+                case MainTerrainType.Grassland:
+                    return adj_Grassland.DescriptionGenerator();
+                case MainTerrainType.Swamp:
+                    return adj_Swamp.DescriptionGenerator();
+                case MainTerrainType.Hill:
+                    return adj_Hill.DescriptionGenerator();
+
+                default:
+                    return "Unknown terrain";
             }
         }
     }

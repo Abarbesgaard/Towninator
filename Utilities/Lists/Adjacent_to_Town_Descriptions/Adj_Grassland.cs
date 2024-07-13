@@ -11,7 +11,7 @@ namespace TowninatorCLI
         "stretching as far as the eye can see, under a vast open sky.",
         "with wildflowers dotting the landscape, adding splashes of color.",
         "where herds of grazing animals roam freely in the open plains.",
-        "offering a peaceful retreat amidst the tranquil scenery.",
+        "offering a peaceful retreat amidst the tranquil scenery of green blades of grass.",
         "where the sun sets over rolling fields in a blaze of colors.",
         "with its expansive openness inviting exploration and discovery.",
         "where the rustling of grasses harmonizes with the song of birds.",

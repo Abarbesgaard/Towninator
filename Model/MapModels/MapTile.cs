@@ -5,7 +5,7 @@ namespace TowninatorCLI
     {
         public int X { get; }
         public int Y { get; }
-        public MainTerrainType? Terrain { get; set; }
+        public MainTerrainType Terrain { get; set; }
         public SecondaryTerrainType SecondaryTerrain { get; }
         public MapEvent? Event { get; set; }
         public string? Description { get; set; }
@@ -17,7 +17,7 @@ namespace TowninatorCLI
         public bool IsEastOfTown { get; set; }
         public bool IsWestOfTown { get; set; }
 
-        public MapTile(int x, int y, MainTerrainType? terrain, SecondaryTerrainType secondaryTerrain, MapEvent? mapEvent = null, bool hasTown = false)
+        public MapTile(int x, int y, MainTerrainType terrain, SecondaryTerrainType secondaryTerrain, MapEvent? mapEvent = null, bool hasTown = false)
         {
             X = x;
             Y = y;

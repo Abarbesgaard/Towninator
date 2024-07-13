@@ -2,6 +2,7 @@ namespace TowninatorCLI
 {
     public enum MainTerrainType
     {
+        None,
         Desert,
         Forest,
         Grassland,

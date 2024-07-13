@@ -4,7 +4,6 @@ namespace TowninatorCLI
     {
         public Town GenerateRandomTown()
         {
-            Console.WriteLine($"[Method]: GenerateTown.GenerateRandomTown");
             return new Town
             {
                 Name = TownNameGenerator.GenerateName(),

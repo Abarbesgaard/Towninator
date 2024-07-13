@@ -12,7 +12,6 @@ namespace TowninatorCLI
         }
         public Map GenerateMap(int townX, int townY, int width, int height)
         {
-            Console.WriteLine($"[Method]: MapUtilities.GenerateMap. Params: townX: {townX}, townY: {townY}.");
             Map map = new Map(width, height);
             MapTile[,] _mapTiles = map.GetTiles();
 
@@ -23,7 +22,7 @@ namespace TowninatorCLI
             {
                 for (int x = 0; x < width; x++)
                 {
-                    MainTerrainType? terrain = GetTerrainFromNoiseValue(noiseMap[x, y]);
+                    MainTerrainType terrain = GetTerrainFromNoiseValue(noiseMap[x, y]);
                     _mapTiles[x, y] = new MapTile(x, y, terrain, SecondaryTerrainType.None, null);
                 }
             }
@@ -42,7 +41,7 @@ namespace TowninatorCLI
 
         }
 
-        private MainTerrainType? GetTerrainFromNoiseValue(float noiseValue)
+        private MainTerrainType GetTerrainFromNoiseValue(float noiseValue)
         {
             if (noiseValue < 0.2f)
                 return MainTerrainType.Ocean;
@@ -65,7 +64,7 @@ namespace TowninatorCLI
             else
                 return MainTerrainType.Grassland;
         }
-        public string GetTownDescriptionBasedOnTerrain(MainTerrainType? terrain)
+        public string GetTownDescriptionBasedOnTerrain(MainTerrainType terrain)
         {
             Town_Highmountain town_Highmountain = new Town_Highmountain();
             Town_MediumMountain town_MediumMountain = new Town_MediumMountain();
@@ -103,7 +102,7 @@ namespace TowninatorCLI
 
 
 
-        public MainTerrainType? GetTerrainOfAdjacentTile(Map map, Direction direction, int townX, int townY)
+        public MainTerrainType GetTerrainOfAdjacentTile(Map map, Direction direction, int townX, int townY)
         {
             if (map == null)
             {
@@ -150,8 +149,7 @@ namespace TowninatorCLI
 
         public void AddTownToMap(int x, int y, MapTile[,] _mapTiles)
         {
-            Console.WriteLine($"[Method]: MapUtilities.AddTownToMap. Params: x: {x}, y: {y}.");
-            MainTerrainType? terrain = _mapTiles[x, y].Terrain;
+            MainTerrainType terrain = _mapTiles[x, y].Terrain;
             string description = GetTownDescriptionBasedOnTerrain(terrain);
 
             _mapTiles[x, y].HasTown = true;
@@ -159,7 +157,7 @@ namespace TowninatorCLI
         }
 
 
-        public MainTerrainType? GetTerrainAt(int x, int y, int height, int width, MapTile[,] _mapTiles)
+        public MainTerrainType GetTerrainAt(int x, int y, int height, int width, MapTile[,] _mapTiles)
         {
             if (x < 0 || x >= width || y < 0 || y >= height)
             {

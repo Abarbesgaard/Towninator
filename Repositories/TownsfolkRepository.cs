@@ -28,7 +28,7 @@ namespace TowninatorCLI
                     checkCommand.CommandText = "SELECT COUNT(*) FROM Towns WHERE Id = @TownId";
                     checkCommand.Parameters.AddWithValue("@TownId", townsfolk.TownId);
 
-                    long count = (long)checkCommand.ExecuteScalar();
+                    long? count = (long?)checkCommand.ExecuteScalar();
                     if (count == 0)
                     {
                         throw new Exception($"Foreign key constraint failed: TownId {townsfolk.TownId} does not exist in Towns table.");

@@ -2,7 +2,7 @@ namespace TowninatorCLI
 {
     public static class TownNameGenerator
     {
-
+        // TODO : add Mainterrain to add variety to the names
         public static string GenerateName()
         {
             Random random = new Random();

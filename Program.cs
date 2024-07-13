@@ -25,7 +25,6 @@ namespace TowninatorCLI
                 {
                     if (options.Town)
                     {
-                        Console.WriteLine("Town options selected");
                         Map map = mapController.GenerateMap(20, 20);
                         Town town = townController.GenerateTown();
 
@@ -41,7 +40,7 @@ namespace TowninatorCLI
                     }
                     else if (options.ViewMap)
                     {
-                        mapController.DisplayMap(1);
+                        mapController.DisplayLatestMap();
                     }
                     else if (options.MapLengend)
                     {

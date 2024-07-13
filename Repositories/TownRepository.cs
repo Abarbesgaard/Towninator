@@ -126,7 +126,6 @@ namespace TowninatorCLI
                     command.Parameters.AddWithValue("@Id", town.Id);
 
                     int rowsAffected = command.ExecuteNonQuery();
-                    Console.WriteLine($"Updated {rowsAffected} row(s) in Towns table.");
 
                     // Optionally, you can handle error checking or logging here
                 }
@@ -138,8 +137,6 @@ namespace TowninatorCLI
 
         public int AddTown(Town town)
         {
-            Console.WriteLine($"[Method]: TownRepository.AddTown. Params: town: {town.Id} {town.Name}.");
-
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
@@ -149,7 +146,7 @@ namespace TowninatorCLI
                                NorthDescription, SouthDescription, EastDescription, WestDescription)
             VALUES (@Name, @Culture, @Education, @Health, @Military, @Order, @Production, @Recreation, @Trade, @Wealth, @Worship, @MainDescription,
                     @NorthDescription, @SouthDescription, @EastDescription, @WestDescription);
-            SELECT last_insert_rowid();"; // Retrieve the last inserted row id
+            SELECT last_insert_rowid();";
 
                 try
                 {
@@ -172,10 +169,18 @@ namespace TowninatorCLI
                         command.Parameters.AddWithValue("@EastDescription", town.EastDescription ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@WestDescription", town.WestDescription ?? (object)DBNull.Value);
 
-                        long newTownId = (long)command.ExecuteScalar();
-                        town.Id = (int)newTownId;
-                        Console.WriteLine($"TownRepository.AddTown. Params: town: {town.Id} {town.Name}");
-                        return (int)newTownId; // Cast to int and return the new town ID
+                        long? newTownId = (long?)command.ExecuteScalar();
+
+                        if (newTownId != null)
+                        {
+                            town.Id = (int)newTownId;
+                            return (int)newTownId;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Failed to retrieve new town Id from database.");
+                            return -1;
+                        }
                     }
                 }
                 catch (Exception ex)

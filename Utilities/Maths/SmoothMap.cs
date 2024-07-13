@@ -8,8 +8,8 @@ namespace TowninatorCLI
             {
                 for (int x = 1; x < Width - 1; x++)
                 {
-                    MainTerrainType? terrain = _mapTiles[x, y].Terrain;
-                    Dictionary<MainTerrainType?, int> neighborTerrainCounts = new Dictionary<MainTerrainType?, int>(EqualityComparer<MainTerrainType?>.Default);
+                    MainTerrainType terrain = _mapTiles[x, y].Terrain;
+                    Dictionary<MainTerrainType, int> neighborTerrainCounts = new Dictionary<MainTerrainType, int>(EqualityComparer<MainTerrainType>.Default);
 
                     // Count the types of neighboring terrains
                     for (int ny = y - 1; ny <= y + 1; ny++)
@@ -18,7 +18,7 @@ namespace TowninatorCLI
                         {
                             if (nx == x && ny == y) continue;
 
-                            MainTerrainType? neighborTerrain = _mapTiles[nx, ny].Terrain;
+                            MainTerrainType neighborTerrain = _mapTiles[nx, ny].Terrain;
                             if (!neighborTerrainCounts.ContainsKey(neighborTerrain))
                             {
                                 neighborTerrainCounts[neighborTerrain] = 0;
@@ -28,7 +28,7 @@ namespace TowninatorCLI
                     }
 
                     // Find the most common neighbor terrain type
-                    MainTerrainType? mostCommonNeighborTerrain = terrain;
+                    MainTerrainType mostCommonNeighborTerrain = terrain;
                     int maxCount = 0;
                     foreach (var kvp in neighborTerrainCounts)
                     {
