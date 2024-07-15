@@ -3,14 +3,19 @@ namespace TowninatorCLI
     public class TownViewModel
     {
         private readonly TownRepository _townRepository;
+        private bool debug;
 
-        public TownViewModel(TownRepository townRep)
+
+        public TownViewModel(TownRepository townRep, bool debug = false)
         {
+            this.debug = debug;
             _townRepository = townRep;
         }
 
         public void ViewLatestTown()
         {
+            if (debug) Debugging.WriteNColor("[] TownViewModel.ViewLatestTown() ", ConsoleColor.Green);
+
             Town? town = _townRepository.GetLatestTown();
             if (town == null)
             {

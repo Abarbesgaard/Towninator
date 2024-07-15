@@ -5,18 +5,22 @@ namespace TowninatorCLI
     public class SQLiteDatabaseManager
     {
         private string connectionString;
-        public SQLiteDatabaseManager(string dbFileName)
+        private bool debug;
+
+        public SQLiteDatabaseManager(string dbFileName, bool debug = false)
         {
             connectionString = $"Data Source={dbFileName}; foreign keys=true;";
+            this.debug = debug;
         }
 
 
         public void CreateDatabase()
         {
+            if (debug) Debugging.WriteNColor("Creating database...", ConsoleColor.Green);
             using (var connection = new SqliteConnection(connectionString))
             {
                 connection.Open();
-
+                if (debug) Debugging.WriteNColor("Initiating connection.", ConsoleColor.Green);
                 // Enable foreign key constraints
                 string commandForeignKey = @"PRAGMA foreign_keys = ON;";
                 ExecuteNonQ(connection, commandForeignKey);
@@ -54,6 +58,7 @@ namespace TowninatorCLI
                 ";
                 ExecuteNonQ(connection, createTableQuery);
 
+                if (debug) Debugging.WriteNColor("Creating Towns table.", ConsoleColor.Green);
                 // Create Townsfolk table
                 string createTownsfolkTable = @"
                 CREATE TABLE Townsfolk (
@@ -78,6 +83,7 @@ namespace TowninatorCLI
             ";
                 ExecuteNonQ(connection, createTownsfolkTable);
 
+                if (debug) Debugging.WriteNColor("Creating Townsfolk table.", ConsoleColor.Green);
                 // Create Map table
                 string createMapTable = @"
                   CREATE TABLE Map (
@@ -90,6 +96,8 @@ namespace TowninatorCLI
 
                 ";
                 ExecuteNonQ(connection, createMapTable);
+
+                if (debug) Debugging.WriteNColor("Creating Map table.", ConsoleColor.Green);
 
                 // Create MapTile table
                 string createMapTileTable = @"
@@ -112,6 +120,7 @@ namespace TowninatorCLI
                 ";
                 ExecuteNonQ(connection, createMapTileTable);
 
+                if (debug) Debugging.WriteNColor("Creating MapMapTile table.", ConsoleColor.Green);
                 connection.Close();
             }
         }

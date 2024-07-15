@@ -6,20 +6,24 @@ namespace TowninatorCLI
         private readonly string dbFileName;
         private MapUtilities mapUtilities;
         private TownRepository townRepository;
+        private bool debug;
 
 
 
-        public MapController(string dbFileName)
+        public MapController(string dbFileName, bool debug = false)
         {
             this.dbFileName = dbFileName;
             this.mapRepository = new MapRepository(this.dbFileName);
-            mapUtilities = new MapUtilities(this.dbFileName);
+            mapUtilities = new MapUtilities(this.dbFileName, debug);
             townRepository = new TownRepository(this.dbFileName);
+            this.debug = debug;
+
 
         }
 
         public Map GenerateMap(int width, int height)
         {
+            if (debug) Debugging.WriteNColor($"[] MapController.GenerateMap(width {width}, height {height})", ConsoleColor.Green);
             int townX = width / 2;
             int townY = height / 2;
             Map map = mapUtilities.GenerateMap(townX, townY, width, height); // Pass town coordinates

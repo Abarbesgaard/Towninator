@@ -4,14 +4,21 @@ namespace TowninatorCLI
     {
         private Random _random = new Random();
         private SmoothMap _smoothMap = new SmoothMap();
-        NoiseMap _noiseMap = new NoiseMap();
+        private NoiseMap _noiseMap;
         private MapRepository? mapRepository;
-        public MapUtilities(string dbFileName)
+        private bool debug;
+
+        public MapUtilities(string dbFileName, bool debug = false)
         {
+            this.debug = debug;
+            _noiseMap = new NoiseMap(debug);
             mapRepository = new MapRepository(dbFileName);
         }
+
         public Map GenerateMap(int townX, int townY, int width, int height)
         {
+            if (debug) Debugging.WriteNColor($"[] MapUtilities.GenerateMap(townX {townX}, townY {townY}, width {width}, height {height})", ConsoleColor.Green);
+
             Map map = new Map(width, height);
             MapTile[,] _mapTiles = map.GetTiles();
 

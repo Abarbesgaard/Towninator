@@ -6,14 +6,18 @@ namespace TowninatorCLI
     {
 
         private readonly string _connectionString;
+        private bool debug;
 
-        public TownRepository(string dbFileName)
+        public TownRepository(string dbFileName, bool debug = false)
         {
+            this.debug = debug;
             _connectionString = $"Data Source={dbFileName}";
         }
 
         public Town? GetTownById(int id)
         {
+            if (debug) Debugging.WriteNColor($"[] TownRepository.GetTownById( id: {id} )", ConsoleColor.Green);
+
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
@@ -57,6 +61,8 @@ namespace TowninatorCLI
 
         public Town GetLatestTown()
         {
+            if (debug) Debugging.WriteNColor("[] TownRepository.GetLatestTown()", ConsoleColor.Green);
+
             Town town = new Town();
 
             using (var connection = new SqliteConnection(_connectionString))
@@ -102,6 +108,7 @@ namespace TowninatorCLI
 
         public void UpdateTownDescriptions(Town town)
         {
+            if (debug) Debugging.WriteNColor($"[] TownRepository.UpdateTownDescriptions( Town {town.Name} )", ConsoleColor.Green);
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
@@ -137,6 +144,8 @@ namespace TowninatorCLI
 
         public int AddTown(Town town)
         {
+            if (debug) Debugging.WriteNColor($"[] TownRepository.AddTown( Town {town.Name} )", ConsoleColor.Green);
+
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();

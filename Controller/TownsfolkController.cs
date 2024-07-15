@@ -7,6 +7,7 @@ namespace TowninatorCLI
         private readonly TownsfolkRepository _townsfolkRepository;
         private readonly MapController _mapController;
         private readonly MapRepository _mapRepository;
+        private readonly TownsfolkView _townsfolkView;
 
         public TownsfolkController(string dbFileName)
         {
@@ -14,6 +15,8 @@ namespace TowninatorCLI
             _townsfolkRepository = new TownsfolkRepository(dbFileName);
             _mapController = new MapController(dbFileName);
             _mapRepository = new MapRepository(dbFileName);
+            _townsfolkView = new TownsfolkView(dbFileName);
+
 
 
         }
@@ -63,7 +66,7 @@ namespace TowninatorCLI
                 for (int j = 0; j < numChildren; j++)
                 {
                     Townsfolk child = TownsfolkGenerator.GenerateRandomTownsfolk();
-                    child.Profession = professionAssignmentService.AssignProfession(mainTerrainType, random);
+                    child.Profession = Profession.None;
                     child.IsChild = true;
                     familyMembers.Add(child);
                 }
@@ -83,6 +86,10 @@ namespace TowninatorCLI
         }
 
 
+        public void ViewAllTownsfolk()
+        {
+            _townsfolkView.Display();
+        }
 
         public void addSingleTownsfolk(Townsfolk townsfolk) { }
         public void saveSingleTownsfolk(Townsfolk townsfolk) { }

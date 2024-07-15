@@ -3,8 +3,14 @@ namespace TowninatorCLI
     public class NoiseMap
     {
         PerlinNoise _perlinNoise = new PerlinNoise();
+        private bool debug;
+        public NoiseMap(bool debug = false)
+        {
+            this.debug = debug;
+        }
         public float[,] GenerateNoiseMap(int width, int height, float scale, int octaves)
         {
+            if (debug) Debugging.WriteNColor($"[] NoiseMap.GenerateNoiseMap( width: {width}, height: {height}, scale: {scale}, octaves: {octaves} )", ConsoleColor.Green);
             float[,] noiseMap = new float[width, height];
             float maxNoiseHeight = float.MinValue;
             float minNoiseHeight = float.MaxValue;

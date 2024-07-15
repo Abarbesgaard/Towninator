@@ -11,6 +11,8 @@ namespace TowninatorCLI
 
     public class TownController
     {
+
+        private bool debug;
         private readonly TownRepository _townRep;
         private readonly TownViewModel _townVM;
         private readonly MapUtilities _mapUtilities;
@@ -20,19 +22,22 @@ namespace TowninatorCLI
         private readonly MapController _mapController;
         Random random = new Random();
 
-        public TownController(TownRepository townRep, MapController mapController, string dbFileName)
+        public TownController(TownRepository townRep, MapController mapController, string dbFileName, bool debug = false)
         {
-            _townRep = townRep;
-            _townVM = new TownViewModel(townRep);
+            _townRep = new TownRepository(dbFileName, debug);
+            _townVM = new TownViewModel(townRep, debug);
             _mapController = mapController;
             _mapUtilities = new MapUtilities(dbFileName);
             townsfolkRepository = new TownsfolkRepository(dbFileName);
             _townDescriptionUpdater = new TownDescriptionUpdater(dbFileName);
             _generateTown = new GenerateTown();
+            this.debug = debug;
+
         }
 
         public Town GenerateTown()
         {
+            if (debug) Debugging.WriteNColor("[] TownController.GenerateTown() ", ConsoleColor.Green);
             Town randomTown = _generateTown.GenerateRandomTown();
 
             return randomTown;
@@ -40,11 +45,16 @@ namespace TowninatorCLI
 
         public void SaveTown(Town town, Map map)
         {
+
+            if (debug) Debugging.WriteNColor($"[] TownController.SaveTown( Town {town.Name}, map {map}) ", ConsoleColor.Green);
             _townRep.AddTown(town);
         }
 
         public void UpdateTown(Town town)
         {
+            if (debug) Debugging.WriteNColor($"[] TownController.UpdateTown( Town {town.Name}) ", ConsoleColor.Green);
+
+
             Town newTown = _townRep.GetLatestTown();
             newTown = town;
             _townDescriptionUpdater.UpdateTownDescriptions(town);
@@ -60,11 +70,14 @@ namespace TowninatorCLI
 
         public void ViewLatestTown()
         {
+            if (debug) Debugging.WriteNColor("[] TownController.ViewLatestTown() ", ConsoleColor.Green);
             _townVM.ViewLatestTown();
         }
 
         public void ViewTownWithTownsfolk(int id)
         {
+
+            if (debug) Console.WriteLine("Viewing town with townsfolk...");
             Town? town = _townRep.GetTownById(id);
 
             if (town == null)

@@ -2,8 +2,10 @@ namespace TowninatorCLI
 {
     public class GenerateTown
     {
-        public Town GenerateRandomTown()
+        private bool debug;
+        public Town GenerateRandomTown(bool debug = false)
         {
+            if (debug) Debugging.WriteNColor("[] GenerateTown.GenerateRandomTown() ", ConsoleColor.Green);
             return new Town
             {
                 Name = TownNameGenerator.GenerateName(),
