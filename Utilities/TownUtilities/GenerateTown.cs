@@ -3,6 +3,10 @@ namespace TowninatorCLI
     public class GenerateTown
     {
         private bool debug;
+        public GenerateTown(bool debug = false)
+        {
+            this.debug = debug;
+        }
         public Town GenerateRandomTown(bool debug = false)
         {
             if (debug) Debugging.WriteNColor("[] GenerateTown.GenerateRandomTown() ", ConsoleColor.Green);

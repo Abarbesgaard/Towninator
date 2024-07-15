@@ -30,7 +30,7 @@ namespace TowninatorCLI
             _mapUtilities = new MapUtilities(dbFileName);
             townsfolkRepository = new TownsfolkRepository(dbFileName);
             _townDescriptionUpdater = new TownDescriptionUpdater(dbFileName);
-            _generateTown = new GenerateTown();
+            _generateTown = new GenerateTown(debug);
             this.debug = debug;
 
         }
