@@ -47,12 +47,15 @@ namespace TowninatorCLI
         public string? Origin { get; set; }
         public string? Region { get; set; }
         public string? Country { get; set; }
+        public bool? IsParent { get; set; }
+        public bool? IsChild { get; set; }
         // TODO : Add position on map via Maptile id in db, 
         public Townsfolk()
         {
         }
 
-        public Townsfolk(int id, string firstName, string lastName, int age, Gender gender, Profession profession, ProfessionSkillLevel skillLevel)
+        public Townsfolk(int id, string firstName, string lastName, int age, Gender gender, Profession profession, ProfessionSkillLevel skillLevel
+            , bool isAlive, string description, bool isMarried, int townId, string origin, string region, string country, bool isParent, bool isChild)
     : this()
         {
             Id = id;
@@ -62,6 +65,15 @@ namespace TowninatorCLI
             Gender = gender;
             Profession = profession;
             SkillLevel = skillLevel;
+            IsAlive = isAlive;
+            Description = description;
+            IsMarried = isMarried;
+            TownId = townId;
+            Origin = origin;
+            Region = region;
+            Country = country;
+            IsParent = isParent;
+            IsChild = isChild;
         }
     }
 }

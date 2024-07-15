@@ -65,7 +65,6 @@ namespace TowninatorCLI
 
         public void ViewTownWithTownsfolk(int id)
         {
-            // Get the town from repository
             Town? town = _townRep.GetTownById(id);
 
             if (town == null)
@@ -73,30 +72,7 @@ namespace TowninatorCLI
                 Console.WriteLine($"Town with ID {id} not found.");
                 return;
             }
-
-            // Display town details
             _townVM.ViewLatestTown();
-
-            // Display townsfolk details using TownsfolkView
-        }
-
-        private void GenerateFamilies(int numberOfFamilies, int townId)
-        {
-            Random random = new Random();
-
-            for (int i = 0; i < numberOfFamilies; i++)
-            {
-                int familySize = random.Next(2, 5);
-                string lastName = TownsfolkNameGenerator.GenerateLastName();
-
-                for (int j = 0; j < familySize; j++)
-                {
-                    Townsfolk townsfolk = TownsfolkGenerator.GenerateRandomTownsfolk();
-                    townsfolk.TownId = townId;
-                    townsfolk.LastName = lastName;
-                    townsfolkRepository.Add(townsfolk);
-                }
-            }
         }
     }
 }

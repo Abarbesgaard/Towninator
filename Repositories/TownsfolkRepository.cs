@@ -17,41 +17,38 @@ namespace TowninatorCLI
 
         public void Add(Townsfolk townsfolk)
         {
-
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
 
-                // Check if TownId exists in Towns table
-                using (var checkCommand = connection.CreateCommand())
+
+
+                string query = @"
+                INSERT INTO Townsfolk (Age, FirstName, LastName, Gender, Profession, SkillLevel, IsAlive, Description, IsMarried, TownId, Origin, Region, Country, IsParent, IsChild)
+                VALUES (@Age, @FirstName, @LastName, @Gender, @Profession, @SkillLevel, @IsAlive, @Description, @IsMarried, @TownId, @Origin, @Region, @Country, @IsParent, @IsChild)
+            ";
+
+                using (var command = connection.CreateCommand())
                 {
-                    checkCommand.CommandText = "SELECT COUNT(*) FROM Towns WHERE Id = @TownId";
-                    checkCommand.Parameters.AddWithValue("@TownId", townsfolk.TownId);
+                    command.CommandText = query;
+                    command.Parameters.AddWithValue("@Age", townsfolk.Age);
+                    command.Parameters.AddWithValue("@FirstName", townsfolk.FirstName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@LastName", townsfolk.LastName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Gender", townsfolk.Gender);
+                    command.Parameters.AddWithValue("@Profession", townsfolk.Profession);
+                    command.Parameters.AddWithValue("@SkillLevel", townsfolk.SkillLevel);
+                    command.Parameters.AddWithValue("@IsAlive", townsfolk.IsAlive);
+                    command.Parameters.AddWithValue("@Description", townsfolk.Description ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@IsMarried", townsfolk.IsMarried);
+                    command.Parameters.AddWithValue("@TownId", townsfolk.TownId);
+                    command.Parameters.AddWithValue("@Origin", townsfolk.Origin ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Region", townsfolk.Region ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Country", townsfolk.Country ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@IsParent", townsfolk.IsParent ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@IsChild", townsfolk.IsChild ?? (object)DBNull.Value);
 
-                    long? count = (long?)checkCommand.ExecuteScalar();
-                    if (count == 0)
-                    {
-                        throw new Exception($"Foreign key constraint failed: TownId {townsfolk.TownId} does not exist in Towns table.");
-                    }
+                    command.ExecuteNonQuery();
                 }
-
-                // Create a command to insert townsfolk
-                var command = connection.CreateCommand();
-                command.CommandText = @"INSERT INTO Townsfolk (FirstName, LastName, Gender, Age, TownId, Description, IsAlive, IsMarried, SkillLevel, Profession) 
-                                VALUES (@FirstName, @LastName, @Gender, @Age, @TownId, @Description, @IsAlive, @IsMarried, @SkillLevel, @Profession)";
-                command.Parameters.AddWithValue("@FirstName", townsfolk.FirstName ?? "");
-                command.Parameters.AddWithValue("@LastName", townsfolk.LastName ?? "");
-                command.Parameters.AddWithValue("@Gender", (int)townsfolk.Gender);
-                command.Parameters.AddWithValue("@Age", townsfolk.Age);
-                command.Parameters.AddWithValue("@TownId", townsfolk.TownId);
-                command.Parameters.AddWithValue("@Description", townsfolk.Description ?? "");
-                command.Parameters.AddWithValue("@IsAlive", townsfolk.IsAlive);
-                command.Parameters.AddWithValue("@IsMarried", townsfolk.IsMarried);
-                command.Parameters.AddWithValue("@SkillLevel", (int)townsfolk.SkillLevel);
-                command.Parameters.AddWithValue("@Profession", (int)townsfolk.Profession);
-
-                // Execute the command
-                command.ExecuteNonQuery();
             }
         }
         public List<Townsfolk> GetAll()
@@ -92,5 +89,7 @@ namespace TowninatorCLI
 
             return townsfolkList;
         }
+
     }
+
 }

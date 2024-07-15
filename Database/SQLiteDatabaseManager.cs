@@ -56,7 +56,7 @@ namespace TowninatorCLI
 
                 // Create Townsfolk table
                 string createTownsfolkTable = @"
-                CREATE TABLE IF NOT EXISTS Townsfolk (
+                CREATE TABLE Townsfolk (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Age INTEGER,
                     FirstName TEXT,
@@ -68,6 +68,11 @@ namespace TowninatorCLI
                     Description TEXT,
                     IsMarried INTEGER,
                     TownId INTEGER,
+                    Origin TEXT,
+                    Region TEXT,
+                    Country TEXT,
+                    IsParent INTEGER,
+                    IsChild INTEGER,
                     FOREIGN KEY(TownId) REFERENCES Towns(Id)
                 );
             ";
@@ -88,7 +93,7 @@ namespace TowninatorCLI
 
                 // Create MapTile table
                 string createMapTileTable = @"
-                CREATE TABLE IF NOT EXISTS MapTile (
+                CREATE TABLE  MapTile (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     MapId INTEGER,
                     X INTEGER,
@@ -117,6 +122,18 @@ namespace TowninatorCLI
             {
                 command.CommandText = query;
                 command.ExecuteNonQuery();
+            }
+        }
+        public void DeleteDatabase(string dbFileName)
+        {
+            if (File.Exists(dbFileName))
+            {
+                File.Delete(dbFileName);
+                Console.WriteLine("Database file deleted.");
+            }
+            else
+            {
+                Console.WriteLine("Database file does not exist.");
             }
         }
     }
