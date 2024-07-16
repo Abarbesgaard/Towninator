@@ -1,12 +1,12 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists
 {
-    public class Town_Ocean
+    public class TownOcean
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
 
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
             {
               "A town floating in the open ocean, connected by sturdy bridges and platforms.",
               "An oceanic settlement on floating rafts, where buildings sway with the gentle waves.",
@@ -28,7 +28,8 @@ namespace TowninatorCLI
               "A marine settlement where daily life unfolds amidst the endless horizon of the open ocean.",
               "A floating village where homes and businesses float on the tranquil waters, linked by marine craft.",
               "A coastal town built on sturdy rafts and floating structures, navigating the sea's vastness."
-    }; string description = descriptions[random.Next(descriptions.Length)];
+    }; 
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

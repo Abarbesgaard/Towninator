@@ -1,108 +1,88 @@
-namespace TowninatorCLI
-{
-    public class MapUtilities
-    {
-        private Random _random = new Random();
-        private SmoothMap _smoothMap = new SmoothMap();
-        private NoiseMap _noiseMap;
-        private MapRepository? mapRepository;
-        private bool debug;
+using TowninatorCLI.Controller;
+using TowninatorCLI.Repositories;
+using TowninatorCLI.Utilities.Lists;
+using TowninatorCLI.Utilities.misc;
+using TowninatorCLI.Utilities.Maths;
 
-        public MapUtilities(string dbFileName, bool debug = false)
-        {
-            this.debug = debug;
-            _noiseMap = new NoiseMap(debug);
-            mapRepository = new MapRepository(dbFileName);
-        }
+namespace TowninatorCLI.Utilities.MapUtilities
+{
+    public class MapUtilities(string dbFileName, bool debug = false)
+    {
+        private readonly Random _random = new Random();
+        private readonly SmoothMap _smoothMap = new SmoothMap();
+        private readonly NoiseMap _noiseMap = new(debug);
+        private MapRepository? _mapRepository = new(dbFileName);
 
         public Map GenerateMap(int townX, int townY, int width, int height)
         {
             if (debug) Debugging.WriteNColor($"[] MapUtilities.GenerateMap(townX {townX}, townY {townY}, width {width}, height {height})", ConsoleColor.Green);
 
-            Map map = new Map(width, height);
-            MapTile[,] _mapTiles = map.GetTiles();
+            var map = new Map(width, height);
+            var mapTiles = map.GetTiles();
 
-            float[,] noiseMap = _noiseMap.GenerateNoiseMap(width, height, 0.3f, 5);
+            var noiseMap = _noiseMap.GenerateNoiseMap(width, height, 0.3f, 5);
 
             // Initialize the map with initial noise-based terrain types
-            for (int y = 0; y < height; y++)
+            for (var y = 0; y < height; y++)
             {
-                for (int x = 0; x < width; x++)
+                for (var x = 0; x < width; x++)
                 {
-                    MainTerrainType terrain = GetTerrainFromNoiseValue(noiseMap[x, y]);
-                    _mapTiles[x, y] = new MapTile(x, y, terrain, SecondaryTerrainType.None, null);
+                    var terrain = GetTerrainFromNoiseValue(noiseMap[x, y]);
+                    mapTiles[x, y] = new MapTile(x, y, terrain, SecondaryTerrainType.None, null);
                 }
             }
 
             // Smooth the map to ensure more natural transitions between terrain types
-            _smoothMap.initiate(height, width, _mapTiles);
-            AddTownToMap(townX, townY, _mapTiles);
+            _smoothMap.Initiate(height, width, mapTiles);
+            AddTownToMap(townX, townY, mapTiles);
             // Add random events
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
-                int x = _random.Next(width);
-                int y = _random.Next(height);
-                _mapTiles[x, y].Event = new MapEvent("A mysterious encounter");
+                var x = _random.Next(width);
+                var y = _random.Next(height);
+                mapTiles[x, y].Event = new MapEvent("A mysterious encounter");
             }
             return map;
 
         }
 
-        private MainTerrainType GetTerrainFromNoiseValue(float noiseValue)
+        private static MainTerrainType GetTerrainFromNoiseValue(float noiseValue)
         {
-            if (noiseValue < 0.2f)
-                return MainTerrainType.Ocean;
-            else if (noiseValue < 0.25f)
-                return MainTerrainType.Swamp;
-            else if (noiseValue < 0.35f)
-                return MainTerrainType.Grassland;
-            else if (noiseValue < 0.45f)
-                return MainTerrainType.Hill;
-            else if (noiseValue < 0.55f)
-                return MainTerrainType.Forest;
-            else if (noiseValue < 0.65f)
-                return MainTerrainType.Grassland;
-            else if (noiseValue < 0.9f)
-                return MainTerrainType.LowMountain;
-            else if (noiseValue < 0.95f)
-                return MainTerrainType.MediumMountain;
-            else if (noiseValue < 0.97f)
-                return MainTerrainType.HighMountain;
-            else
-                return MainTerrainType.Grassland;
-        }
-        public string GetTownDescriptionBasedOnTerrain(MainTerrainType terrain)
-        {
-            Town_Highmountain town_Highmountain = new Town_Highmountain();
-            Town_MediumMountain town_MediumMountain = new Town_MediumMountain();
-            Town_LowMountain town_Lowmountain = new Town_LowMountain();
-            Town_Forest town_Forest = new Town_Forest();
-            Town_Ocean town_Ocean = new Town_Ocean();
-            Town_Grassland town_Grasland = new Town_Grassland();
-            Town_Swamp town_Swamp = new Town_Swamp();
-            Town_Hill town_Hill = new Town_Hill();
-            switch (terrain)
+            return noiseValue switch
             {
-                case MainTerrainType.HighMountain:
-                    return town_Highmountain.DescriptionGenerator();
-                case MainTerrainType.MediumMountain:
-                    return town_MediumMountain.DescriptionGenerator();
-                case MainTerrainType.LowMountain:
-                    return town_Lowmountain.DescriptionGenerator();
-                case MainTerrainType.Forest:
-                    return town_Forest.DescriptionGenerator();
-                case MainTerrainType.Ocean:
-                    return town_Ocean.DescriptionGenerator();
-                case MainTerrainType.Grassland:
-                    return town_Grasland.DescriptionGenerator();
-                case MainTerrainType.Swamp:
-                    return town_Swamp.DescriptionGenerator();
-                case MainTerrainType.Hill:
-                    return town_Hill.DescriptionGenerator();
+                < 0.2f => MainTerrainType.Ocean,
+                < 0.25f => MainTerrainType.Swamp,
+                < 0.35f => MainTerrainType.Grassland,
+                < 0.45f => MainTerrainType.Hill,
+                < 0.55f => MainTerrainType.Forest,
+                < 0.65f => MainTerrainType.Grassland,
+                < 0.9f => MainTerrainType.LowMountain,
+                < 0.95f => MainTerrainType.MediumMountain,
+                < 0.97f => MainTerrainType.HighMountain,
+                _ => MainTerrainType.Grassland
+            };
+        }
 
-                default:
-                    return "A town in a unique terrain.";
-            }
+        public static string GetTownDescriptionBasedOnTerrain(MainTerrainType terrain)
+        {
+            var townHighMountain = new TownHighMountain();
+            var townMediumMountain = new TownMediumMountain();
+            var townLowMountain = new TownLowMountain();
+            var townOcean = new TownOcean();
+            var townSwamp = new TownSwamp();
+            var townHill = new TownHill();
+            return terrain switch
+            {
+                MainTerrainType.HighMountain => TownHighMountain.DescriptionGenerator(),
+                MainTerrainType.MediumMountain => TownMediumMountain.DescriptionGenerator(),
+                MainTerrainType.LowMountain => TownLowMountain.DescriptionGenerator(),
+                MainTerrainType.Forest => TownForest.DescriptionGenerator(),
+                MainTerrainType.Ocean => TownOcean.DescriptionGenerator(),
+                MainTerrainType.Grassland => TownGrassland.DescriptionGenerator(),
+                MainTerrainType.Swamp => TownSwamp.DescriptionGenerator(),
+                MainTerrainType.Hill => TownHill.DescriptionGenerator(),
+                _ => "A town in a unique terrain."
+            };
         }
 
 
@@ -143,7 +123,7 @@ namespace TowninatorCLI
             }
 
             // Retrieve terrain type from the map tile
-            MapTile? tile = map.GetTile(adjX, adjY);
+            var tile = map.GetTile(adjX, adjY);
             if (tile == null)
             {
                 throw new Exception($"Tile at ({adjX}, {adjY}) not found in the map.");
@@ -153,25 +133,24 @@ namespace TowninatorCLI
         }
 
 
-
-        public void AddTownToMap(int x, int y, MapTile[,] _mapTiles)
+        private void AddTownToMap(int x, int y, MapTile[,] mapTiles)
         {
-            MainTerrainType terrain = _mapTiles[x, y].Terrain;
-            string description = GetTownDescriptionBasedOnTerrain(terrain);
+            var terrain = mapTiles[x, y].Terrain;
+            var description = GetTownDescriptionBasedOnTerrain(terrain);
 
-            _mapTiles[x, y].HasTown = true;
-            _mapTiles[x, y].Description = description;
+            mapTiles[x, y].HasTown = true;
+            mapTiles[x, y].Description = description;
         }
 
 
-        public MainTerrainType GetTerrainAt(int x, int y, int height, int width, MapTile[,] _mapTiles)
+        public MainTerrainType GetTerrainAt(int x, int y, int height, int width, MapTile[,] mapTiles)
         {
             if (x < 0 || x >= width || y < 0 || y >= height)
             {
-                throw new ArgumentOutOfRangeException("Coordinates are out of map bounds.");
+                throw new ArgumentOutOfRangeException(nameof(x));
             }
 
-            return _mapTiles[x, y].Terrain;
+            return mapTiles[x, y].Terrain;
         }
 
     }

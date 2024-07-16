@@ -1,11 +1,11 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
 {
-    public class Adj_Hill
+    public class AdjHill
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
     {
         "rolling gently under the open sky, offering expansive views.",
         "dotted with wildflowers and grazing animals, a tranquil sight.",
@@ -28,7 +28,7 @@ namespace TowninatorCLI
         "where the hills embrace the warmth of the sun throughout the day.",
         "with its undulating slopes hiding surprises around every bend."    };
 
-            string description = descriptions[random.Next(descriptions.Length)];
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

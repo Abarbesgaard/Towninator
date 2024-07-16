@@ -1,11 +1,11 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
 {
-    public class Adj_Forest
+    public class AdjForest
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
     {
         "where ancient trees whisper tales of old.",
         "shrouded in mystique amidst towering trunks.",
@@ -26,7 +26,7 @@ namespace TowninatorCLI
         "nestled within a vast forest, paths leading deeper into nature's embrace.",
         "guarded by ancient trees where the forest meets the village.",
         "in the magical heart of a forest, where nature's energy hums."    };
-            string description = descriptions[random.Next(descriptions.Length)];
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

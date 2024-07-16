@@ -1,11 +1,12 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
+
 {
-    public class Adj_Grassland
+    public class AdjGrassland
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
     {
         "where gentle breezes sway the tall grasses in waves of green.",
         "stretching as far as the eye can see, under a vast open sky.",
@@ -27,7 +28,7 @@ namespace TowninatorCLI
         "where the beauty of simplicity merges with nature's abundance.",
         "with its peaceful ambiance soothing the weary traveler.",
         "where the grasslands paint the landscape in shades of green."    };
-            string description = descriptions[random.Next(descriptions.Length)];
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

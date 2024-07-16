@@ -1,4 +1,4 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.misc
 {
 
     public static class Debugging

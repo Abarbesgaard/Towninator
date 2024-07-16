@@ -1,22 +1,13 @@
-namespace TowninatorCLI
+using TowninatorCLI.Controller;
+using TowninatorCLI.Repositories;
+using TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions;
+using TowninatorCLI.Model;
+namespace TowninatorCLI.Utilities.TownUtilities
 {
-    public class TownDescriptionUpdater
+    public class TownDescriptionUpdater(string dbFileName)
     {
-        private readonly MapUtilities _mapUtilities;
-        private readonly MapRepository _mapRepository;
-        private readonly MapController _mapController;
-        private readonly TownRepository _townRepository;
-        public TownDescriptionUpdater(string dbFileName)
-        {
-            _mapUtilities = new MapUtilities(dbFileName);
-            _mapRepository = new MapRepository(dbFileName);
-            _mapController = new MapController(dbFileName);
-            _townRepository = new TownRepository(dbFileName);
-
-        }
-
-
-
+        private readonly MapRepository _mapRepository = new(dbFileName);
+        private readonly TownRepository _townRepository = new(dbFileName);
 
 
         public void UpdateTownDescriptions(Town town)
@@ -25,7 +16,7 @@ namespace TowninatorCLI
             {
 
                 // Fetch map using townId
-                Map map = _mapRepository.GetMapByTownId(town.Id);
+                var map = _mapRepository.GetMapByTownId(town.Id);
 
                 if (map == null)
                 {
@@ -41,17 +32,16 @@ namespace TowninatorCLI
                 }
 
                 // Get the terrain at the town's position
-                MainTerrainType townTerrain = _mapRepository.GetTerrainAtCoordinate(map.Id, townMapTile.X, townMapTile.Y);
+                var townTerrain = _mapRepository.GetTerrainAtCoordinate(map.Id, townMapTile.X, townMapTile.Y);
 
                 // Update town descriptions based on terrain
-                town.MainDescription = _mapUtilities.GetTownDescriptionBasedOnTerrain(townTerrain);
-                // TODO : Denne kommer med forkerte adjacent terrains
+                town.MainDescription = MapUtilities.MapUtilities.GetTownDescriptionBasedOnTerrain(townTerrain);
 
                 // Get adjacent terrains
-                MainTerrainType? northTerrain = _mapRepository.GetTerrainOfAdjacentTile(map, Direction.North, townMapTile.X, townMapTile.Y);
-                MainTerrainType? southTerrain = _mapRepository.GetTerrainOfAdjacentTile(map, Direction.South, townMapTile.X, townMapTile.Y);
-                MainTerrainType? eastTerrain = _mapRepository.GetTerrainOfAdjacentTile(map, Direction.East, townMapTile.X, townMapTile.Y);
-                MainTerrainType? westTerrain = _mapRepository.GetTerrainOfAdjacentTile(map, Direction.West, townMapTile.X, townMapTile.Y);
+                var northTerrain = _mapRepository.GetTerrainOfAdjacentTile(map, Direction.North, townMapTile.X, townMapTile.Y);
+                var southTerrain = _mapRepository.GetTerrainOfAdjacentTile(map, Direction.South, townMapTile.X, townMapTile.Y);
+                var eastTerrain = _mapRepository.GetTerrainOfAdjacentTile(map, Direction.East, townMapTile.X, townMapTile.Y);
+                var westTerrain = _mapRepository.GetTerrainOfAdjacentTile(map, Direction.West, townMapTile.X, townMapTile.Y);
 
                 // Update town descriptions based on adjacent terrains
                 town.NorthDescription = GetDirectionalTownDescriptionFromTerrain(northTerrain, Direction.North);
@@ -73,57 +63,37 @@ namespace TowninatorCLI
             // Implement your logic to get directional descriptions based on terrain and direction
             // Example logic:
 
-
-            switch (direction)
+            return direction switch
             {
-                case Direction.North:
+                Direction.North =>
                     // Implement logic to get description north of town
-                    return $"North of town: {AddTerrainDescription(terrain)}";
-                case Direction.South:
+                    $"North of town: {AddTerrainDescription(terrain)}",
+                Direction.South =>
                     // Implement logic to get description south of town
-                    return $"South of town: {AddTerrainDescription(terrain)}";
-                case Direction.East:
+                    $"South of town: {AddTerrainDescription(terrain)}",
+                Direction.East =>
                     // Implement logic to get description east of town
-                    return $"East of town: {AddTerrainDescription(terrain)}";
-                case Direction.West:
+                    $"East of town: {AddTerrainDescription(terrain)}",
+                Direction.West =>
                     // Implement logic to get description west of town
-                    return $"West of town: {AddTerrainDescription(terrain)}";
-                default:
-                    throw new ArgumentException($"Unsupported direction: {direction}");
-            }
+                    $"West of town: {AddTerrainDescription(terrain)}",
+                _ => throw new ArgumentException($"Unsupported direction: {direction}")
+            };
         }
-        private string AddTerrainDescription(MainTerrainType? terrain)
+        private static string AddTerrainDescription(MainTerrainType? terrain)
         {
-            Adj_Grassland adj_Grassland = new Adj_Grassland();
-            Adj_LowMountain adj_lowMountain = new Adj_LowMountain();
-            Adj_MediumMountain adj_MediumMountain = new Adj_MediumMountain();
-            Adj_HighMountain adj_HighMountain = new Adj_HighMountain();
-            Adj_Forest adj_Forest = new Adj_Forest();
-            Adj_Ocean adj_Ocean = new Adj_Ocean();
-            Adj_Swamp adj_Swamp = new Adj_Swamp();
-            Adj_Hill adj_Hill = new Adj_Hill();
-            switch (terrain)
+            return terrain switch
             {
-                case MainTerrainType.HighMountain:
-                    return adj_HighMountain.DescriptionGenerator();
-                case MainTerrainType.MediumMountain:
-                    return adj_MediumMountain.DescriptionGenerator();
-                case MainTerrainType.LowMountain:
-                    return adj_lowMountain.DescriptionGenerator();
-                case MainTerrainType.Forest:
-                    return adj_Forest.DescriptionGenerator();
-                case MainTerrainType.Ocean:
-                    return adj_Ocean.DescriptionGenerator();
-                case MainTerrainType.Grassland:
-                    return adj_Grassland.DescriptionGenerator();
-                case MainTerrainType.Swamp:
-                    return adj_Swamp.DescriptionGenerator();
-                case MainTerrainType.Hill:
-                    return adj_Hill.DescriptionGenerator();
-
-                default:
-                    return "Unknown terrain";
-            }
+                MainTerrainType.HighMountain => AdjHighMountain.DescriptionGenerator(),
+                MainTerrainType.MediumMountain => AdjMediumMountain.DescriptionGenerator(),
+                MainTerrainType.LowMountain => AdjLowMountain.DescriptionGenerator(),
+                MainTerrainType.Forest => AdjForest.DescriptionGenerator(),
+                MainTerrainType.Ocean => AdjOcean.DescriptionGenerator(),
+                MainTerrainType.Grassland => AdjGrassland.DescriptionGenerator(),
+                MainTerrainType.Swamp => AdjSwamp.DescriptionGenerator(),
+                MainTerrainType.Hill => AdjHill.DescriptionGenerator(),
+                _ => "Unknown terrain"
+            };
         }
     }
 }

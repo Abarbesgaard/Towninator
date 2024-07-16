@@ -1,11 +1,11 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists
 {
-    public class Town_Highmountain
+    public class TownHighMountain
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
               {
                 "Nestled in a valley between towering peaks, where the air is thin and the wind is cold.",
                 "A remote town surrounded by breathtaking, ancient peaks.",
@@ -29,7 +29,7 @@ namespace TowninatorCLI
                 "Perched on a mountain ridge, with panoramic views."
             };
 
-            string description = descriptions[random.Next(descriptions.Length)];
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

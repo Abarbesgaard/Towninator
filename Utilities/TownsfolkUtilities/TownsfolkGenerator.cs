@@ -1,4 +1,5 @@
-namespace TowninatorCLI
+using TowninatorCLI.Model;
+namespace TowninatorCLI.Utilities.TownsfolkUtilities
 {
 
     public static class TownsfolkGenerator
@@ -6,25 +7,17 @@ namespace TowninatorCLI
 
         public static Townsfolk GenerateRandomTownsfolk()
         {
-            Random random = new Random();
-            int genderValue = random.Next(0, 2);
-            Gender gender = (Gender)genderValue;
-            string name;
+            var random = new Random();
+            var genderValue = random.Next(0, 2);
+            var gender = (Gender)genderValue;
 
-            if (gender == Gender.Male)
-            {
-                name = TownsfolkNameGenerator.GenerateMaleName();
-            }
-            else
-            {
-                name = TownsfolkNameGenerator.GenerateFemaleName();
-            }
+            var name = gender == Gender.Male ? TownsfolkNameGenerator.GenerateMaleName() : TownsfolkNameGenerator.GenerateFemaleName();
 
             return new Townsfolk
             {
                 Gender = gender,
                 FirstName = name,
-                Profession = (Profession)random.Next(1, 9),
+                Profession = (Model.Profession)random.Next(1, 9),
                 Age = random.Next(1, 100)
             };
         }

@@ -1,11 +1,11 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
 {
-    public class Adj_MediumMountain
+    public class AdjHighMountain
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
     {
         "near the edge of a deep ravine, with steep cliffs and a distant waterfall.",
         "on a narrow path winding between towering peaks, offering glimpses of distant valleys.",
@@ -27,7 +27,8 @@ namespace TowninatorCLI
         "at the mouth of a cavern leading deep into the heart of the mountain.",
         "beside a natural arch formed by millennia of wind and water erosion.",
         "in a clearing where ancient trees grow, their gnarled roots twisting into the earth."
-    }; string description = descriptions[random.Next(descriptions.Length)];
+    };
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

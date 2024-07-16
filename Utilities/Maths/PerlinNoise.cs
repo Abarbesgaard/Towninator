@@ -1,13 +1,13 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Maths
 {
     public class PerlinNoise
     {
-        private int[] permutation;
+        private readonly int[] _permutation;
         private const int GradientSizeTable = 256;
 
         public PerlinNoise()
         {
-            permutation = new int[GradientSizeTable * 2];
+            _permutation = new int[GradientSizeTable * 2];
             InitPermutation();
         }
 
@@ -18,64 +18,62 @@ namespace TowninatorCLI
                 throw new ArgumentException($"Permutation array must have a length of {GradientSizeTable}");
             }
 
-            permutation = new int[GradientSizeTable * 2];
-            for (int i = 0; i < GradientSizeTable; i++)
+            _permutation = new int[GradientSizeTable * 2];
+            for (var i = 0; i < GradientSizeTable; i++)
             {
-                permutation[i] = permutation[i + GradientSizeTable] = customPermutation[i];
+                _permutation[i] = _permutation[i + GradientSizeTable] = customPermutation[i];
             }
         }
 
         private void InitPermutation()
         {
-            int[] p = new int[GradientSizeTable];
+            var p = new int[GradientSizeTable];
 
-            for (int i = 0; i < GradientSizeTable; i++)
+            for (var i = 0; i < GradientSizeTable; i++)
             {
                 p[i] = i;
             }
 
-            Random rng = new Random();
-            for (int i = 0; i < GradientSizeTable; i++)
+            var rng = new Random();
+            for (var i = 0; i < GradientSizeTable; i++)
             {
-                int swapIndex = rng.Next(GradientSizeTable);
-                int tmp = p[i];
-                p[i] = p[swapIndex];
-                p[swapIndex] = tmp;
+                var swapIndex = rng.Next(GradientSizeTable);
+                (p[i], p[swapIndex]) = (p[swapIndex], p[i]);
             }
 
-            for (int i = 0; i < GradientSizeTable; i++)
+            for (var i = 0; i < GradientSizeTable; i++)
             {
-                permutation[i] = permutation[i + GradientSizeTable] = p[i];
+                _permutation[i] = _permutation[i + GradientSizeTable] = p[i];
             }
         }
 
-        private float Fade(float t)
+        private static float Fade(float t)
         {
             return t * t * t * (t * (t * 6 - 15) + 10);
         }
 
-        private float Gradient(int hash, float x, float y)
+        private static float Gradient(int hash, float x, float y)
         {
-            int h = hash & 15;
-            float u = h < 8 ? x : y;
-            float v = h < 4 ? y : h == 12 || h == 14 ? x : 0;
+            var h = hash & 15;
+            var u = h < 8 ? x : y;
+            var v = h < 4 ? y : h is 12 or 14 ? x : 0;
             return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
         }
 
         public float Noise(float x, float y)
         {
-            int X = (int)Math.Floor(x) & 255;
-            int Y = (int)Math.Floor(y) & 255;
+            var X = (int)Math.Floor(x) & 255;
+            var Y = (int)Math.Floor(y) & 255;
             x -= (float)Math.Floor(x);
             y -= (float)Math.Floor(y);
-            float u = Fade(x);
-            float v = Fade(y);
-            int A = permutation[X] + Y, AA = permutation[A], AB = permutation[A + 1], B = permutation[X + 1] + Y, BA = permutation[B], BB = permutation[B + 1];
+            var u = Fade(x);
+            var v = Fade(y);
+            int a = _permutation[X] + Y, aa = _permutation[a], ab = _permutation[a + 1], b = _permutation[X + 1] + Y, ba = _permutation[b], bb = _permutation[b + 1];
 
-            return Lerp(v, Lerp(u, Gradient(permutation[AA], x, y), Gradient(permutation[BA], x - 1, y)), Lerp(u, Gradient(permutation[AB], x, y - 1), Gradient(permutation[BB], x - 1, y - 1)));
+            return Lerp(v, Lerp(u, Gradient(_permutation[aa], x, y), Gradient(_permutation[ba], x - 1, y)), Lerp(u, Gradient(_permutation[ab], x, y - 1), Gradient(_permutation[bb], x - 1, y - 1)));
         }
 
-        public float Lerp(float t, float a, float b)
+        private static float Lerp(float t, float a, float b)
         {
             return a + t * (b - a);
         }

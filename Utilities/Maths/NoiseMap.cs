@@ -1,35 +1,32 @@
-namespace TowninatorCLI
+using TowninatorCLI.Utilities.misc;
+namespace TowninatorCLI.Utilities.Maths
 {
-    public class NoiseMap
+    public class NoiseMap(bool debug = false)
     {
-        PerlinNoise _perlinNoise = new PerlinNoise();
-        private bool debug;
-        public NoiseMap(bool debug = false)
-        {
-            this.debug = debug;
-        }
+        private readonly PerlinNoise _perlinNoise = new PerlinNoise();
+
         public float[,] GenerateNoiseMap(int width, int height, float scale, int octaves)
         {
             if (debug) Debugging.WriteNColor($"[] NoiseMap.GenerateNoiseMap( width: {width}, height: {height}, scale: {scale}, octaves: {octaves} )", ConsoleColor.Green);
-            float[,] noiseMap = new float[width, height];
-            float maxNoiseHeight = float.MinValue;
-            float minNoiseHeight = float.MaxValue;
+            var noiseMap = new float[width, height];
+            var maxNoiseHeight = float.MinValue;
+            var minNoiseHeight = float.MaxValue;
 
-            for (int y = 0; y < height; y++)
+            for (var y = 0; y < height; y++)
             {
-                for (int x = 0; x < width; x++)
+                for (var x = 0; x < width; x++)
                 {
                     float amplitude = 1;
                     float frequency = 1;
                     float noiseHeight = 0;
 
-                    for (int o = 0; o < octaves; o++)
+                    for (var o = 0; o < octaves; o++)
                     {
-                        float sampleX = x / scale * frequency;
-                        float sampleY = y / scale * frequency;
+                        var sampleX = x / scale * frequency;
+                        var sampleY = y / scale * frequency;
 
                         // Assuming Math.PerlinNoise, adjust as per your noise generation method
-                        float perlinValue = _perlinNoise.Noise(sampleX, sampleY);
+                        var perlinValue = _perlinNoise.Noise(sampleX, sampleY);
                         noiseHeight += perlinValue * amplitude;
 
                         amplitude *= 0.5f;
@@ -46,9 +43,9 @@ namespace TowninatorCLI
             }
 
             // Normalize the noise map to a range between 0 and 1
-            for (int y = 0; y < height; y++)
+            for (var y = 0; y < height; y++)
             {
-                for (int x = 0; x < width; x++)
+                for (var x = 0; x < width; x++)
                 {
                     noiseMap[x, y] = (noiseMap[x, y] - minNoiseHeight) / (maxNoiseHeight - minNoiseHeight);
                 }

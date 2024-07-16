@@ -1,12 +1,12 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists
 {
-    public class Town_Grassland
+    public abstract class TownGrassland
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
 
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
             {
         "A town nestled in expansive grasslands, where the wind whispers through tall blades.",
         "Amidst rolling hills and endless meadows, a town thrives in the embrace of nature.",
@@ -28,7 +28,8 @@ namespace TowninatorCLI
         "Nestled in expansive grasslands, where the breeze carries the scent of wild herbs and freedom.",
         "In the embrace of rolling hills and vast plains, a town finds solace amidst the beauty of the grasslands.",
         "A village nestled in a sea of green, where the rhythm of life mirrors the gentle sway of the grass."
-    }; string description = descriptions[random.Next(descriptions.Length)];
+    }; 
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

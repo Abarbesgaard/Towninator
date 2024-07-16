@@ -1,11 +1,11 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
 {
-    public class Adj_LowMountain
+    public class AdjLowMountain
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
     {
          "nestled in the foothills, with gentle slopes and scattered boulders.",
         "surrounded by rolling hills and occasional outcroppings of rock.",
@@ -29,7 +29,7 @@ namespace TowninatorCLI
         "within a labyrinth of narrow gorges and hidden valleys."
     };
 
-            string description = descriptions[random.Next(descriptions.Length)];
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

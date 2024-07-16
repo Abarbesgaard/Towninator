@@ -1,24 +1,22 @@
 
+using TowninatorCLI.Repositories;
+using TowninatorCLI.Model;
 using System.Text;
 
-namespace TowninatorCLI
+namespace TowninatorCLI.View
 {
-    public class TownsfolkView
+    public class TownsfolkView(string dbFilename)
     {
-        private readonly TownsfolkRepository _townsfolkRepository;
-        public TownsfolkView(string dbFilename)
-        {
-            _townsfolkRepository = new TownsfolkRepository(dbFilename);
-        }
+        private readonly TownsfolkRepository _townsfolkRepository = new(dbFilename);
 
         public void Display()
         {
-            List<Townsfolk> _townsfolk = _townsfolkRepository.GetAll();
+            var townsfolk = _townsfolkRepository.GetAll();
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendLine("Townsfolk Information");
             sb.AppendLine(new string('=', 50));
-            foreach (var person in _townsfolk)
+            foreach (var person in townsfolk)
             {
                 sb.AppendLine(GetTownsfolkAscii(person));
                 sb.AppendLine(new string('-', 50));
@@ -27,9 +25,9 @@ namespace TowninatorCLI
             Console.WriteLine(sb.ToString());
         }
 
-        private string GetTownsfolkAscii(Townsfolk person)
+        private static string GetTownsfolkAscii(Townsfolk person)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendLine($"Name: {person.FirstName} {person.LastName}");
             sb.AppendLine($"Age: {person.Age}");
             sb.AppendLine($"Gender: {person.Gender}");

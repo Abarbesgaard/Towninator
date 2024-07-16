@@ -1,11 +1,11 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
 {
-    public class Adj_Swamp
+    public class AdjSwamp
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
     {
         "where murky waters hide ancient secrets beneath the surface.",
         "with twisted trees and tangled vines creating an eerie atmosphere.",
@@ -28,7 +28,7 @@ namespace TowninatorCLI
         "with its tangled growth offering both concealment and danger.",
         "where the swampy terrain challenges even the most experienced traveler."
     };
-            string description = descriptions[random.Next(descriptions.Length)];
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

@@ -1,11 +1,11 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists
 {
-    public class Town_Hill
+    public class TownHill
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
             {
         "A town nestled in rolling hills, where the sun sets over gentle slopes.",
         "Amidst picturesque hills and valleys, a town flourishes in the embrace of nature.",
@@ -27,7 +27,8 @@ namespace TowninatorCLI
         "In the tranquil embrace of hills and valleys, a town's spirit echoes through the landscape.",
         "Nestled in the curves of rolling hills, where each rise and fall tells a story of its own.",
         "Among undulating landscapes and winding paths, a town thrives amidst natural beauty."
-    }; string description = descriptions[random.Next(descriptions.Length)];
+    }; 
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

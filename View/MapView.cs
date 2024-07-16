@@ -1,14 +1,8 @@
-
-namespace TowninatorCLI
+using TowninatorCLI.Repositories;
+namespace TowninatorCLI.View
 {
-    public class MapView
+    public class MapView(MapRepository mapRepository)
     {
-        private readonly MapRepository _mapRepository;
-
-        public MapView(MapRepository mapRepository)
-        {
-            _mapRepository = mapRepository;
-        }
         // TODO: Needs to have the icons in the database for easy access across the application
         public void DisplayMapLegend()
         {
@@ -32,37 +26,27 @@ namespace TowninatorCLI
         {
             try
             {
-                Map? map = _mapRepository.GetLatestMap();
-                if (map == null)
-                {
-                    return;
-                }
+                var map = mapRepository.GetLatestMap();
 
-                MapTile[,] mapTiles = map.GetTiles();
+                var mapTiles = map.GetTiles();
 
-                if (mapTiles == null)
-                {
-                    Console.WriteLine($"No tiles found for Map ID {map.Id}.");
-                    return;
-                }
-
-                int width = map.Width;
-                int height = map.Height;
+                var width = map.Width;
+                var height = map.Height;
 
                 // Display the map
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
-                    for (int x = 0; x < width; x++)
+                    for (var x = 0; x < width; x++)
                     {
-                        MapTile tile = mapTiles[x, y];
+                        var tile = mapTiles[x, y];
 
                         // Check if this tile has the same terrain type as the one to the left
-                        bool sameAsLeft = (x > 0 && mapTiles[x - 1, y].Terrain == tile.Terrain);
+                        var sameAsLeft = (x > 0 && mapTiles[x - 1, y].Terrain == tile.Terrain);
                         // Check if this tile has the same terrain type as the one above
-                        bool sameAsAbove = (y > 0 && mapTiles[x, y - 1].Terrain == tile.Terrain);
+                        var sameAsAbove = (y > 0 && mapTiles[x, y - 1].Terrain == tile.Terrain);
 
                         // Determine the symbol to display
-                        string symbol = tile.ToString();
+                        var symbol = tile.ToString();
 
                         // If same as left or above, adjust the symbol
                         if (sameAsLeft || sameAsAbove)
@@ -85,39 +69,27 @@ namespace TowninatorCLI
         {
             try
             {
-                Map map = _mapRepository.LoadMap(mapId);
+                var map = mapRepository.LoadMap(mapId);
 
-                if (map == null)
-                {
-                    Console.WriteLine($"Map with ID {mapId} not found.");
-                    return;
-                }
+                var mapTiles = map.GetTiles();
 
-                MapTile[,] mapTiles = map.GetTiles();
-
-                if (mapTiles == null)
-                {
-                    Console.WriteLine($"No tiles found for Map ID {mapId}.");
-                    return;
-                }
-
-                int width = map.Width;
-                int height = map.Height;
+                var width = map.Width;
+                var height = map.Height;
 
                 // Display the map
-                for (int y = 0; y < height; y++)
+                for (var y = 0; y < height; y++)
                 {
-                    for (int x = 0; x < width; x++)
+                    for (var x = 0; x < width; x++)
                     {
-                        MapTile tile = mapTiles[x, y];
+                        var tile = mapTiles[x, y];
 
                         // Check if this tile has the same terrain type as the one to the left
-                        bool sameAsLeft = (x > 0 && mapTiles[x - 1, y].Terrain == tile.Terrain);
+                        var sameAsLeft = (x > 0 && mapTiles[x - 1, y].Terrain == tile.Terrain);
                         // Check if this tile has the same terrain type as the one above
-                        bool sameAsAbove = (y > 0 && mapTiles[x, y - 1].Terrain == tile.Terrain);
+                        var sameAsAbove = (y > 0 && mapTiles[x, y - 1].Terrain == tile.Terrain);
 
                         // Determine the symbol to display
-                        string symbol = tile.ToString();
+                        var symbol = tile.ToString();
 
                         // If same as left or above, adjust the symbol
                         if (sameAsLeft || sameAsAbove)

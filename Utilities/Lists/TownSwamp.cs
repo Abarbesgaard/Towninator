@@ -1,12 +1,12 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists
 {
-    public class Town_Swamp
+    public class TownSwamp
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
 
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
             {
               "A town nestled amidst misty swamplands, where ancient trees rise from murky waters.",
         "In the heart of a mystical swamp, a town thrives amidst twisting vines and eerie mists.",
@@ -29,7 +29,7 @@ namespace TowninatorCLI
         "Nestled in the murky depths of a foreboding marsh, where the land and water intertwine.",
         "In a labyrinth of twisting channels and mossy shores, a town's spirit is forged in the heart of the swamp."
     };
-            string description = descriptions[random.Next(descriptions.Length)];
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

@@ -1,11 +1,11 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
 {
-    public class Adj_Ocean
+    public class AdjOcean
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
             var random = new Random();
-            string[] descriptions = new string[]
+            var descriptions = new string[]
     {
         "where the waves endlessly crash against the shore.",
         "stretching as far as the eye can see, its depths full of mysteries.",
@@ -28,7 +28,7 @@ namespace TowninatorCLI
         "with its gentle waves carrying dreams from distant shores.",
         "where the ocean's vastness invites contemplation and wonder."
     };
-            string description = descriptions[random.Next(descriptions.Length)];
+            var description = descriptions[random.Next(descriptions.Length)];
 
             return description;
         }

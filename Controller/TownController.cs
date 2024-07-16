@@ -1,5 +1,11 @@
-
-namespace TowninatorCLI
+using TowninatorCLI.Database;
+using TowninatorCLI.Model;
+using TowninatorCLI.Utilities.misc;
+using TowninatorCLI.View;
+using TowninatorCLI.Utilities.MapUtilities;
+using TowninatorCLI.Utilities.TownUtilities;
+using TowninatorCLI.Repositories;
+namespace TowninatorCLI.Controller
 {
     public enum Direction
     {
@@ -9,36 +15,25 @@ namespace TowninatorCLI
         West
     }
 
-    public class TownController
+    public class TownController(
+        TownRepository townRep,
+        MapController mapController,
+        string dbFileName,
+        bool debug = false)
     {
-
-        private bool debug;
-        private readonly TownRepository _townRep;
-        private readonly TownViewModel _townVM;
-        private readonly MapUtilities _mapUtilities;
-        private readonly TownsfolkRepository townsfolkRepository;
-        private readonly GenerateTown _generateTown;
-        private readonly TownDescriptionUpdater _townDescriptionUpdater;
-        private readonly MapController _mapController;
-        Random random = new Random();
-
-        public TownController(TownRepository townRep, MapController mapController, string dbFileName, bool debug = false)
-        {
-            _townRep = new TownRepository(dbFileName, debug);
-            _townVM = new TownViewModel(townRep, debug);
-            _mapController = mapController;
-            _mapUtilities = new MapUtilities(dbFileName);
-            townsfolkRepository = new TownsfolkRepository(dbFileName);
-            _townDescriptionUpdater = new TownDescriptionUpdater(dbFileName);
-            _generateTown = new GenerateTown(debug);
-            this.debug = debug;
-
-        }
+        private readonly TownRepository _townRep = new(dbFileName, debug);
+        private readonly TownViewModel _townVm = new(townRep, debug);
+        private readonly MapUtilities _mapUtilities = new(dbFileName);
+        private readonly TownsfolkRepository _townsfolkRepository = new(dbFileName);
+        private readonly GenerateTown _generateTown = new(debug);
+        private readonly TownDescriptionUpdater _townDescriptionUpdater = new(dbFileName);
+        private readonly MapController _mapController = mapController;
+        private Random _random = new Random();
 
         public Town GenerateTown()
         {
             if (debug) Debugging.WriteNColor("[] TownController.GenerateTown() ", ConsoleColor.Green);
-            Town randomTown = _generateTown.GenerateRandomTown();
+            var randomTown = _generateTown.GenerateRandomTown();
 
             return randomTown;
         }
@@ -55,8 +50,7 @@ namespace TowninatorCLI
             if (debug) Debugging.WriteNColor($"[] TownController.UpdateTown( Town {town.Name}) ", ConsoleColor.Green);
 
 
-            Town newTown = _townRep.GetLatestTown();
-            newTown = town;
+            _townRep.GetLatestTown();
             _townDescriptionUpdater.UpdateTownDescriptions(town);
             try
             {
@@ -71,21 +65,21 @@ namespace TowninatorCLI
         public void ViewLatestTown()
         {
             if (debug) Debugging.WriteNColor("[] TownController.ViewLatestTown() ", ConsoleColor.Green);
-            _townVM.ViewLatestTown();
+            _townVm.ViewLatestTown();
         }
 
         public void ViewTownWithTownsfolk(int id)
         {
 
             if (debug) Console.WriteLine("Viewing town with townsfolk...");
-            Town? town = _townRep.GetTownById(id);
+            var town = _townRep.GetTownById(id);
 
             if (town == null)
             {
                 Console.WriteLine($"Town with ID {id} not found.");
                 return;
             }
-            _townVM.ViewLatestTown();
+            _townVm.ViewLatestTown();
         }
     }
 }

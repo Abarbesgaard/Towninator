@@ -1,17 +1,13 @@
 
 using Microsoft.Data.Sqlite;
-namespace TowninatorCLI
-{
-    public class MapRepository
-    {
-        private readonly string _connectionString;
-        private readonly TownRepository _townRepository;
+using TowninatorCLI.Controller;
 
-        public MapRepository(string dbFileName)
-        {
-            _connectionString = $"Data Source={dbFileName}";
-            _townRepository = new TownRepository(dbFileName);
-        }
+namespace TowninatorCLI.Repositories
+{
+    public class MapRepository(string dbFileName)
+    {
+        private readonly string _connectionString = $"Data Source={dbFileName}";
+        private readonly TownRepository _townRepository = new(dbFileName);
 
         public MainTerrainType? GetTerrainOfAdjacentTile(Map map, Direction direction, int x, int y)
         {
@@ -20,8 +16,8 @@ namespace TowninatorCLI
             {
                 throw new ArgumentNullException(nameof(map), "Map is null.");
             }
-            int adjacentX = x;
-            int adjacentY = y;
+            var adjacentX = x;
+            var adjacentY = y;
 
             switch (direction)
             {
@@ -44,138 +40,124 @@ namespace TowninatorCLI
             {
                 throw new ArgumentOutOfRangeException($"Adjusted coordinates ({adjacentX}, {adjacentY}) are outside map boundaries.");
             }
-            using (var connection = new SqliteConnection(_connectionString))
+
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            var command = new SqliteCommand("SELECT MainTerrain FROM MapTile WHERE MapId = @MapId AND X = @X AND Y = @Y", connection);
+            command.Parameters.AddWithValue("@MapId", map.Id);
+            command.Parameters.AddWithValue("@X", adjacentX);
+            command.Parameters.AddWithValue("@Y", adjacentY);
+
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
             {
-                connection.Open();
-
-                var command = new SqliteCommand("SELECT MainTerrain FROM MapTile WHERE MapId = @MapId AND X = @X AND Y = @Y", connection);
-                command.Parameters.AddWithValue("@MapId", map.Id);
-                command.Parameters.AddWithValue("@X", adjacentX);
-                command.Parameters.AddWithValue("@Y", adjacentY);
-
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        return Enum.Parse<MainTerrainType>(reader.GetString(0));
-                    }
-                    else
-                    {
-                        return null; // Or handle the case where the adjacent tile is not found
-                    }
-                }
+                return Enum.Parse<MainTerrainType>(reader.GetString(0));
+            }
+            else
+            {
+                return null; // Or handle the case where the adjacent tile is not found
             }
         }
 
         public void SaveMap(Map map, int townId)
         {
-            using (SqliteConnection? connection = new SqliteConnection(_connectionString))
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            using (var transaction = connection.BeginTransaction())
             {
-                connection.Open();
+                // Verify that the TownId exists in the Towns table
+                var verifyTownCmd = connection.CreateCommand();
+                verifyTownCmd.CommandText = "SELECT COUNT(*) FROM Towns WHERE Id = @TownId";
+                verifyTownCmd.Parameters.AddWithValue("@TownId", townId);
 
-                using (var transaction = connection.BeginTransaction())
+                var townCount = (long?)verifyTownCmd.ExecuteScalar();
+
+                if (townCount == 0)
                 {
-                    // Verify that the TownId exists in the Towns table
-                    SqliteCommand? verifyTownCmd = connection.CreateCommand();
-                    verifyTownCmd.CommandText = "SELECT COUNT(*) FROM Towns WHERE Id = @TownId";
-                    verifyTownCmd.Parameters.AddWithValue("@TownId", townId);
-
-                    long? townCount = (long?)verifyTownCmd.ExecuteScalar();
-
-                    if (townCount == 0)
-                    {
-                        throw new Exception($"TownId {townId} does not exist in the Towns table.");
-                    }
-
-                    // Insert or replace map record
-                    var insertMapCmd = connection.CreateCommand();
-                    insertMapCmd.CommandText = @"
-                      INSERT OR REPLACE INTO Map (Width, Height, TownId)
-                      VALUES (@Width, @Height, @TownId);
-                      SELECT last_insert_rowid();";
-
-                    insertMapCmd.Parameters.AddWithValue("@Width", map.Width);
-                    insertMapCmd.Parameters.AddWithValue("@Height", map.Height);
-                    insertMapCmd.Parameters.AddWithValue("@TownId", townId);
-
-                    try
-                    {
-                        long? mapId = (long?)insertMapCmd.ExecuteScalar();
-                        if (mapId != null)
-                        {
-                            map.Id = (int)mapId;
-                        }
-                        else
-                        {
-                            throw new Exception("Failed to retrieve mapId from database.");
-                        }
-                        // Delete existing map tiles for the map
-                        var deleteMapTilesCmd = connection.CreateCommand();
-                        deleteMapTilesCmd.CommandText = "DELETE FROM MapTile WHERE MapId = @MapId";
-                        deleteMapTilesCmd.Parameters.AddWithValue("@MapId", mapId);
-                        deleteMapTilesCmd.ExecuteNonQuery();
-
-                        // Insert new map tiles
-                        var insertTileCmd = connection.CreateCommand();
-                        insertTileCmd.CommandText = @"
-                          INSERT INTO MapTile (MapId, X, Y, MainTerrain, SecondaryTerrain, Event, HasTown, IsNorthOfTown, IsSouthOfTown, IsEastOfTown, IsWestOfTown)
-                          VALUES (@MapId, @X, @Y, @MainTerrain, @SecondaryTerrain, @Event, @HasTown, @IsNorthOfTown, @IsSouthOfTown, @IsEastOfTown, @IsWestOfTown)";
-
-                        foreach (var tile in map.GetAllTiles())
-                        {
-                            insertTileCmd.Parameters.Clear();
-                            insertTileCmd.Parameters.AddWithValue("@MapId", mapId); // Use the retrieved mapId here
-                            insertTileCmd.Parameters.AddWithValue("@X", tile.X);
-                            insertTileCmd.Parameters.AddWithValue("@Y", tile.Y);
-                            insertTileCmd.Parameters.AddWithValue("@MainTerrain", tile.Terrain.ToString());
-                            insertTileCmd.Parameters.AddWithValue("@SecondaryTerrain", tile.SecondaryTerrain.ToString());
-                            insertTileCmd.Parameters.AddWithValue("@Event", tile.Event?.Description ?? string.Empty);
-                            insertTileCmd.Parameters.AddWithValue("@HasTown", tile.HasTown ? 1 : 0);
-                            insertTileCmd.Parameters.AddWithValue("@IsNorthOfTown", tile.IsNorthOfTown ? 1 : 0);
-                            insertTileCmd.Parameters.AddWithValue("@IsSouthOfTown", tile.IsSouthOfTown ? 1 : 0);
-                            insertTileCmd.Parameters.AddWithValue("@IsEastOfTown", tile.IsEastOfTown ? 1 : 0);
-                            insertTileCmd.Parameters.AddWithValue("@IsWestOfTown", tile.IsWestOfTown ? 1 : 0);
-
-                            insertTileCmd.ExecuteNonQuery();
-                        }
-
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                        transaction.Rollback();
-                        throw;
-                    }
+                    throw new Exception($"TownId {townId} does not exist in the Towns table.");
                 }
 
-                connection.Close();
+                // Insert or replace map record
+                var insertMapCmd = connection.CreateCommand();
+                insertMapCmd.CommandText = "INSERT OR REPLACE INTO Map (Width, Height, TownId)VALUES (@Width, @Height, @TownId);SELECT last_insert_rowid(); ";
+
+                insertMapCmd.Parameters.AddWithValue("@Width", map.Width);
+                insertMapCmd.Parameters.AddWithValue("@Height", map.Height);
+                insertMapCmd.Parameters.AddWithValue("@TownId", townId);
+
+                try
+                {
+                    var mapId = (long?)insertMapCmd.ExecuteScalar();
+                    if (mapId != null)
+                    {
+                        map.Id = (int)mapId;
+                    }
+                    else
+                    {
+                        throw new Exception("Failed to retrieve mapId from database.");
+                    }
+                    // Delete existing map tiles for the map
+                    var deleteMapTilesCmd = connection.CreateCommand();
+                    deleteMapTilesCmd.CommandText = "DELETE FROM MapTile WHERE MapId = @MapId";
+                    deleteMapTilesCmd.Parameters.AddWithValue("@MapId", mapId);
+                    deleteMapTilesCmd.ExecuteNonQuery();
+
+                    // Insert new map tiles
+                    var insertTileCmd = connection.CreateCommand();
+                    insertTileCmd.CommandText = "INSERT INTO MapTile (MapId, X, Y, MainTerrain, SecondaryTerrain, Event, HasTown, IsNorthOfTown, IsSouthOfTown, IsEastOfTown, IsWestOfTown) VALUES (@MapId, @X, @Y, @MainTerrain, @SecondaryTerrain, @Event, @HasTown, @IsNorthOfTown, @IsSouthOfTown, @IsEastOfTown, @IsWestOfTown)";
+
+                    foreach (var tile in map.GetAllTiles())
+                    {
+                        insertTileCmd.Parameters.Clear();
+                        insertTileCmd.Parameters.AddWithValue("@MapId", mapId); // Use the retrieved mapId here
+                        insertTileCmd.Parameters.AddWithValue("@X", tile.X);
+                        insertTileCmd.Parameters.AddWithValue("@Y", tile.Y);
+                        insertTileCmd.Parameters.AddWithValue("@MainTerrain", tile.Terrain.ToString());
+                        insertTileCmd.Parameters.AddWithValue("@SecondaryTerrain", tile.SecondaryTerrain.ToString());
+                        insertTileCmd.Parameters.AddWithValue("@Event", tile.Event?.Description ?? string.Empty);
+                        insertTileCmd.Parameters.AddWithValue("@HasTown", tile.HasTown ? 1 : 0);
+                        insertTileCmd.Parameters.AddWithValue("@IsNorthOfTown", tile.IsNorthOfTown ? 1 : 0);
+                        insertTileCmd.Parameters.AddWithValue("@IsSouthOfTown", tile.IsSouthOfTown ? 1 : 0);
+                        insertTileCmd.Parameters.AddWithValue("@IsEastOfTown", tile.IsEastOfTown ? 1 : 0);
+                        insertTileCmd.Parameters.AddWithValue("@IsWestOfTown", tile.IsWestOfTown ? 1 : 0);
+
+                        insertTileCmd.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    transaction.Rollback();
+                    throw;
+                }
             }
+
+            connection.Close();
         }
 
 
         public MainTerrainType GetTerrainAtCoordinate(long mapId, int x, int y)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            var command = new SqliteCommand("SELECT MainTerrain FROM MapTile WHERE MapId = @MapId AND X = @X AND Y = @Y", connection);
+            command.Parameters.AddWithValue("@MapId", mapId);
+            command.Parameters.AddWithValue("@X", x);
+            command.Parameters.AddWithValue("@Y", y);
+
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
             {
-                connection.Open();
-
-                var command = new SqliteCommand("SELECT MainTerrain FROM MapTile WHERE MapId = @MapId AND X = @X AND Y = @Y", connection);
-                command.Parameters.AddWithValue("@MapId", mapId);
-                command.Parameters.AddWithValue("@X", x);
-                command.Parameters.AddWithValue("@Y", y);
-
-                using (var reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        return Enum.Parse<MainTerrainType>(reader.GetString(0));
-                    }
-                    else
-                    {
-                        throw new Exception($"Tile at coordinates ({x}, {y}) not found in map with ID {mapId}.");
-                    }
-                }
+                return Enum.Parse<MainTerrainType>(reader.GetString(0));
+            }
+            else
+            {
+                throw new Exception($"Tile at coordinates ({x}, {y}) not found in map with ID {mapId}.");
             }
         }
 
@@ -183,71 +165,59 @@ namespace TowninatorCLI
 
         public MapTile? GetTownPosition()
         {
-            string sql = @"
-              SELECT X, Y, MainTerrain, SecondaryTerrain, Event, Description,
-                    IsNorthOfTown, IsSouthOfTown, IsEastOfTown, IsWestOfTown
-              FROM MapTile
-              WHERE HasTown = 1
-              LIMIT 1;
-              ";
+            const string sql = " SELECT X, Y, MainTerrain, SecondaryTerrain, Event, Description, IsNorthOfTown, IsSouthOfTown, IsEastOfTown, IsWestOfTown FROM MapTile  WHERE HasTown = 1 LIMIT 1;  ";
 
             try
             {
-                using (var connection = new SqliteConnection(_connectionString))
+                using var connection = new SqliteConnection(_connectionString);
+                connection.Open();
+
+                using var command = new SqliteCommand(sql, connection);
+                using var reader = command.ExecuteReader();
+                if (reader.Read())
                 {
-                    connection.Open();
+                    var x = Convert.ToInt32(reader["X"]);
+                    var y = Convert.ToInt32(reader["Y"]);
 
-                    using (var command = new SqliteCommand(sql, connection))
+                    var mainTerrain = MainTerrainType.None;
+
+                    if (reader["MainTerrain"] != DBNull.Value)
                     {
-                        using (var reader = command.ExecuteReader())
+                        Enum.TryParse(reader["MainTerrain"].ToString(), out MainTerrainType parsedMainTerrain);
+                        mainTerrain = parsedMainTerrain;
+                    }
+
+
+                    var secondaryTerrain = Enum.TryParse(reader["SecondaryTerrain"].ToString(), out SecondaryTerrainType parsedSecondaryTerrain)
+                        ? parsedSecondaryTerrain
+                        : SecondaryTerrainType.None; // Replace DefaultValue with actual default value
+                    MapEvent? mapEvent = null;
+                    if (reader["Event"] != DBNull.Value)
+                    {
+                        var eventDescription = reader["Event"].ToString();
+                        if (!string.IsNullOrEmpty(eventDescription))
                         {
-                            if (reader.Read())
-                            {
-                                int x = Convert.ToInt32(reader["X"]);
-                                int y = Convert.ToInt32(reader["Y"]);
-
-                                MainTerrainType mainTerrain = MainTerrainType.None;
-
-                                if (reader["MainTerrain"] != DBNull.Value)
-                                {
-                                    Enum.TryParse(reader["MainTerrain"].ToString(), out MainTerrainType parsedMainTerrain);
-                                    mainTerrain = parsedMainTerrain;
-                                }
-
-
-                                SecondaryTerrainType secondaryTerrain = Enum.TryParse(reader["SecondaryTerrain"].ToString(), out SecondaryTerrainType parsedSecondaryTerrain)
-                                                          ? parsedSecondaryTerrain
-                                                          : SecondaryTerrainType.None; // Replace DefaultValue with actual default value
-                                MapEvent? mapEvent = null;
-                                if (reader["Event"] != DBNull.Value)
-                                {
-                                    string? eventDescription = reader["Event"].ToString();
-                                    if (!string.IsNullOrEmpty(eventDescription))
-                                    {
-                                        mapEvent = new MapEvent(eventDescription); // Assuming MapEvent constructor takes a non-null string parameter
-                                    }
-                                }
-                                string? description = reader["Description"] == DBNull.Value ? null : reader["Description"].ToString();
-                                bool isNorthOfTown = Convert.ToBoolean(reader["IsNorthOfTown"]);
-                                bool isSouthOfTown = Convert.ToBoolean(reader["IsSouthOfTown"]);
-                                bool isEastOfTown = Convert.ToBoolean(reader["IsEastOfTown"]);
-                                bool isWestOfTown = Convert.ToBoolean(reader["IsWestOfTown"]);
-
-                                return new MapTile(x, y, mainTerrain, secondaryTerrain, mapEvent, true)
-                                {
-                                    IsNorthOfTown = isNorthOfTown,
-                                    IsSouthOfTown = isSouthOfTown,
-                                    IsEastOfTown = isEastOfTown,
-                                    IsWestOfTown = isWestOfTown,
-                                    Description = description
-                                };
-                            }
-                            else
-                            {
-                                Console.WriteLine("No town position found in the database.");
-                            }
+                            mapEvent = new MapEvent(eventDescription); // Assuming MapEvent constructor takes a non-null string parameter
                         }
                     }
+                    var description = reader["Description"] == DBNull.Value ? null : reader["Description"].ToString();
+                    var isNorthOfTown = Convert.ToBoolean(reader["IsNorthOfTown"]);
+                    var isSouthOfTown = Convert.ToBoolean(reader["IsSouthOfTown"]);
+                    var isEastOfTown = Convert.ToBoolean(reader["IsEastOfTown"]);
+                    var isWestOfTown = Convert.ToBoolean(reader["IsWestOfTown"]);
+
+                    return new MapTile(x, y, mainTerrain, secondaryTerrain, mapEvent, true)
+                    {
+                        IsNorthOfTown = isNorthOfTown,
+                        IsSouthOfTown = isSouthOfTown,
+                        IsEastOfTown = isEastOfTown,
+                        IsWestOfTown = isWestOfTown,
+                        Description = description
+                    };
+                }
+                else
+                {
+                    Console.WriteLine("No town position found in the database.");
                 }
 
                 // If no data was found or another issue occurred, return null
@@ -263,14 +233,14 @@ namespace TowninatorCLI
 
         public Map GetLatestMap()
         {
-            Map? map = new Map(0, 0);
+            var map = new Map(0, 0);
 
 
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
 
-                string query = "SELECT Id, Width, Height FROM Map ORDER BY Id DESC LIMIT 1;";
+                const string query = "SELECT Id, Width, Height FROM Map ORDER BY Id DESC LIMIT 1;";
 
                 using (var command = new SqliteCommand(query, connection))
                 {
@@ -278,43 +248,41 @@ namespace TowninatorCLI
                     {
                         if (reader.Read())
                         {
-                            long mapId = reader.GetInt64(reader.GetOrdinal("Id"));
-                            int width = reader.GetInt32(reader.GetOrdinal("Width"));
-                            int height = reader.GetInt32(reader.GetOrdinal("Height"));
+                            var mapId = reader.GetInt64(reader.GetOrdinal("Id"));
+                            var width = reader.GetInt32(reader.GetOrdinal("Width"));
+                            var height = reader.GetInt32(reader.GetOrdinal("Height"));
                             map = new Map(width, height) { Id = map.Id };
 
                             var tileCommand = new SqliteCommand("SELECT X, Y, MainTerrain, SecondaryTerrain, Event, HasTown, IsNorthOfTown, IsSouthOfTown, IsEastOfTown, IsWestOfTown FROM MapTile WHERE MapId = @MapId", connection);
                             tileCommand.Parameters.AddWithValue("@MapId", mapId);
 
-                            using (var tileReader = tileCommand.ExecuteReader())
+                            using var tileReader = tileCommand.ExecuteReader();
+                            while (tileReader.Read())
                             {
-                                while (tileReader.Read())
+                                var x = tileReader.GetInt32(tileReader.GetOrdinal("X"));
+                                var y = tileReader.GetInt32(tileReader.GetOrdinal("Y"));
+                                var terrain = Enum.Parse<MainTerrainType>(tileReader.GetString(tileReader.GetOrdinal("MainTerrain")));
+                                var secondaryTerrain = Enum.Parse<SecondaryTerrainType>(tileReader.GetString(tileReader.GetOrdinal("SecondaryTerrain")));
+                                var eventDescription = tileReader.IsDBNull(tileReader.GetOrdinal("Event")) ? null : tileReader.GetString(tileReader.GetOrdinal("Event"));
+                                var hasTown = tileReader.GetBoolean(tileReader.GetOrdinal("HasTown"));
+                                var isNorthOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsNorthOfTown"));
+                                var isSouthOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsSouthOfTown"));
+                                var isEastOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsEastOfTown"));
+                                var isWestOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsWestOfTown"));
+
+                                // Create MapEvent object if eventDescription is not null
+                                var mapEvent = !string.IsNullOrEmpty(eventDescription) ? new MapEvent(eventDescription) : null;
+
+                                // Create the MapTile including HasTown and directional flags
+                                var tile = new MapTile(x, y, terrain, secondaryTerrain, mapEvent, hasTown)
                                 {
-                                    int x = tileReader.GetInt32(tileReader.GetOrdinal("X"));
-                                    int y = tileReader.GetInt32(tileReader.GetOrdinal("Y"));
-                                    MainTerrainType terrain = Enum.Parse<MainTerrainType>(tileReader.GetString(tileReader.GetOrdinal("MainTerrain")));
-                                    SecondaryTerrainType secondaryTerrain = Enum.Parse<SecondaryTerrainType>(tileReader.GetString(tileReader.GetOrdinal("SecondaryTerrain")));
-                                    string? eventDescription = tileReader.IsDBNull(tileReader.GetOrdinal("Event")) ? null : tileReader.GetString(tileReader.GetOrdinal("Event"));
-                                    bool hasTown = tileReader.GetBoolean(tileReader.GetOrdinal("HasTown"));
-                                    bool isNorthOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsNorthOfTown"));
-                                    bool isSouthOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsSouthOfTown"));
-                                    bool isEastOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsEastOfTown"));
-                                    bool isWestOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsWestOfTown"));
+                                    IsNorthOfTown = isNorthOfTown,
+                                    IsSouthOfTown = isSouthOfTown,
+                                    IsEastOfTown = isEastOfTown,
+                                    IsWestOfTown = isWestOfTown
+                                };
 
-                                    // Create MapEvent object if eventDescription is not null
-                                    MapEvent? mapEvent = !string.IsNullOrEmpty(eventDescription) ? new MapEvent(eventDescription) : null;
-
-                                    // Create the MapTile including HasTown and directional flags
-                                    MapTile tile = new MapTile(x, y, terrain, secondaryTerrain, mapEvent, hasTown)
-                                    {
-                                        IsNorthOfTown = isNorthOfTown,
-                                        IsSouthOfTown = isSouthOfTown,
-                                        IsEastOfTown = isEastOfTown,
-                                        IsWestOfTown = isWestOfTown
-                                    };
-
-                                    map.SetTile(x, y, tile);
-                                }
+                                map.SetTile(x, y, tile);
                             }
                         }
                     }
@@ -334,63 +302,57 @@ namespace TowninatorCLI
 
         public Map LoadMap(long mapId)
         {
-            using (var connection = new SqliteConnection(_connectionString))
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            var command = new SqliteCommand("SELECT Width, Height FROM Map WHERE Id = @MapId", connection);
+            command.Parameters.AddWithValue("@MapId", mapId);
+
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
             {
-                connection.Open();
+                var width = reader.GetInt32(0);
+                var height = reader.GetInt32(1);
+                var map = new Map(width, height);
 
-                var command = new SqliteCommand("SELECT Width, Height FROM Map WHERE Id = @MapId", connection);
-                command.Parameters.AddWithValue("@MapId", mapId);
+                var tileCommand = new SqliteCommand("SELECT X, Y, MainTerrain, SecondaryTerrain, Event, HasTown, IsNorthOfTown, IsSouthOfTown, IsEastOfTown, IsWestOfTown FROM MapTile WHERE MapId = @MapId", connection);
+                tileCommand.Parameters.AddWithValue("@MapId", mapId);
 
-                using (var reader = command.ExecuteReader())
+                using var tileReader = tileCommand.ExecuteReader();
+                while (tileReader.Read())
                 {
-                    if (reader.Read())
+                    var x = tileReader.GetInt32(tileReader.GetOrdinal("X"));
+                    var y = tileReader.GetInt32(tileReader.GetOrdinal("Y"));
+                    var terrain = Enum.Parse<MainTerrainType>(tileReader.GetString(tileReader.GetOrdinal("MainTerrain")));
+                    var secondaryTerrain = Enum.Parse<SecondaryTerrainType>(tileReader.GetString(tileReader.GetOrdinal("SecondaryTerrain")));
+                    var eventDescription = tileReader.IsDBNull(tileReader.GetOrdinal("Event")) ? null : tileReader.GetString(tileReader.GetOrdinal("Event"));
+                    var hasTown = tileReader.GetBoolean(tileReader.GetOrdinal("HasTown"));
+                    var isNorthOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsNorthOfTown"));
+                    var isSouthOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsSouthOfTown"));
+                    var isEastOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsEastOfTown"));
+                    var isWestOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsWestOfTown"));
+
+                    // Create MapEvent object if eventDescription is not null
+                    var mapEvent = !string.IsNullOrEmpty(eventDescription) ? new MapEvent(eventDescription) : null;
+
+                    // Create the MapTile including HasTown and directional flags
+                    var tile = new MapTile(x, y, terrain, secondaryTerrain, mapEvent, hasTown)
                     {
-                        int width = reader.GetInt32(0);
-                        int height = reader.GetInt32(1);
-                        Map map = new Map(width, height);
+                        IsNorthOfTown = isNorthOfTown,
+                        IsSouthOfTown = isSouthOfTown,
+                        IsEastOfTown = isEastOfTown,
+                        IsWestOfTown = isWestOfTown
+                    };
 
-                        var tileCommand = new SqliteCommand("SELECT X, Y, MainTerrain, SecondaryTerrain, Event, HasTown, IsNorthOfTown, IsSouthOfTown, IsEastOfTown, IsWestOfTown FROM MapTile WHERE MapId = @MapId", connection);
-                        tileCommand.Parameters.AddWithValue("@MapId", mapId);
-
-                        using (var tileReader = tileCommand.ExecuteReader())
-                        {
-                            while (tileReader.Read())
-                            {
-                                int x = tileReader.GetInt32(tileReader.GetOrdinal("X"));
-                                int y = tileReader.GetInt32(tileReader.GetOrdinal("Y"));
-                                MainTerrainType terrain = Enum.Parse<MainTerrainType>(tileReader.GetString(tileReader.GetOrdinal("MainTerrain")));
-                                SecondaryTerrainType secondaryTerrain = Enum.Parse<SecondaryTerrainType>(tileReader.GetString(tileReader.GetOrdinal("SecondaryTerrain")));
-                                string? eventDescription = tileReader.IsDBNull(tileReader.GetOrdinal("Event")) ? null : tileReader.GetString(tileReader.GetOrdinal("Event"));
-                                bool hasTown = tileReader.GetBoolean(tileReader.GetOrdinal("HasTown"));
-                                bool isNorthOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsNorthOfTown"));
-                                bool isSouthOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsSouthOfTown"));
-                                bool isEastOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsEastOfTown"));
-                                bool isWestOfTown = tileReader.GetBoolean(tileReader.GetOrdinal("IsWestOfTown"));
-
-                                // Create MapEvent object if eventDescription is not null
-                                MapEvent? mapEvent = !string.IsNullOrEmpty(eventDescription) ? new MapEvent(eventDescription) : null;
-
-                                // Create the MapTile including HasTown and directional flags
-                                MapTile tile = new MapTile(x, y, terrain, secondaryTerrain, mapEvent, hasTown)
-                                {
-                                    IsNorthOfTown = isNorthOfTown,
-                                    IsSouthOfTown = isSouthOfTown,
-                                    IsEastOfTown = isEastOfTown,
-                                    IsWestOfTown = isWestOfTown
-                                };
-
-                                // Set the tile in the map
-                                map.SetTile(x, y, tile);
-                            }
-                        }
-
-                        return map;
-                    }
-                    else
-                    {
-                        throw new Exception($"Map with ID {mapId} not found.");
-                    }
+                    // Set the tile in the map
+                    map.SetTile(x, y, tile);
                 }
+
+                return map;
+            }
+            else
+            {
+                throw new Exception($"Map with ID {mapId} not found.");
             }
         }
 
@@ -399,31 +361,29 @@ namespace TowninatorCLI
         {
             try
             {
-                using (var connection = new SqliteConnection(_connectionString))
+                using var connection = new SqliteConnection(_connectionString);
+                connection.Open();
+
+                var command = new SqliteCommand("SELECT Id, Width, Height FROM Map WHERE TownId = @TownId", connection);
+                command.Parameters.AddWithValue("@TownId", townId);
+
+                using var reader = command.ExecuteReader();
+                if (reader.Read())
                 {
-                    connection.Open();
+                    var mapId = reader.GetInt64(reader.GetOrdinal("Id"));
+                    var width = reader.GetInt32(reader.GetOrdinal("Width"));
+                    var height = reader.GetInt32(reader.GetOrdinal("Height"));
 
-                    var command = new SqliteCommand("SELECT Id, Width, Height FROM Map WHERE TownId = @TownId", connection);
-                    command.Parameters.AddWithValue("@TownId", townId);
-
-                    using (var reader = command.ExecuteReader())
+                    var map = new Map(width, height)
                     {
-                        if (reader.Read())
-                        {
-                            long mapId = reader.GetInt64(reader.GetOrdinal("Id"));
-                            int width = reader.GetInt32(reader.GetOrdinal("Width"));
-                            int height = reader.GetInt32(reader.GetOrdinal("Height"));
+                        Id = (int)mapId // Set the mapId
+                    };
 
-                            Map map = new Map(width, height);
-                            map.Id = (int)mapId; // Set the mapId
-
-                            return map;
-                        }
-                        else
-                        {
-                            throw new Exception($"Map for TownId {townId} not found.");
-                        }
-                    }
+                    return map;
+                }
+                else
+                {
+                    throw new Exception($"Map for TownId {townId} not found.");
                 }
             }
             catch (Exception ex)

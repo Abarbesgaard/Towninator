@@ -1,19 +1,24 @@
 ﻿using CommandLine;
+using TowninatorCLI.Controller;
+using TowninatorCLI.Database;
+using TowninatorCLI.Utilities.misc;
+using TowninatorCLI.Repositories;
+
 namespace TowninatorCLI
 {
-    internal class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(options =>
                 {
-                    bool debug = options.Debug;
+                    var debug = options.Debug;
                     if (debug) Debugging.WriteNColor("Dig in!", ConsoleColor.Green);
 
-                    string dbFileName = Path.Combine(AppContext.BaseDirectory, "town.sqlite");
-                    SQLiteDatabaseManager database = new SQLiteDatabaseManager(dbFileName, debug);
-                    bool databaseExists = File.Exists(dbFileName);
+                    var dbFileName = Path.Combine(AppContext.BaseDirectory, "town.sqlite");
+                    var database = new SqLiteDatabaseManager(dbFileName, debug);
+                    var databaseExists = File.Exists(dbFileName);
 
                     if (!databaseExists)
                     {
@@ -21,11 +26,11 @@ namespace TowninatorCLI
                         Console.WriteLine("New database created.");
                     }
 
-                    var _townRepository = new TownRepository(dbFileName);
-                    var _townsfolkController = new TownsfolkController(dbFileName);
-                    var _mapRepository = new MapRepository(dbFileName);
-                    var _mapController = new MapController(dbFileName, debug);
-                    var _townController = new TownController(_townRepository, _mapController, dbFileName, debug);
+                    var townRepository = new TownRepository(dbFileName);
+                    var townsfolkController = new TownsfolkController(dbFileName);
+                    var mapRepository = new MapRepository(dbFileName);
+                    var mapController = new MapController(dbFileName, debug);
+                    var townController = new TownController(townRepository, mapController, dbFileName, debug);
 
                     if (options.Reset)
                     {
@@ -35,28 +40,28 @@ namespace TowninatorCLI
 
                     if (options.Town)
                     {
-                        Map map = _mapController.GenerateMap(20, 20);
-                        Town town = _townController.GenerateTown();
-                        _townController.SaveTown(town, map);
-                        _mapController.SaveMap(map, town.Id);
-                        _townsfolkController.GenerateFamilies(7, town.Id);
-                        _townController.UpdateTown(town);
-                        _townController.ViewLatestTown();
+                        var map = mapController.GenerateMap(20, 20);
+                        var town = townController.GenerateTown();
+                        townController.SaveTown(town, map);
+                        mapController.SaveMap(map, town.Id);
+                        townsfolkController.GenerateFamilies(7, town.Id);
+                        townController.UpdateTown(town);
+                        townController.ViewLatestTown();
                     }
                     else if (options.TownWithTownsfolk)
                     {
                         if (debug) Console.WriteLine("Viewing town information with townsfolk...");
-                        _townsfolkController.ViewAllTownsfolk();
+                        townsfolkController.ViewAllTownsfolk();
                     }
                     else if (options.ViewMap)
                     {
                         if (debug) Console.WriteLine("Viewing map...");
-                        _mapController.DisplayLatestMap();
+                        mapController.DisplayLatestMap();
                     }
-                    else if (options.MapLengend)
+                    else if (options.MapLegend)
                     {
                         if (debug) Console.WriteLine("Viewing map legend...");
-                        _mapController.DisplayMapLegend();
+                        mapController.DisplayMapLegend();
                     }
 
                     if (debug)
@@ -78,15 +83,13 @@ namespace TowninatorCLI
         public bool ViewMap { get; set; }
 
         [Option('l', "MapLegend", HelpText = "View map legend.")]
-        public bool MapLengend { get; set; }
+        public bool MapLegend { get; set; }
 
         [Option('R', "reset", Required = false, HelpText = "Reset the database.")]
         public bool Reset { get; set; }
 
         [Option('D', "Debug", Required = false, HelpText = "print debug information.")]
         public bool Debug { get; set; }
-
-
     }
 }
 

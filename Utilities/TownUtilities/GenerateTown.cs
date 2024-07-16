@@ -1,15 +1,14 @@
-namespace TowninatorCLI
+using TowninatorCLI.Utilities.misc;
+using TowninatorCLI.Model;
+namespace TowninatorCLI.Utilities.TownUtilities
 {
-    public class GenerateTown
+    public class GenerateTown(bool debug = false)
     {
-        private bool debug;
-        public GenerateTown(bool debug = false)
-        {
-            this.debug = debug;
-        }
+        private readonly bool _debug = debug;
+
         public Town GenerateRandomTown(bool debug = false)
         {
-            if (debug) Debugging.WriteNColor("[] GenerateTown.GenerateRandomTown() ", ConsoleColor.Green);
+            if (_debug) Debugging.WriteNColor("[] GenerateTown.GenerateRandomTown() ", ConsoleColor.Green);
             return new Town
             {
                 Name = TownNameGenerator.GenerateName(),

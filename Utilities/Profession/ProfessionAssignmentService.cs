@@ -1,119 +1,104 @@
-
-namespace TowninatorCLI
+using TowninatorCLI.Model;
+namespace TowninatorCLI.Utilities.Profession
 {
     public class ProfessionAssignmentService
     {
-        private Dictionary<MainTerrainType, Dictionary<Profession, double>> professionWeights;
-
-        public ProfessionAssignmentService()
+        private readonly Dictionary<MainTerrainType, Dictionary<Model.Profession, double>> _professionWeights = new()
         {
-            // Initialize profession weights based on MainTerrainType
-            professionWeights = new Dictionary<MainTerrainType, Dictionary<Profession, double>>();
-
             // Example weights based on terrain types
-            professionWeights[MainTerrainType.Desert] = new Dictionary<Profession, double>
+            [MainTerrainType.Desert] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.3 },
-                { Profession.Blacksmith, 0.2 },
-                { Profession.Trader, 0.3 },
+                { Model.Profession.Farmer, 0.3 },
+                { Model.Profession.Blacksmith, 0.2 },
+                { Model.Profession.Trader, 0.3 },
                 // Adjust weights as needed for each terrain type
-            };
-
-            professionWeights[MainTerrainType.Forest] = new Dictionary<Profession, double>
+            },
+            [MainTerrainType.Forest] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.2 },
-                { Profession.Blacksmith, 0.1 },
-                { Profession.Teacher, 0.4 },
+                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Blacksmith, 0.1 },
+                { Model.Profession.Teacher, 0.4 },
                 // Adjust weights as needed for each terrain type
-            };
-
-            professionWeights[MainTerrainType.Grassland] = new Dictionary<Profession, double>
-           {
-                { Profession.Farmer, 0.4 },
-                { Profession.Doctor, 0.2 },
-                { Profession.Teacher, 0.2 },
-           };
-
-            professionWeights[MainTerrainType.Hill] = new Dictionary<Profession, double>
+            },
+            [MainTerrainType.Grassland] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.3 },
-                { Profession.Blacksmith, 0.2 },
-                { Profession.Soldier, 0.4 },
-            };
-            professionWeights[MainTerrainType.Jungle] = new Dictionary<Profession, double>
+                { Model.Profession.Farmer, 0.4 },
+                { Model.Profession.Doctor, 0.2 },
+                { Model.Profession.Teacher, 0.2 },
+            },
+            [MainTerrainType.Hill] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.2 },
-                { Profession.Blacksmith, 0.1 },
-                { Profession.Teacher, 0.4 },
-            };
-            professionWeights[MainTerrainType.LowMountain] = new Dictionary<Profession, double>
+                { Model.Profession.Farmer, 0.3 },
+                { Model.Profession.Blacksmith, 0.2 },
+                { Model.Profession.Soldier, 0.4 },
+            },
+            [MainTerrainType.Jungle] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.2 },
-                { Profession.Blacksmith, 0.1 },
-                { Profession.Teacher, 0.4 },
-            };
-            professionWeights[MainTerrainType.MediumMountain] = new Dictionary<Profession, double>
+                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Blacksmith, 0.1 },
+                { Model.Profession.Teacher, 0.4 },
+            },
+            [MainTerrainType.LowMountain] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.2 },
-                { Profession.Blacksmith, 0.1 },
-                { Profession.Teacher, 0.4 },
-            };
-            professionWeights[MainTerrainType.HighMountain] = new Dictionary<Profession, double>
+                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Blacksmith, 0.1 },
+                { Model.Profession.Teacher, 0.4 },
+            },
+            [MainTerrainType.MediumMountain] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.2 },
-                { Profession.Blacksmith, 0.1 },
-                { Profession.Teacher, 0.4 },
-            };
-            professionWeights[MainTerrainType.Ocean] = new Dictionary<Profession, double>
+                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Blacksmith, 0.1 },
+                { Model.Profession.Teacher, 0.4 },
+            },
+            [MainTerrainType.HighMountain] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.2 },
-                { Profession.Blacksmith, 0.1 },
-                { Profession.Teacher, 0.4 },
-            };
-            professionWeights[MainTerrainType.Savannah] = new Dictionary<Profession, double>
+                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Blacksmith, 0.1 },
+                { Model.Profession.Teacher, 0.4 },
+            },
+            [MainTerrainType.Ocean] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.2 },
-                { Profession.Blacksmith, 0.1 },
-                { Profession.Teacher, 0.4 },
-            };
-            professionWeights[MainTerrainType.Swamp] = new Dictionary<Profession, double>
+                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Blacksmith, 0.1 },
+                { Model.Profession.Teacher, 0.4 },
+            },
+            [MainTerrainType.Savannah] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.2 },
-                { Profession.Blacksmith, 0.1 },
-                { Profession.Teacher, 0.4 },
-            };
-            professionWeights[MainTerrainType.Tundra] = new Dictionary<Profession, double>
+                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Blacksmith, 0.1 },
+                { Model.Profession.Teacher, 0.4 },
+            },
+            [MainTerrainType.Swamp] = new Dictionary<Model.Profession, double>
             {
-                { Profession.Farmer, 0.2 },
-                { Profession.Blacksmith, 0.1 },
-                { Profession.Teacher, 0.4 },
-            };
-
-        }
-
-        public Profession AssignProfession(MainTerrainType terrainType, Random random)
-        {
-            if (professionWeights.ContainsKey(terrainType))
+                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Blacksmith, 0.1 },
+                { Model.Profession.Teacher, 0.4 },
+            },
+            [MainTerrainType.Tundra] = new Dictionary<Model.Profession, double>
             {
-                var weights = professionWeights[terrainType];
-                return WeightedRandom(weights, random);
+                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Blacksmith, 0.1 },
+                { Model.Profession.Teacher, 0.4 },
             }
-            else
-            {
+        };
+
+        // Initialize profession weights based on MainTerrainType
+        // Example weights based on terrain types
+        // Adjust weights as needed for each terrain type
+        // Adjust weights as needed for each terrain type
+
+        public Model.Profession AssignProfession(MainTerrainType terrainType, Random random)
+        {
+            return _professionWeights.TryGetValue(terrainType, out var value) ? WeightedRandom(value, random) :
                 // Default profession if no specific weights are defined for the terrain type
-                return Profession.None;
-            }
+                Model.Profession.None;
         }
 
-        private Profession WeightedRandom(Dictionary<Profession, double> weights, Random random)
+        private static Model.Profession WeightedRandom(Dictionary<Model.Profession, double> weights, Random random)
         {
-            double totalWeight = 0.0;
-            foreach (var kvp in weights)
-            {
-                totalWeight += kvp.Value;
-            }
+            var totalWeight = weights.Sum(kvp => kvp.Value);
 
-            double randomValue = random.NextDouble() * totalWeight;
+            var randomValue = random.NextDouble() * totalWeight;
 
             foreach (var kvp in weights)
             {

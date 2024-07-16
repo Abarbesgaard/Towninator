@@ -1,11 +1,11 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Utilities.Lists
 {
-    public class Town_MediumMountain
+    public class TownMediumMountain
     {
-        public string DescriptionGenerator()
+        public static string DescriptionGenerator()
         {
             var random = new Random();
-            string[] descriptions = new string[] {
+            var descriptions = new string[] {
                 "Nestled in brooding mountain ranges.",
                 "Surrounded by ominous, towering peaks.",
                 "At the base of imposing, jagged mountains.",
@@ -27,7 +27,7 @@ namespace TowninatorCLI
                 "Mountains creating a piercing skyline.",
                 "In a region of haunted highlands."
         };
-            string description = descriptions[random.Next(descriptions.Length)];
+            var description = descriptions[random.Next(descriptions.Length)];
             return description;
         }
     }

@@ -1,27 +1,14 @@
-namespace TowninatorCLI
+using TowninatorCLI.Repositories;
+using TowninatorCLI.Utilities.misc;
+namespace TowninatorCLI.View
 {
-    public class TownViewModel
+    public class TownViewModel(TownRepository townRep, bool debug = false)
     {
-        private readonly TownRepository _townRepository;
-        private bool debug;
-
-
-        public TownViewModel(TownRepository townRep, bool debug = false)
-        {
-            this.debug = debug;
-            _townRepository = townRep;
-        }
-
         public void ViewLatestTown()
         {
             if (debug) Debugging.WriteNColor("[] TownViewModel.ViewLatestTown() ", ConsoleColor.Green);
 
-            Town? town = _townRepository.GetLatestTown();
-            if (town == null)
-            {
-                Console.WriteLine($"Town not found.");
-                return;
-            }
+            var town = townRep.GetLatestTown();
             Console.Write($"Welcome to the town of ");
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write($"{town.Name} ");
