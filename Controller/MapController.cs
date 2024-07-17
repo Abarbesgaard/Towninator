@@ -1,3 +1,4 @@
+using TowninatorCLI.Model.MapModels;
 using TowninatorCLI.Utilities.misc;
 using TowninatorCLI.Utilities.MapUtilities;
 using TowninatorCLI.Repositories;
@@ -10,6 +11,8 @@ namespace TowninatorCLI.Controller
         private readonly MapUtilities _mapUtilities = new(dbFileName, debug);
         private readonly TownRepository _townRepository = new(dbFileName);
         private readonly string _dbFileName = dbFileName;
+
+       
 
 
         public Map GenerateMap(int width, int height)

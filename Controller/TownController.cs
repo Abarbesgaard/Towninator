@@ -1,5 +1,5 @@
-using TowninatorCLI.Database;
 using TowninatorCLI.Model;
+using TowninatorCLI.Model.MapModels;
 using TowninatorCLI.Utilities.misc;
 using TowninatorCLI.View;
 using TowninatorCLI.Utilities.MapUtilities;

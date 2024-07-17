@@ -6,16 +6,22 @@ namespace TowninatorCLI.Repositories
 {
     public class BuildingRepository(string dbFileName, bool debug = false)
     {
-        private readonly string _connectionString = $"Data Source={dbFileName};Version=3;";
+        private readonly string _connectionString = $"Data Source={dbFileName}";
 
-        public void SaveBuilding(Building building)
+        public void AddBuilding(Building building)
         {
-            if (debug) Debugging.WriteNColor("[] BuildingRepository.SaveBuilding()", ConsoleColor.Green);
+            if (debug) Debugging.WriteNColor($"[] BuildingRepository.AddBuilding(building {building})", ConsoleColor.Green);
             using var connection = new SQLiteConnection(_connectionString);
             connection.Open();
 
-            const string query = " INSERT INTO Buildings (Name, Description, BuildingType, SpecificBuilding, SpawnProbability, TownId) " +
-                                 "VALUES (@Name, @Description, @BuildingType, @SpecificBuilding, @SpawnProbability, @TownId);";
+            const string query = """
+                                 INSERT INTO Buildings 
+                                 (Name, Description, BuildingType, 
+                                 SpecificBuilding, SpawnProbability, TownId) 
+                                 VALUES 
+                                 (@Name, @Description, @BuildingType, 
+                                 @SpecificBuilding, @SpawnProbability, @TownId);
+                                 """;
 
             using (var command = new SQLiteCommand(query, connection))
             {
@@ -40,7 +46,10 @@ namespace TowninatorCLI.Repositories
             using var connection = new SQLiteConnection(_connectionString);
             connection.Open();
 
-            const string query = " SELECT Id, Name, Description, BuildingType, SpecificBuilding, SpawnProbability, TownId FROM Buildings;";
+            const string query = @"
+        SELECT Id, Name, Description, BuildingType, SpecificBuilding, SpawnProbability, TownId 
+        FROM Buildings;
+    ";
 
             using (var command = new SQLiteCommand(query, connection))
             {
@@ -53,8 +62,8 @@ namespace TowninatorCLI.Repositories
                         var description = Convert.ToString(reader["Description"]);
                         var buildingType = Enum.Parse<BuildingType>(Convert.ToString(reader["BuildingType"]) ?? string.Empty);
                         var specificBuilding = Enum.Parse<SpecificBuilding>(Convert.ToString(reader["SpecificBuilding"]) ?? string.Empty);
-                        var spawnProbability = Convert.ToInt32(reader["SpawnProbability"]);
-                        var townId = Convert.ToInt32(reader["TownId"]);
+                        var spawnProbability = reader["SpawnProbability"] == DBNull.Value ? 0 : Convert.ToInt32(reader["SpawnProbability"]);
+                        var townId = reader["TownId"] == DBNull.Value ? 0 : Convert.ToInt32(reader["TownId"]);
 
                         // You can load townsfolk or other related data if needed
                         List<Townsfolk>? townsfolk = null; // Example: Load townsfolk related to this building
@@ -70,6 +79,7 @@ namespace TowninatorCLI.Repositories
 
             return buildings;
         }
+
     }
 }
 

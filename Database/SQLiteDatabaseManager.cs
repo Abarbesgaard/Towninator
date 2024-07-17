@@ -18,21 +18,29 @@ namespace TowninatorCLI.Database
             ExecuteNonQ(connection, commandForeignKey);
 
             // Drop existing tables (if any)
-            const string dropTableQuery = "DROP TABLE IF EXISTS MapTile; DROP TABLE IF EXISTS Map; DROP TABLE IF EXISTS Townsfolk; DROP TABLE IF EXISTS Towns; ";
+            const string dropTableQuery = """
+                                              DROP TABLE IF EXISTS MapTile;
+                                              DROP TABLE IF EXISTS Map;
+                                              DROP TABLE IF EXISTS Townsfolk;
+                                              DROP TABLE IF EXISTS Towns;
+                                              DROP TABLE IF EXISTS Buildings;
+
+                                          """;
             ExecuteNonQ(connection, dropTableQuery);
-            
+           if (debug) Debugging.WriteNColor("Dropping Tables", ConsoleColor.Green); 
                        // Create Towns table
-            const string createTownQuery = """CREATE TABLE Towns (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Culture INTEGER, Education INTEGER, Health INTEGER, Military INTEGER, "Order" INTEGER, Production INTEGER, Recreation INTEGER,Trade INTEGER, Wealth INTEGER, Worship INTEGER, MainDescription TEXT, NorthDescription TEXT, SouthDescription TEXT, EastDescription TEXT,WestDescription TEXT); """;
+            const string createTownQuery = """CREATE TABLE Towns (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Culture INTEGER, Crime INTEGER, Education INTEGER, Health INTEGER, Military INTEGER, "Order" INTEGER, Production INTEGER, Recreation INTEGER,Trade INTEGER, Wealth INTEGER, Worship INTEGER, MainDescription TEXT, NorthDescription TEXT, SouthDescription TEXT, EastDescription TEXT,WestDescription TEXT); """;
             ExecuteNonQ(connection, createTownQuery);
             
             if (debug) Debugging.WriteNColor("Creating Towns table.", ConsoleColor.Green);
+            
             const string buildTableQuery =
-                "CREATE TABLE Buildings ( Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL, Description TEXT, Type INTEGER , SpecificBuilding INTEGER, SpawnProbability INTEGER,TownId INTEGER, FOREIGN KEY(TownId) REFERENCES Towns(Id)); ";
+                "CREATE TABLE Buildings ( Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Description TEXT, BuildingType INTEGER , SpecificBuilding INTEGER, SpawnProbability INTEGER,TownId INTEGER, FOREIGN KEY(TownId) REFERENCES Towns(Id)); ";
             ExecuteNonQ(connection, buildTableQuery);
-           
             if (debug) Debugging.WriteNColor("Creating Buildings table.", ConsoleColor.Green);
+            
             // Create Townsfolk table
-            const string createTownsfolkTable = " CREATE TABLE Townsfolk (Id INTEGER PRIMARY KEY AUTOINCREMENT, Age INTEGER,  FirstName TEXT, LastName TEXT, Gender INTEGER, Profession INTEGER, SkillLevel INTEGER, IsAlive INTEGER, Description TEXT,IsMarried INTEGER, Region TEXT, Country TEXT, IsParent INTEGER, IsChild INTEGER,TownId INTEGER, FOREIGN KEY(TownId) REFERENCES Towns(Id) );  ";
+            const string createTownsfolkTable = " CREATE TABLE Townsfolk (Id INTEGER PRIMARY KEY AUTOINCREMENT, Age INTEGER,  FirstName TEXT, LastName TEXT, Gender INTEGER, Profession INTEGER, SkillLevel INTEGER, IsAlive INTEGER, Description TEXT,IsMarried INTEGER, Region TEXT, Country TEXT, Origin TEXT, IsParent INTEGER, IsChild INTEGER,TownId INTEGER, FOREIGN KEY(TownId) REFERENCES Towns(Id) );  ";
             ExecuteNonQ(connection, createTownsfolkTable);
 
 
@@ -52,18 +60,17 @@ namespace TowninatorCLI.Database
             connection.Close();
         }
 
-        private static void ExecuteNonQ(SqliteConnection connection, string query)
+        public static void ExecuteNonQ(SqliteConnection connection, string query)
         {
             using var command = connection.CreateCommand();
             command.CommandText = query;
             command.ExecuteNonQuery();
         }
-        public void DeleteDatabase(string dbFileName)
+        public static void DeleteDatabase(string dbFileName)
         {
             if (File.Exists(dbFileName))
             {
                 File.Delete(dbFileName);
-                Console.WriteLine("Database file deleted.");
             }
             else
             {

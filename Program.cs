@@ -31,10 +31,11 @@ namespace TowninatorCLI
                     var mapRepository = new MapRepository(dbFileName);
                     var mapController = new MapController(dbFileName, debug);
                     var townController = new TownController(townRepository, mapController, dbFileName, debug);
+                    var buildingController = new BuildingsController(dbFileName, debug);
 
                     if (options.Reset)
                     {
-                        database.DeleteDatabase(dbFileName);
+                        SqLiteDatabaseManager.DeleteDatabase(dbFileName);
                         database.CreateDatabase();
                     }
 
@@ -46,7 +47,11 @@ namespace TowninatorCLI
                         mapController.SaveMap(map, town.Id);
                         townsfolkController.GenerateFamilies(7, town.Id);
                         townController.UpdateTown(town);
+                        buildingController.GenerateBuildings();
                         townController.ViewLatestTown();
+                        buildingController.ViewAllBuildings();
+                        mapController.DisplayLatestMap();
+                        
                     }
                     else if (options.TownWithTownsfolk)
                     {
@@ -63,7 +68,11 @@ namespace TowninatorCLI
                         if (debug) Console.WriteLine("Viewing map legend...");
                         mapController.DisplayMapLegend();
                     }
-
+                    else if (options.Buildings)
+                    {
+                        if(debug) Debugging.WriteNColor("[] Options.Buildings", ConsoleColor.Green);
+                        buildingController.ViewAllBuildings();
+                    }
                     if (debug)
                     {
                         Console.WriteLine("-_Debug End_-");
@@ -87,9 +96,13 @@ namespace TowninatorCLI
 
         [Option('R', "reset", Required = false, HelpText = "Reset the database.")]
         public bool Reset { get; set; }
-
+        
+        [Option('B',"Buildings", Required = false, HelpText = "Display a building" )]
+        public bool Buildings { get; set; }
+        
         [Option('D', "Debug", Required = false, HelpText = "print debug information.")]
         public bool Debug { get; set; }
+        
     }
 }
 

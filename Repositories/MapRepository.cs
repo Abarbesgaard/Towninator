@@ -1,6 +1,7 @@
 
 using Microsoft.Data.Sqlite;
 using TowninatorCLI.Controller;
+using TowninatorCLI.Model.MapModels;
 
 namespace TowninatorCLI.Repositories
 {
@@ -112,16 +113,20 @@ namespace TowninatorCLI.Repositories
                     {
                         insertTileCmd.Parameters.Clear();
                         insertTileCmd.Parameters.AddWithValue("@MapId", mapId); // Use the retrieved mapId here
-                        insertTileCmd.Parameters.AddWithValue("@X", tile.X);
-                        insertTileCmd.Parameters.AddWithValue("@Y", tile.Y);
-                        insertTileCmd.Parameters.AddWithValue("@MainTerrain", tile.Terrain.ToString());
-                        insertTileCmd.Parameters.AddWithValue("@SecondaryTerrain", tile.SecondaryTerrain.ToString());
-                        insertTileCmd.Parameters.AddWithValue("@Event", tile.Event?.Description ?? string.Empty);
-                        insertTileCmd.Parameters.AddWithValue("@HasTown", tile.HasTown ? 1 : 0);
-                        insertTileCmd.Parameters.AddWithValue("@IsNorthOfTown", tile.IsNorthOfTown ? 1 : 0);
-                        insertTileCmd.Parameters.AddWithValue("@IsSouthOfTown", tile.IsSouthOfTown ? 1 : 0);
-                        insertTileCmd.Parameters.AddWithValue("@IsEastOfTown", tile.IsEastOfTown ? 1 : 0);
-                        insertTileCmd.Parameters.AddWithValue("@IsWestOfTown", tile.IsWestOfTown ? 1 : 0);
+                        if (tile != null)
+                        {
+                            insertTileCmd.Parameters.AddWithValue("@X", tile.X);
+                            insertTileCmd.Parameters.AddWithValue("@Y", tile.Y);
+                            insertTileCmd.Parameters.AddWithValue("@MainTerrain", tile.Terrain.ToString());
+                            insertTileCmd.Parameters.AddWithValue("@SecondaryTerrain",
+                                tile.SecondaryTerrain.ToString());
+                            insertTileCmd.Parameters.AddWithValue("@Event", tile.Event?.Description ?? string.Empty);
+                            insertTileCmd.Parameters.AddWithValue("@HasTown", tile.HasTown ? 1 : 0);
+                            insertTileCmd.Parameters.AddWithValue("@IsNorthOfTown", tile.IsNorthOfTown ? 1 : 0);
+                            insertTileCmd.Parameters.AddWithValue("@IsSouthOfTown", tile.IsSouthOfTown ? 1 : 0);
+                            insertTileCmd.Parameters.AddWithValue("@IsEastOfTown", tile.IsEastOfTown ? 1 : 0);
+                            insertTileCmd.Parameters.AddWithValue("@IsWestOfTown", tile.IsWestOfTown ? 1 : 0);
+                        }
 
                         insertTileCmd.ExecuteNonQuery();
                     }

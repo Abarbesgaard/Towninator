@@ -1,3 +1,4 @@
+using System.Data;
 using Microsoft.Data.Sqlite;
 using TowninatorCLI.Model;
 using TowninatorCLI.Utilities.misc;
@@ -31,6 +32,7 @@ namespace TowninatorCLI.Repositories
                     eastDescription: reader.IsDBNull(reader.GetOrdinal("EastDescription")) ? "" : reader.GetString(reader.GetOrdinal("EastDescription")),
                     westDescription: reader.IsDBNull(reader.GetOrdinal("WestDescription")) ? "" : reader.GetString(reader.GetOrdinal("WestDescription")),
                     culture: reader.GetInt32(reader.GetOrdinal("Culture")),
+                    crime: reader.GetInt32(reader.GetOrdinal("Crime")),
                     education: reader.GetInt32(reader.GetOrdinal("Education")),
                     health: reader.GetInt32(reader.GetOrdinal("Health")),
                     military: reader.GetInt32(reader.GetOrdinal("Military")),
@@ -67,6 +69,7 @@ namespace TowninatorCLI.Repositories
                         town.Id = reader.GetInt32(reader.GetOrdinal("Id"));
                         town.Name = reader.IsDBNull(reader.GetOrdinal("Name")) ? null : reader.GetString(reader.GetOrdinal("Name"));
                         town.Culture = reader.GetInt32(reader.GetOrdinal("Culture"));
+                        town.Crime = reader.GetInt32(reader.GetOrdinal("Crime"));
                         town.Education = reader.GetInt32(reader.GetOrdinal("Education"));
                         town.Health = reader.GetInt32(reader.GetOrdinal("Health"));
                         town.Military = reader.GetInt32(reader.GetOrdinal("Military"));
@@ -125,13 +128,14 @@ namespace TowninatorCLI.Repositories
             using var connection = new SqliteConnection(_connectionString);
             connection.Open();
 
-            const string query = """ INSERT INTO Towns (Name, Culture, Education, Health, Military, "Order", Production, Recreation, Trade, Wealth, Worship, MainDescription,NorthDescription, SouthDescription, EastDescription, WestDescription) VALUES (@Name, @Culture, @Education, @Health, @Military, @Order, @Production, @Recreation, @Trade, @Wealth, @Worship, @MainDescription, @NorthDescription, @SouthDescription, @EastDescription, @WestDescription); SELECT last_insert_rowid(); """;
+            const string query = """ INSERT INTO Towns (Name, Culture, Crime, Education, Health, Military, "Order", Production, Recreation, Trade, Wealth, Worship, MainDescription,NorthDescription, SouthDescription, EastDescription, WestDescription) VALUES (@Name, @Culture, @Crime, @Education, @Health, @Military, @Order, @Production, @Recreation, @Trade, @Wealth, @Worship, @MainDescription, @NorthDescription, @SouthDescription, @EastDescription, @WestDescription); SELECT last_insert_rowid(); """;
 
             try
             {
                 using var command = new SqliteCommand(query, connection);
                 command.Parameters.AddWithValue("@Name", town.Name ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@Culture", town.Culture);
+                command.Parameters.AddWithValue("@Crime", town.Crime);
                 command.Parameters.AddWithValue("@Education", town.Education);
                 command.Parameters.AddWithValue("@Health", town.Health);
                 command.Parameters.AddWithValue("@Military", town.Military);

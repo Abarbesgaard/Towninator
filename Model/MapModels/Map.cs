@@ -1,11 +1,11 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Model.MapModels
 {
     public class Map
     {
         public int Id { get; set; }
-        public MapTile[,] _mapTiles;
-        public int Width { get; }
-        public int Height { get; }
+        private readonly MapTile[,] _mapTiles;
+        public int Width { get; init; }
+        public int Height { get; init; }
 
         public Map(int width, int height)
         {
@@ -13,6 +13,12 @@ namespace TowninatorCLI
             Height = height;
             _mapTiles = new MapTile[width, height];
         }
+
+        public Map()
+        {
+            throw new NotImplementedException();
+        }
+
         public void SetTile(int x, int y, MapTile tile)
         {
             _mapTiles[x, y] = tile;
@@ -23,12 +29,9 @@ namespace TowninatorCLI
             return _mapTiles; // Assuming _mapTiles is your 2D array of MapTile
         }
 
-        public IEnumerable<MapTile> GetAllTiles()
+        public IEnumerable<MapTile?> GetAllTiles()
         {
-            foreach (var tile in _mapTiles)
-            {
-                yield return tile;
-            }
+            return _mapTiles.Cast<MapTile?>();
         }
 
         public MapTile? GetTile(int x, int y)

@@ -12,17 +12,16 @@ namespace TowninatorCLI.Controller
         private readonly BuildingGenerator _buildingGenerator = new(dbFileName, debug);
         private readonly BuildingViewModel _buildingViewModel = new(dbFileName, debug);
 
-        public Building GenerateBuilding()
+        public void GenerateBuildings()
         {
             if (debug) Debugging.WriteNColor("[] BuildingsController.GenerateBuilding() ", ConsoleColor.Green);
-            var building = _buildingGenerator.GenerateBuilding();
-            _buildingRep.SaveBuilding(building);
-            return building;
+            _buildingGenerator.GenerateBuilding();
         }
 
         public void ViewAllBuildings()
         {
-            
+            _buildingViewModel.ViewBuilding();
+
         }
 
     }

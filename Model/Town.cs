@@ -1,7 +1,6 @@
+using TowninatorCLI.Model.MapModels;
 namespace TowninatorCLI.Model
 {
-
-
     public class Town
     {
         public int Id { get; set; }
@@ -12,6 +11,7 @@ namespace TowninatorCLI.Model
         public string? EastDescription { get; set; }
         public string? WestDescription { get; set; }
         public int Culture { get; set; }
+        public int Crime { get; set; }
         public int Education { get; set; }
         public int Health { get; set; }
         public int Military { get; set; }
@@ -24,9 +24,8 @@ namespace TowninatorCLI.Model
         public List<Townsfolk>? Townsfolk { get; set; }
         public Map? Map { get; set; }
         public Town() { }
-        // Constructor with parameters
         public Town(int id, string name, string mainDescription, string northDescription, string southDescription,
-                    string eastDescription, string westDescription, int culture, int education, int health,
+                    string eastDescription, string westDescription, int culture,int crime, int education, int health,
                     int military, int order, int production, int recreation, int trade, int wealth, int worship,
                     List<Townsfolk>? townsfolk)
         {
@@ -38,6 +37,7 @@ namespace TowninatorCLI.Model
             EastDescription = eastDescription;
             WestDescription = westDescription;
             Culture = culture;
+            Crime = crime;
             Education = education;
             Health = health;
             Military = military;

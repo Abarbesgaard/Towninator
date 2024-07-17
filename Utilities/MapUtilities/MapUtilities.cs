@@ -1,4 +1,5 @@
 using TowninatorCLI.Controller;
+using TowninatorCLI.Model.MapModels;
 using TowninatorCLI.Repositories;
 using TowninatorCLI.Utilities.Lists;
 using TowninatorCLI.Utilities.misc;
