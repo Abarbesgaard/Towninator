@@ -24,15 +24,35 @@ namespace TowninatorCLI.Database
                                               DROP TABLE IF EXISTS Townsfolk;
                                               DROP TABLE IF EXISTS Towns;
                                               DROP TABLE IF EXISTS Buildings;
+                                              DROP TABLE IF EXISTS Events;
 
                                           """;
             ExecuteNonQ(connection, dropTableQuery);
-           if (debug) Debugging.WriteNColor("Dropping Tables", ConsoleColor.Green); 
+            if (debug) Debugging.WriteNColor("Dropping Tables", ConsoleColor.Green); 
                        // Create Towns table
             const string createTownQuery = """CREATE TABLE Towns (Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Culture INTEGER, Crime INTEGER, Education INTEGER, Health INTEGER, Military INTEGER, "Order" INTEGER, Production INTEGER, Recreation INTEGER,Trade INTEGER, Wealth INTEGER, Worship INTEGER, MainDescription TEXT, NorthDescription TEXT, SouthDescription TEXT, EastDescription TEXT,WestDescription TEXT); """;
             ExecuteNonQ(connection, createTownQuery);
             
             if (debug) Debugging.WriteNColor("Creating Towns table.", ConsoleColor.Green);
+
+            const string eventTableQuery = """
+                                           CREATE TABLE Event (
+                                           Id INTEGER PRIMARY KEY,
+                                           Name TEXT NOT NULL,
+                                           Description TEXT,
+                                           EventSeverity INTEGER NOT NULL,
+                                           EventType INTEGER NOT NULL,
+                                           MapTileId INTEGER NOT NULL,
+                                           TownsfolkId INTEGER,
+                                           IsFinished BOOLEAN NOT NULL,
+                                           InProgress BOOLEAN NOT NULL,
+                                           Impact TEXT,
+                                           Priority INTEGER NOT NULL,
+                                           ResourcesNeeded TEXT,
+                                           Consequences TEXT);
+                                           """;
+            ExecuteNonQ(connection, eventTableQuery);
+            if(debug) Debugging.WriteNColor("Creating Event Table", ConsoleColor.Green);
             
             const string buildTableQuery =
                 "CREATE TABLE Buildings ( Id INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT, Description TEXT, BuildingType INTEGER , SpecificBuilding INTEGER, SpawnProbability INTEGER,TownId INTEGER, FOREIGN KEY(TownId) REFERENCES Towns(Id)); ";
