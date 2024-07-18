@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TowninatorCLI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+68af22ad7c2f1df089b9e289b88a1e39c9c37033")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f513ccefb5418031e69139d06d2f4d7c4ee5f21d")]
 [assembly: System.Reflection.AssemblyProductAttribute("TowninatorCLI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TowninatorCLI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
