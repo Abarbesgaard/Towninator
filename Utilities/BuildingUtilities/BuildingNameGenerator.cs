@@ -8,39 +8,39 @@ public static class BuildingNameGenerator
     {
         return building switch
         {
-            SpecificBuilding.Library => LibraryName(terrain),
-            SpecificBuilding.School => "School",
-            SpecificBuilding.Theater => "Theater",
-            SpecificBuilding.Harbor => "Harbor",
-            SpecificBuilding.Blacksmith => "Blacksmith",
-            SpecificBuilding.Tavern => "Tavern",
+            SpecificBuilding.Alehouse => AlehouseName(terrain),
+            SpecificBuilding.Longhouse=> "Longhouse",
+            SpecificBuilding.MeadHall => "Mead Hall",
+            SpecificBuilding.FishermansHut => "Fisherman's Hut",
+            SpecificBuilding.Shipwright => "Shipwright",
+            SpecificBuilding.Wharf => "Wharf",
             _ => "The establisment has no name"
         };
     }
 
-    private static string LibraryName(MainTerrainType type)
+    private static string AlehouseName(MainTerrainType type)
     {
         var random = new Random();
-        var prefix = new[] { "Quiet", "Tranquil", "Gentle", "Soft", "Serene", "Whispering", "Mellow", "Calm", "Subtle" };
+        var prefix = new[] { "Bjór-ker", "Bjórr", "Öl", "Ǫl", "Ǫl-ker"};
         var randomIndex = random.Next(0, prefix.Length);
         var randomPrefix = prefix[randomIndex];
         var postfix = type switch
         {
-            MainTerrainType.Desert => "Sand",
-            MainTerrainType.Forest => "Lushness",
-            MainTerrainType.Grassland => "Grasses",
-            MainTerrainType.Hill => "Very Small Mountains",
-            MainTerrainType.Jungle => "Wet Greenery",
-            MainTerrainType.Ocean => "Endless Seas",
-            MainTerrainType.Savannah => "Hot Sands",
-            MainTerrainType.Swamp => "Foulness",
-            MainTerrainType.Tundra => "Bleakness",
-            MainTerrainType.HighMountain => "White Peaks",
-            MainTerrainType.LowMountain => "Rocky OutCrops",
-            MainTerrainType.MediumMountain => "Greys",
-            _ => "Nothingness"
+            MainTerrainType.Desert => "sandr",
+            MainTerrainType.Forest => "viðr",
+            MainTerrainType.Grassland => "græs",
+            MainTerrainType.Hill => "hæð",
+            MainTerrainType.Jungle => "viðr",
+            MainTerrainType.Ocean => "sund",
+            MainTerrainType.Savannah => "gœðalauss",
+            MainTerrainType.Swamp => "myrr",
+            MainTerrainType.Tundra => "gœðalauss",
+            MainTerrainType.HighMountain => "bjarg",
+            MainTerrainType.LowMountain => "kaldbak",
+            MainTerrainType.MediumMountain => "bjarg",
+            _ => ""
         };
-        return $"The {randomPrefix} Library of {postfix}";
+        return $"{randomPrefix}{postfix}";
     }
 }
                

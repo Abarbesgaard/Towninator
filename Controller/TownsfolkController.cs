@@ -2,21 +2,22 @@ using TowninatorCLI.Repositories;
 using TowninatorCLI.View;
 using TowninatorCLI.Utilities.TownsfolkUtilities;
 using TowninatorCLI.Model;
+using TowninatorCLI.Utilities.misc;
 using TowninatorCLI.Utilities.Profession;
 namespace TowninatorCLI.Controller
 {
-    public class TownsfolkController(string dbFileName)
+    public class TownsfolkController(string dbFileName,bool debug = false )
     {
 
         private readonly TownRepository _townRepository = new(dbFileName);
         private readonly TownsfolkRepository _townsfolkRepository = new(dbFileName);
-        private readonly MapController _mapController = new(dbFileName);
         private readonly MapRepository _mapRepository = new(dbFileName);
         private readonly TownsfolkView _townsfolkView = new(dbFileName);
 
 
         public void GenerateFamilies(int numberOfFamilies, int townId)
         {
+            if (debug) Debugging.WriteNColor($"TownsfolkController.GenerateFamilies(numberOfFamilies {numberOfFamilies},townId {townId}", ConsoleColor.Green);
             if (_townRepository.GetTownById(townId) == null)
             {
                 throw new Exception($"Town with Id {townId} does not exist.");
@@ -78,6 +79,7 @@ namespace TowninatorCLI.Controller
 
         public void ViewAllTownsfolk()
         {
+            if (debug) Debugging.WriteNColor("ViewAllTownsFolk()", ConsoleColor.Blue);
             _townsfolkView.Display();
         }
 

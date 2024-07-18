@@ -17,68 +17,68 @@ namespace TowninatorCLI.Utilities.Profession
             {
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
-                { Model.Profession.Teacher, 0.4 },
+                { Model.Profession.Berserker, 0.4 },
                 // Adjust weights as needed for each terrain type
             },
             [MainTerrainType.Grassland] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.4 },
-                { Model.Profession.Doctor, 0.2 },
-                { Model.Profession.Teacher, 0.2 },
+                { Model.Profession.Hunter, 0.2 },
+                { Model.Profession.Hermit, 0.2 },
             },
             [MainTerrainType.Hill] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.3 },
                 { Model.Profession.Blacksmith, 0.2 },
-                { Model.Profession.Soldier, 0.4 },
+                { Model.Profession.Hunter, 0.4 },
             },
             [MainTerrainType.Jungle] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
-                { Model.Profession.Teacher, 0.4 },
+                { Model.Profession.Hunter, 0.4 },
             },
             [MainTerrainType.LowMountain] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
-                { Model.Profession.Teacher, 0.4 },
+                { Model.Profession.Hunter, 0.4 },
             },
             [MainTerrainType.MediumMountain] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
-                { Model.Profession.Teacher, 0.4 },
+                { Model.Profession.Hunter, 0.4 },
             },
             [MainTerrainType.HighMountain] = new Dictionary<Model.Profession, double>
             {
-                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Shaman, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
-                { Model.Profession.Teacher, 0.4 },
+                { Model.Profession.Hunter, 0.4 },
             },
             [MainTerrainType.Ocean] = new Dictionary<Model.Profession, double>
             {
-                { Model.Profession.Farmer, 0.2 },
+                { Model.Profession.Seafarer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
-                { Model.Profession.Teacher, 0.4 },
+                { Model.Profession.Hunter, 0.4 },
             },
             [MainTerrainType.Savannah] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
-                { Model.Profession.Teacher, 0.4 },
+                { Model.Profession.Hunter, 0.4 },
             },
             [MainTerrainType.Swamp] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
-                { Model.Profession.Teacher, 0.4 },
+                { Model.Profession.Hunter, 0.4 },
             },
             [MainTerrainType.Tundra] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
-                { Model.Profession.Teacher, 0.4 },
+                { Model.Profession.Hunter, 0.4 },
             }
         };
 

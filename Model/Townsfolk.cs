@@ -6,13 +6,20 @@ namespace TowninatorCLI.Model
         Farmer,
         Blacksmith,
         Trader,
-        Doctor,
-        Teacher,
-        Soldier,
-        TavernKeeper,
-        Innkeeper,
-
-        // Add more professions as needed
+        Skald,
+        Seafarer,
+        Shipwright,
+        Warrior,
+        Jarl,
+        Runecarver,
+        Fisherman,
+        Hunter,
+        Shaman,
+        Weaver,
+        Berserker,
+        Explorer,
+        Fisher,
+        Hermit,
     }
 
     public enum ProfessionSkillLevel

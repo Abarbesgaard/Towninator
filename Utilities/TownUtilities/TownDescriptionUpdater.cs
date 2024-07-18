@@ -2,6 +2,7 @@ using TowninatorCLI.Controller;
 using TowninatorCLI.Repositories;
 using TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions;
 using TowninatorCLI.Model;
+using TowninatorCLI.Model.MapModels;
 namespace TowninatorCLI.Utilities.TownUtilities
 {
     public class TownDescriptionUpdater(string dbFileName)

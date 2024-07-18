@@ -9,14 +9,14 @@ namespace TowninatorCLI.Utilities.Lists.Buildings
         {
             return
             [
-                new Building(1, null, null, BuildingType.Education, SpecificBuilding.Library, 3, null, null),
-                new Building(2, null, null, BuildingType.Education, SpecificBuilding.School, 5, null, null),
-                new Building(3, null, null, BuildingType.Culture, SpecificBuilding.Museum, 4, null, null),
-                new Building(4, null, null, BuildingType.Culture, SpecificBuilding.Theater, 2, null, null),
-                new Building(5, null, null, BuildingType.Health, SpecificBuilding.Clinic, 3, null, null),
-                new Building(6, null, null, BuildingType.Trade, SpecificBuilding.Harbor, 5, null, null),
-                new Building(7,null, null, BuildingType.Production, SpecificBuilding.Blacksmith, 5,null,null),
-                new Building(8, null, null, BuildingType.Recreation, SpecificBuilding.Tavern, 6, null, null)
+                new Building(1, null, null, BuildingType.Education, SpecificBuilding.Alehouse, 3, null, null),
+                new Building(2, null, null, BuildingType.Education, SpecificBuilding.Wharf, 5, null, null),
+                new Building(3, null, null, BuildingType.Culture, SpecificBuilding.Watchtower, 4, null, null),
+                new Building(4, null, null, BuildingType.Culture, SpecificBuilding.FishermansHut, 2, null, null),
+                new Building(5, null, null, BuildingType.Health, SpecificBuilding.HermitsHut, 3, null, null),
+                new Building(6, null, null, BuildingType.Trade, SpecificBuilding.MeadHall, 5, null, null),
+                new Building(7,null, null, BuildingType.Production, SpecificBuilding.Longhouse, 10,null,null),
+                new Building(8, null, null, BuildingType.Recreation, SpecificBuilding.Shipwright, 6, null, null)
                 // Add more buildings as needed
             ];
         }

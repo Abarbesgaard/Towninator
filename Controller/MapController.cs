@@ -11,10 +11,6 @@ namespace TowninatorCLI.Controller
         private readonly MapUtilities _mapUtilities = new(dbFileName, debug);
         private readonly TownRepository _townRepository = new(dbFileName);
         private readonly string _dbFileName = dbFileName;
-
-       
-
-
         public Map GenerateMap(int width, int height)
         {
             if (debug) Debugging.WriteNColor($"[] MapController.GenerateMap(width {width}, height {height})", ConsoleColor.Green);
@@ -27,6 +23,7 @@ namespace TowninatorCLI.Controller
 
         public void SaveMap(Map map, int townId)
         {
+            if (debug) Debugging.WriteNColor($"MapController.SaveMap(map: {map}, townId: {townId}", ConsoleColor.Green);
             var town = _townRepository.GetLatestTown();
             town.Id = townId;
             _mapRepository.SaveMap(map, townId);
@@ -34,6 +31,7 @@ namespace TowninatorCLI.Controller
 
         public void DisplayMap(long mapId)
         {
+            if (debug) Debugging.WriteNColor($"MapController.DisplayMap(mapId: {mapId})", ConsoleColor.Blue);
             var map = _mapRepository.LoadMap(mapId);
             var mapView = new MapView(_mapRepository);
             mapView.DisplayMap(mapId);
@@ -41,19 +39,21 @@ namespace TowninatorCLI.Controller
 
         public void DisplayLatestMap()
         {
+            if (debug) Debugging.WriteNColor("MapController.DisplayLatestMap()", ConsoleColor.Blue);
             var mapView = new MapView(_mapRepository);
             mapView.DisplayLatestMap();
         }
 
         public Map? GetMapForTown(int townId)
         {
+            if (debug) Debugging.WriteNColor($"MapController.GetMapForTown(townId {townId}", ConsoleColor.Green);
             var map = _mapRepository.GetMapByTownId(townId); 
-
             return map;
         }
 
         public void DisplayMapLegend()
         {
+            if (debug) Debugging.WriteNColor("MapController.DisplayMapLegend()", ConsoleColor.Blue);
             var mapView = new MapView(_mapRepository);
             mapView.DisplayMapLegend();
         }

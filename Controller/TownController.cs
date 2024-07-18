@@ -33,6 +33,7 @@ namespace TowninatorCLI.Controller
         public Town GenerateTown()
         {
             if (debug) Debugging.WriteNColor("[] TownController.GenerateTown() ", ConsoleColor.Green);
+          
             var randomTown = _generateTown.GenerateRandomTown();
 
             return randomTown;
@@ -40,7 +41,6 @@ namespace TowninatorCLI.Controller
 
         public void SaveTown(Town town, Map map)
         {
-
             if (debug) Debugging.WriteNColor($"[] TownController.SaveTown( Town {town.Name}, map {map}) ", ConsoleColor.Green);
             _townRep.AddTown(town);
         }
@@ -48,8 +48,6 @@ namespace TowninatorCLI.Controller
         public void UpdateTown(Town town)
         {
             if (debug) Debugging.WriteNColor($"[] TownController.UpdateTown( Town {town.Name}) ", ConsoleColor.Green);
-
-
             _townRep.GetLatestTown();
             _townDescriptionUpdater.UpdateTownDescriptions(town);
             try
@@ -64,14 +62,14 @@ namespace TowninatorCLI.Controller
 
         public void ViewLatestTown()
         {
-            if (debug) Debugging.WriteNColor("[] TownController.ViewLatestTown() ", ConsoleColor.Green);
+            if (debug) Debugging.WriteNColor("[] TownController.ViewLatestTown() ", ConsoleColor.Blue);
             _townVm.ViewLatestTown();
         }
 
         public void ViewTownWithTownsfolk(int id)
         {
 
-            if (debug) Console.WriteLine("Viewing town with townsfolk...");
+            if (debug) Debugging.WriteNColor($"TownController.ViewTownWithTownsfolk(id {id})", ConsoleColor.Blue); 
             var town = _townRep.GetTownById(id);
 
             if (town == null)

@@ -8,7 +8,6 @@ namespace TowninatorCLI.Controller
 {
     public class BuildingsController(string dbFileName, bool debug = false)
     {
-        private readonly BuildingRepository _buildingRep = new(dbFileName, debug);
         private readonly BuildingGenerator _buildingGenerator = new(dbFileName, debug);
         private readonly BuildingViewModel _buildingViewModel = new(dbFileName, debug);
 
@@ -20,6 +19,7 @@ namespace TowninatorCLI.Controller
 
         public void ViewAllBuildings()
         {
+            if (debug) Debugging.WriteNColor("[] BuildingController.ViewAllBuildings()", ConsoleColor.Blue);
             _buildingViewModel.ViewBuilding();
 
         }

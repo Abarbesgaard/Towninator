@@ -10,7 +10,7 @@ namespace TowninatorCLI.Utilities.BuildingUtilities
         private readonly TownRepository? _townRep = new(dbFileName);
         private readonly MapRepository? _mapRepository = new(dbFileName);
         private readonly BuildingRepository? _buildingRepository = new(dbFileName);
-        private readonly Random _random = new Random();
+        private readonly Random _random = new();
 
         public void GenerateBuilding()
         {
@@ -85,9 +85,9 @@ namespace TowninatorCLI.Utilities.BuildingUtilities
             {
                 var isValid = terrain switch
                 {
-                    MainTerrainType.Ocean => building.SpecificBuilding == SpecificBuilding.Harbor,
+                    MainTerrainType.Ocean => building.SpecificBuilding == SpecificBuilding.Shipwright,
                     MainTerrainType.Grassland or MainTerrainType.LowMountain => building.SpecificBuilding !=
-                        SpecificBuilding.Harbor,
+                        SpecificBuilding.Shipwright,
                     _ => true
                 };
 

@@ -28,7 +28,6 @@ namespace TowninatorCLI
 
                     var townRepository = new TownRepository(dbFileName);
                     var townsfolkController = new TownsfolkController(dbFileName);
-                    var mapRepository = new MapRepository(dbFileName);
                     var mapController = new MapController(dbFileName, debug);
                     var townController = new TownController(townRepository, mapController, dbFileName, debug);
                     var buildingController = new BuildingsController(dbFileName, debug);

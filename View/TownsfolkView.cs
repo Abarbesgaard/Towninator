@@ -1,44 +1,37 @@
-
 using TowninatorCLI.Repositories;
 using TowninatorCLI.Model;
-using System.Text;
+using Spectre.Console;
 
 namespace TowninatorCLI.View
 {
     public class TownsfolkView(string dbFilename)
     {
         private readonly TownsfolkRepository _townsfolkRepository = new(dbFilename);
-
         public void Display()
         {
             var townsfolk = _townsfolkRepository.GetAll();
 
-            var sb = new StringBuilder();
-            sb.AppendLine("Townsfolk Information");
-            sb.AppendLine(new string('=', 50));
-            foreach (var person in townsfolk)
+            foreach (var panel in from person in townsfolk let panelContent = TownsfolkPanel(person) select new Panel(panelContent)
+                         .Header(TownsfolkHeader(person))
+                         .Padding(10,1))
             {
-                sb.AppendLine(GetTownsfolkAscii(person));
-                sb.AppendLine(new string('-', 50));
+                AnsiConsole.Write(panel);
             }
-
-            Console.WriteLine(sb.ToString());
         }
 
-        private static string GetTownsfolkAscii(Townsfolk person)
+        private static string TownsfolkPanel(Townsfolk person)
         {
-            var sb = new StringBuilder();
-            sb.AppendLine($"Name: {person.FirstName} {person.LastName}");
-            sb.AppendLine($"Age: {person.Age}");
-            sb.AppendLine($"Gender: {person.Gender}");
-            sb.AppendLine($"Profession: {person.Profession}");
-            sb.AppendLine($"Town ID: {person.TownId}");
-            sb.AppendLine($"Origin: {person.Origin}");
-            sb.AppendLine($"Region: {person.Region}");
-            sb.AppendLine($"Country: {person.Country}");
-            sb.AppendLine();
-            return sb.ToString();
+            var age = $"{person.Age}";
+            var gender = $"{person.Gender}";
+            var profession = $"{person.Profession}";
+            //TODO : Her skal være flere variabler når de er done
+
+            return $"Age: {age}\nGender: {gender}\nProfession: {profession}";
+        }
+
+        private static string TownsfolkHeader(Townsfolk person)
+        {
+            return $"{person.FirstName} {person.LastName}";
         }
     }
 }
-

@@ -1,3 +1,4 @@
+using TowninatorCLI.Model.MapModels;
 namespace TowninatorCLI.Utilities.Maths
 {
     public class SmoothMap

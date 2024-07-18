@@ -5,9 +5,9 @@ namespace TowninatorCLI.Utilities.TownUtilities
         public static string GenerateName()
         {
             var random = new Random();
-            string[] prefix = ["Be", "De", "El", "Fa", "Ga", "Has", "He", "Jo", "Ki", "La", "Ma", "Na", "Pa", "Ra", "Sa", "Ta", "Va", "A", "Wi", "Za"
+            string[] prefix = ["Apal", "Breiðr", "Búð", "Hol", "Haug", "Hús", "Mikill", "Sand", "Steinn", "Kvi", "Langa"
             ];
-            string[] suffix = ["bur", "brish", "dalin", "fordush", "hammer", "öing", "por", "tomu", "wickkin", "woodah"
+            string[] suffix = ["þorn", "þorp", "toft", "keld", "by", "kirk", "nes", "dalr", "vatn", "beck", "þvait"
             ];
             var name = prefix[RandomNumber(0, prefix.Length)] + suffix[RandomNumber(0, suffix.Length)];
             return name;
@@ -16,7 +16,7 @@ namespace TowninatorCLI.Utilities.TownUtilities
             {
                 return random.Next(min, max);
             }
-        }
+        } 
 
     }
 }
