@@ -1,10 +1,11 @@
 namespace TowninatorCLI.Model.EventModel;
 
-public class Event(int id, string name, string description, EventSeverity eventSeverity, EventType eventType, 
+public class EventModel( string name, string description, EventSeverity eventSeverity, EventType eventType, 
    int mapTileId, int? townsfolkId,  bool isFinished, bool inProgress, string impact, int priority, 
    string resourcesNeeded, string consequences)
 {
-   public int Id { get; set; } = id;
+
+   public int? Id { get; set; }
    public string Name { get; set; } = name;
    public string Description { get; set; } = description;
    public EventSeverity EventSeverity { get; set; } = eventSeverity;

@@ -24,7 +24,7 @@ namespace TowninatorCLI.Database
                                               DROP TABLE IF EXISTS Townsfolk;
                                               DROP TABLE IF EXISTS Towns;
                                               DROP TABLE IF EXISTS Buildings;
-                                              DROP TABLE IF EXISTS Events;
+                                              DROP TABLE IF EXISTS Event;
 
                                           """;
             ExecuteNonQ(connection, dropTableQuery);
