@@ -1,4 +1,4 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Model.MapModels
 {
     public enum SecondaryTerrainType
     {

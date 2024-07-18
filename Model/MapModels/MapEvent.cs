@@ -1,12 +1,9 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Model.MapModels
 {
-    public class MapEvent
+    public class MapEvent(string description)
     {
-        public string Description { get; set; }
-        public MapEvent(string description)
-        {
-            Description = description;
-        }
+        public string Description { get; set; } = description;
+
         public override string ToString()
         {
             return Description;
