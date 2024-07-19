@@ -49,5 +49,55 @@ namespace TowninatorCLI.Repositories
                 connection.Close();
             }
         }
+
+        public List<EventModel> GetAllEvents()
+        {
+            var events = new List<EventModel>();
+
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            const string query = """
+                                 SELECT id, name, description, eventSeverity, eventType, mapTileId, townsfolkId, 
+                                 isFinished, inProgress, impact, priority, resourcesNeeded, consequences 
+                                 FROM Event
+                                 """;
+
+            try
+            {
+                using var command = new SqliteCommand(query, connection);
+                using var reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var eventModel = new EventModel(
+                        name: reader.GetString(1),
+                        description: reader.GetString(2),
+                        eventSeverity: Enum.Parse<EventSeverity>(reader.GetString(3)),
+                        eventType: Enum.Parse<EventType>(reader.GetString(4)),
+                        mapTileId: reader.GetInt32(5),
+                        townsfolkId: reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
+                        isFinished: reader.GetBoolean(7),
+                        inProgress: reader.GetBoolean(8),
+                        impact: reader.GetString(9),
+                        priority: reader.GetInt32(10),
+                        resourcesNeeded: reader.GetString(11),
+                        consequences: reader.GetString(12)
+                    );
+
+                    events.Add(eventModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.WriteLine(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+            return events;
+        }
     } 
 }
