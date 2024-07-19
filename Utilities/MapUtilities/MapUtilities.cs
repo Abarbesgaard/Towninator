@@ -51,16 +51,16 @@ namespace TowninatorCLI.Utilities.MapUtilities
         {
             return noiseValue switch
             {
-                < 0.2f => MainTerrainType.Fjord,        // More fjords
-                < 0.25f => MainTerrainType.Coastal,     // Coastal areas
+                < 0.25f => MainTerrainType.Fjord,        // More fjords
+                < 0.3f => MainTerrainType.Coastal,     // Coastal areas
                 < 0.4f => MainTerrainType.Grassland,   // Grasslands are common
                 < 0.45f => MainTerrainType.Meadow,       // Meadows are slightly less common
-                < 0.49f => MainTerrainType.Marsh,       // Marshes are less common
+                < 0.47f => MainTerrainType.Marsh,       // Marshes are less common
                 < 0.5f => MainTerrainType.Wetland,      // Wetlands are slightly more common than marshes
-                < 0.6f => MainTerrainType.Heath,        // Heathlands are fairly common
-                < 0.75f => MainTerrainType.Forest,      // Forests are very common
-                < 0.8f => MainTerrainType.Tundra,       // Tundra is less common
-                < 0.85f => MainTerrainType.LowMountain, // Low mountains are less common
+                < 0.53f => MainTerrainType.Heath,        // Heathlands are fairly common
+                < 0.65f => MainTerrainType.Forest,      // Forests are very common
+                < 0.7f => MainTerrainType.Tundra,       // Tundra is less common
+                < 0.8f => MainTerrainType.LowMountain, // Low mountains are less common
                 < 0.9f => MainTerrainType.MediumMountain,// Medium mountains are less common
                 < 0.95f => MainTerrainType.HighMountain,// High mountains are rare
                 _ => MainTerrainType.Grassland          // Default to Grassland
