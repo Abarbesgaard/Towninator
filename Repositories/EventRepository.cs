@@ -1,54 +1,110 @@
 using Microsoft.Data.Sqlite;
 using Spectre.Console;
 using TowninatorCLI.Model.EventModel;
-using TowninatorCLI.Utilities.misc;
 
 namespace TowninatorCLI.Repositories
 {
     public class EventRepository(string dbFileName, bool debug = false)
     {
         private readonly string _connectionString = $"Data Source={dbFileName}";
-
-        public void AddEvent(EventModel eventModel)
+        public EventModel GetEventById(int id)
         {
-            if (debug) Debugging.WriteNColor("[] EventRepository.AddEvent()", ConsoleColor.Green);
+            EventModel eventModel = null;
 
             using var connection = new SqliteConnection(_connectionString);
             connection.Open();
 
             const string query = """
-                                 INSERT INTO Event ( name, description, eventSeverity, eventType, mapTileId, townsfolkId, isFinished, inProgress, impact, priority, resourcesNeeded, consequences)
-                                 VALUES ( @name, @description, @eventSeverity, @eventType, @mapTileId, @townsfolkId, @isFinished, @inProgress, @impact, @priority, @resourcesNeeded, @consequences)
+                                 SELECT id, name, description, eventSeverity, eventType, mapTileId, townsfolkId, 
+                                        isFinished, inProgress, impact, priority, resourcesNeeded, consequences
+                                 FROM Event
+                                 WHERE id = @id
                                  """;
-
             try
             {
                 using var command = new SqliteCommand(query, connection);
-                command.Parameters.AddWithValue("@name", eventModel.Name ?? "");
-                command.Parameters.AddWithValue("@description", eventModel.Description ?? "");
-                command.Parameters.AddWithValue("@eventSeverity", eventModel.EventSeverity.ToString());
-                command.Parameters.AddWithValue("@eventType", eventModel.EventType.ToString());
-                command.Parameters.AddWithValue("@mapTileId", eventModel.MapTileId);
-                command.Parameters.AddWithValue("@townsfolkId", (object?)eventModel.TownsfolkId ?? DBNull.Value);
-                command.Parameters.AddWithValue("@isFinished", eventModel.IsFinished);
-                command.Parameters.AddWithValue("@inProgress", eventModel.InProgress);
-                command.Parameters.AddWithValue("@impact", eventModel.Impact ?? "");
-                command.Parameters.AddWithValue("@priority", eventModel.Priority);
-                command.Parameters.AddWithValue("@resourcesNeeded", eventModel.ResourcesNeeded ?? "");
-                command.Parameters.AddWithValue("@consequences", eventModel.Consequences ?? "");
+                command.Parameters.AddWithValue("@id", id);
 
-
-                command.ExecuteNonQuery();
+                using var reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    eventModel = new EventModel(
+                        id = reader.GetInt32(reader.GetOrdinal("id")),
+                        name: reader.GetString(reader.GetOrdinal("name")),
+                        description: reader.GetString(reader.GetOrdinal("description")),
+                        eventSeverity: Enum.Parse<EventSeverity>(reader.GetString(reader.GetOrdinal("eventSeverity"))),
+                        eventType: Enum.Parse<EventType>(reader.GetString(reader.GetOrdinal("eventType"))),
+                        mapTileId: reader.GetInt32(reader.GetOrdinal("mapTileId")),
+                        townsfolkId: reader.IsDBNull(reader.GetOrdinal("townsfolkId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("townsfolkId")),
+                        isFinished: reader.GetBoolean(reader.GetOrdinal("isFinished")),
+                        inProgress: reader.GetBoolean(reader.GetOrdinal("inProgress")),
+                        impact: reader.GetString(reader.GetOrdinal("impact")),
+                        priority: reader.GetInt32(reader.GetOrdinal("priority")),
+                        resourcesNeeded: reader.GetString(reader.GetOrdinal("resourcesNeeded")),
+                        consequences: reader.GetString(reader.GetOrdinal("consequences"))
+                    );
+                }
+                else
+                {
+                    AnsiConsole.WriteLine($"No event found with Id: {id}");
+                }
             }
             catch (Exception ex)
             {
                 AnsiConsole.WriteLine(ex.Message);
+                throw;
             }
             finally
             {
                 connection.Close();
             }
+
+            return eventModel;
         }
+
+
+        public int AddEvent(EventModel eventModel)
+{
+    using var connection = new SqliteConnection(_connectionString);
+    connection.Open();
+
+    const string query = """
+                         INSERT INTO Event (name, description, eventSeverity, eventType, mapTileId, townsfolkId, isFinished, inProgress, impact, priority, resourcesNeeded, consequences)
+                         VALUES (@name, @description, @eventSeverity, @eventType, @mapTileId, @townsfolkId, @isFinished, @inProgress, @impact, @priority, @resourcesNeeded, @consequences);
+                         SELECT last_insert_rowid();
+                         """;
+
+    try
+    {
+        using var command = new SqliteCommand(query, connection);
+        command.Parameters.AddWithValue("@name", eventModel.Name ?? "");
+        command.Parameters.AddWithValue("@description", eventModel.Description ?? "");
+        command.Parameters.AddWithValue("@eventSeverity", eventModel.EventSeverity.ToString());
+        command.Parameters.AddWithValue("@eventType", eventModel.EventType.ToString());
+        command.Parameters.AddWithValue("@mapTileId", eventModel.MapTileId);
+        command.Parameters.AddWithValue("@townsfolkId", (object?)eventModel.TownsfolkId ?? DBNull.Value);
+        command.Parameters.AddWithValue("@isFinished", eventModel.IsFinished);
+        command.Parameters.AddWithValue("@inProgress", eventModel.InProgress);
+        command.Parameters.AddWithValue("@impact", eventModel.Impact ?? "");
+        command.Parameters.AddWithValue("@priority", eventModel.Priority);
+        command.Parameters.AddWithValue("@resourcesNeeded", eventModel.ResourcesNeeded ?? "");
+        command.Parameters.AddWithValue("@consequences", eventModel.Consequences ?? "");
+
+        // Retrieve the ID of the newly inserted event
+        var id = (long)command.ExecuteScalar();
+        return (int)id;
+    }
+    catch (Exception ex)
+    {
+        AnsiConsole.WriteLine(ex.Message);
+        throw;
+    }
+    finally
+    {
+        connection.Close();
+    }
+}
+
 
         public List<EventModel> GetAllEvents()
         {
@@ -71,20 +127,20 @@ namespace TowninatorCLI.Repositories
                 while (reader.Read())
                 {
                     var eventModel = new EventModel(
-                        name: reader.GetString(1),
-                        description: reader.GetString(2),
-                        eventSeverity: Enum.Parse<EventSeverity>(reader.GetString(3)),
-                        eventType: Enum.Parse<EventType>(reader.GetString(4)),
-                        mapTileId: reader.GetInt32(5),
-                        townsfolkId: reader.IsDBNull(6) ? (int?)null : reader.GetInt32(6),
-                        isFinished: reader.GetBoolean(7),
-                        inProgress: reader.GetBoolean(8),
-                        impact: reader.GetString(9),
-                        priority: reader.GetInt32(10),
-                        resourcesNeeded: reader.GetString(11),
-                        consequences: reader.GetString(12)
-                    );
-
+                            id: reader.GetInt32(reader.GetOrdinal("id")),
+                            name: reader.GetString(reader.GetOrdinal("name")),
+                            description: reader.GetString(reader.GetOrdinal("description")),
+                            eventSeverity: Enum.Parse<EventSeverity>(reader.GetString(reader.GetOrdinal("eventSeverity"))),
+                            eventType: Enum.Parse<EventType>(reader.GetString(reader.GetOrdinal("eventType"))),
+                            mapTileId: reader.GetInt32(reader.GetOrdinal("mapTileId")),
+                            townsfolkId: reader.IsDBNull(reader.GetOrdinal("townsfolkId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("townsfolkId")),
+                            isFinished: reader.GetBoolean(reader.GetOrdinal("isFinished")),
+                            inProgress: reader.GetBoolean(reader.GetOrdinal("inProgress")),
+                            impact: reader.GetString(reader.GetOrdinal("impact")),
+                            priority: reader.GetInt32(reader.GetOrdinal("priority")),
+                            resourcesNeeded: reader.GetString(reader.GetOrdinal("resourcesNeeded")),
+                            consequences: reader.GetString(reader.GetOrdinal("consequences"))
+                        );
                     events.Add(eventModel);
                 }
             }
@@ -99,5 +155,63 @@ namespace TowninatorCLI.Repositories
 
             return events;
         }
+
+        public void UpdateEvent(EventModel eventModel)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            const string query = """
+                             UPDATE Event
+                             SET name = @name,
+                                 description = @description,
+                                 eventSeverity = @eventSeverity,
+                                 eventType = @eventType,
+                                 mapTileId = @mapTileId,
+                                 townsfolkId = @townsfolkId,
+                                 isFinished = @isFinished,
+                                 inProgress = @inProgress,
+                                 impact = @impact,
+                                 priority = @priority,
+                                 resourcesNeeded = @resourcesNeeded,
+                                 consequences = @consequences
+                             WHERE id = @id
+                             """;
+
+            try
+            {
+                using var command = new SqliteCommand(query, connection);
+                command.Parameters.AddWithValue("@id", eventModel.Id);
+                command.Parameters.AddWithValue("@name", eventModel.Name ?? "");
+                command.Parameters.AddWithValue("@description", eventModel.Description ?? "");
+                command.Parameters.AddWithValue("@eventSeverity", eventModel.EventSeverity.ToString());
+                command.Parameters.AddWithValue("@eventType", eventModel.EventType.ToString());
+                command.Parameters.AddWithValue("@mapTileId", eventModel.MapTileId);
+                command.Parameters.AddWithValue("@townsfolkId", (object?)eventModel.TownsfolkId ?? DBNull.Value);
+                command.Parameters.AddWithValue("@isFinished", eventModel.IsFinished);
+                command.Parameters.AddWithValue("@inProgress", eventModel.InProgress);
+                command.Parameters.AddWithValue("@impact", eventModel.Impact ?? "");
+                command.Parameters.AddWithValue("@priority", eventModel.Priority);
+                command.Parameters.AddWithValue("@resourcesNeeded", eventModel.ResourcesNeeded ?? "");
+                command.Parameters.AddWithValue("@consequences", eventModel.Consequences ?? "");
+
+            var rowsAffected = command.ExecuteNonQuery();
+
+            if (rowsAffected == 0)
+            {
+                // Handle the case where no rows were updated
+                AnsiConsole.WriteLine($"No event found with Id: {eventModel.Id} to update.");
+            }
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.WriteLine(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
     } 
 }
