@@ -2,6 +2,7 @@ using TowninatorCLI.Model;
 using TowninatorCLI.Utilities.Lists.Buildings;
 using TowninatorCLI.Utilities.misc;
 using TowninatorCLI.Repositories;
+using TowninatorCLI.Model.MapModels;
 
 namespace TowninatorCLI.Utilities.BuildingUtilities
 {
@@ -85,7 +86,7 @@ namespace TowninatorCLI.Utilities.BuildingUtilities
             {
                 var isValid = terrain switch
                 {
-                    MainTerrainType.Ocean => building.SpecificBuilding == SpecificBuilding.Shipwright,
+                    MainTerrainType.Fjord => building.SpecificBuilding == SpecificBuilding.Shipwright,
                     MainTerrainType.Grassland or MainTerrainType.LowMountain => building.SpecificBuilding !=
                         SpecificBuilding.Shipwright,
                     _ => true

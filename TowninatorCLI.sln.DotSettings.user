@@ -5,10 +5,10 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestTemplateMapping/=MSTest/@EntryIndexedValue">d6790ab7-33c2-4425-b2c9-51480cd1a852</s:String>
 	
 	
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=96ac4df6_002D1651_002D4b1c_002Dbe96_002D680fe8171f4e/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="3" IsActive="True" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=96ac4df6_002D1651_002D4b1c_002Dbe96_002D680fe8171f4e/@EntryIndexedValue">&lt;SessionState ContinuousTestingIsOn="True" ContinuousTestingMode="3" Name="All tests from Solution" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Solution /&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b5867b50_002Dd07b_002D4af7_002Da9f7_002D6ebfa06c8903/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Session" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b5867b50_002Dd07b_002D4af7_002Da9f7_002D6ebfa06c8903/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Session" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;MSTest::4BF6C955-0737-44D8-A0A3-D4D9C699FB64::net8.0::TowninatorCLI.Tests.EventTests&lt;/TestId&gt;
   &lt;/TestAncestor&gt;

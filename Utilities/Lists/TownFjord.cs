@@ -1,6 +1,6 @@
 namespace TowninatorCLI.Utilities.Lists
 {
-    public class TownOcean
+    public class TownFjord
     {
         public static string DescriptionGenerator()
         {

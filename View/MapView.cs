@@ -1,24 +1,27 @@
 using TowninatorCLI.Repositories;
 using TowninatorCLI.Utilities.misc;
+using TowninatorCLI.Model.MapModels;
 using Spectre.Console;
 
 namespace TowninatorCLI.View
 {
     public class MapView(MapRepository mapRepository, bool debug = false)
     {
-        private const string DesertColor = "yellow";
+        private const string CoastalColor = "yellow3_1";
         private const string ForestColor = "green4";
         private const string GrassLandColor = "palegreen3";
-        private const string HillColor = "chartreuse2";
-        private const string JungleColor = "darkgreen";
+        private const string HighLandColor = "chartreuse2";
+        private const string HeathColor = "orchid";
         private const string LowMountainColor = "grey42";
         private const string MediumMountainColor = "grey62";
         private const string HighMountainColor = "grey93";
-        private const string OceanColor = "deepskyblue4_1";
-        private const string SavannahColor = "darkorange3";
-        private const string SwampColor = "springgreen4";
+        private const string FjordColor = "deepskyblue4_1";
+        private const string WetlandColor = "palegreen3";
+        private const string MarshColor = "plum4";
         private const string TundraColor = "grey37";
-
+        private const string LakeColor = "skyblue3";
+        private const string MeadowColor = "springgreen2_1";
+                
         public void DisplayMapLegend()
         {
             if (debug) Debugging.WriteNColor("DisplayMapLegend()", ConsoleColor.Blue);
@@ -27,19 +30,21 @@ namespace TowninatorCLI.View
             table.AddColumn(new TableColumn("Terrain").Centered());
 
             // Add the legend rows
-            table.AddRow($"[{DesertColor}]~[/]", "Desert");
+            table.AddRow($"[{CoastalColor}]~[/]", "Coast");
             table.AddRow($"[{ForestColor}]♣ ♠[/]", "Forest");
             table.AddRow($"[{GrassLandColor}]. ⁿ[/]", "Grassland");
-            table.AddRow($"[{HillColor}]∩ n[/]", "Hill");
-            table.AddRow($"[{JungleColor}]♣ Γ[/]", "Jungle");
+            table.AddRow($"[{HighLandColor}]∩ n[/]", "Highlands");
+            table.AddRow($"[{WetlandColor}]⌠[/]", "Wetlands");
             table.AddRow($"[{LowMountainColor}]⌂[/]", "Low Mountain");
             table.AddRow($"[{MediumMountainColor}]▲[/]", "Medium Mountain");
             table.AddRow($"[{HighMountainColor}]∆[/]", "High Mountain");
-            table.AddRow($"[{OceanColor}]≈[/]", "Ocean");
-            table.AddRow($"[{SavannahColor}]S[/]", "Savannah");
-            table.AddRow($"[{SwampColor}]⌠[/]", "Swamp");
-            table.AddRow($"[{TundraColor}]U[/]", "Tundra");
-
+            table.AddRow($"[{FjordColor}]≈[/]", "Fjord");
+            table.AddRow($"[{LakeColor}]=[/]", "Lake");
+            table.AddRow($"[{MarshColor}]≡ %[/]", "Marsh");
+            table.AddRow($"[{TundraColor}].[/]", "Tundra");
+            table.AddRow($"[{HeathColor}]«[/]", "Heath");
+            table.AddRow($"[{MeadowColor}]_[/]", "Meadow");
+            
             // Create a panel and add the table to it
             var panel = new Panel(table)
             {
@@ -135,18 +140,20 @@ namespace TowninatorCLI.View
         {
             return terrain switch
             {
-                MainTerrainType.Desert => $"{DesertColor}",
-                MainTerrainType.Hill => $"{HillColor}",
+                MainTerrainType.Coastal => $"{CoastalColor}",
+                MainTerrainType.Highland => $"{HighLandColor}",
                 MainTerrainType.Forest => $"{ForestColor}",
                 MainTerrainType.Grassland => $"{GrassLandColor}",
-                MainTerrainType.Jungle => $"{JungleColor}",
+                MainTerrainType.Wetland => $"{WetlandColor}",
                 MainTerrainType.LowMountain => $"{LowMountainColor}",
                 MainTerrainType.MediumMountain => $"{MediumMountainColor}",
                 MainTerrainType.HighMountain => $"{HighMountainColor}",
-                MainTerrainType.Ocean => $"{OceanColor}",
-                MainTerrainType.Savannah => $"{SavannahColor}",
-                MainTerrainType.Swamp => $"{SwampColor}",
+                MainTerrainType.Fjord => $"{FjordColor}",
+                MainTerrainType.Lake => $"{LakeColor}",
+                MainTerrainType.Heath => $"{HeathColor}",
                 MainTerrainType.Tundra => $"{TundraColor}",
+                MainTerrainType.Meadow => $"{MeadowColor}",
+                MainTerrainType.Marsh => $"{MarshColor}",
                 _ => "white"
             };
         }

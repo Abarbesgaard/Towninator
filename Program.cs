@@ -40,7 +40,7 @@ namespace TowninatorCLI
 
                     if (options.Town)
                     {
-                        var map = mapController.GenerateMap(20, 20);
+                        var map = mapController.GenerateMap(30, 30);
                         var town = townController.GenerateTown();
                         townController.SaveTown(town, map);
                         mapController.SaveMap(map, town.Id);

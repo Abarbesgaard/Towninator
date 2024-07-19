@@ -51,37 +51,35 @@ namespace TowninatorCLI.Utilities.MapUtilities
         {
             return noiseValue switch
             {
-                < 0.2f => MainTerrainType.Ocean,
-                < 0.25f => MainTerrainType.Swamp,
-                < 0.35f => MainTerrainType.Grassland,
-                < 0.45f => MainTerrainType.Hill,
-                < 0.55f => MainTerrainType.Forest,
-                < 0.65f => MainTerrainType.Grassland,
-                < 0.9f => MainTerrainType.LowMountain,
-                < 0.95f => MainTerrainType.MediumMountain,
-                < 0.97f => MainTerrainType.HighMountain,
-                _ => MainTerrainType.Grassland
+                < 0.2f => MainTerrainType.Fjord,        // More fjords
+                < 0.25f => MainTerrainType.Coastal,     // Coastal areas
+                < 0.4f => MainTerrainType.Grassland,   // Grasslands are common
+                < 0.45f => MainTerrainType.Meadow,       // Meadows are slightly less common
+                < 0.49f => MainTerrainType.Marsh,       // Marshes are less common
+                < 0.5f => MainTerrainType.Wetland,      // Wetlands are slightly more common than marshes
+                < 0.6f => MainTerrainType.Heath,        // Heathlands are fairly common
+                < 0.75f => MainTerrainType.Forest,      // Forests are very common
+                < 0.8f => MainTerrainType.Tundra,       // Tundra is less common
+                < 0.85f => MainTerrainType.LowMountain, // Low mountains are less common
+                < 0.9f => MainTerrainType.MediumMountain,// Medium mountains are less common
+                < 0.95f => MainTerrainType.HighMountain,// High mountains are rare
+                _ => MainTerrainType.Grassland          // Default to Grassland
             };
         }
 
         public static string GetTownDescriptionBasedOnTerrain(MainTerrainType terrain)
         {
-            var townHighMountain = new TownHighMountain();
-            var townMediumMountain = new TownMediumMountain();
-            var townLowMountain = new TownLowMountain();
-            var townOcean = new TownOcean();
-            var townSwamp = new TownSwamp();
-            var townHill = new TownHill();
+          
             return terrain switch
             {
                 MainTerrainType.HighMountain => TownHighMountain.DescriptionGenerator(),
                 MainTerrainType.MediumMountain => TownMediumMountain.DescriptionGenerator(),
                 MainTerrainType.LowMountain => TownLowMountain.DescriptionGenerator(),
                 MainTerrainType.Forest => TownForest.DescriptionGenerator(),
-                MainTerrainType.Ocean => TownOcean.DescriptionGenerator(),
+                MainTerrainType.Fjord => TownFjord.DescriptionGenerator(),
                 MainTerrainType.Grassland => TownGrassland.DescriptionGenerator(),
-                MainTerrainType.Swamp => TownSwamp.DescriptionGenerator(),
-                MainTerrainType.Hill => TownHill.DescriptionGenerator(),
+                MainTerrainType.Wetland => TownWetland.DescriptionGenerator(),
+                MainTerrainType.Highland => TownHighLand.DescriptionGenerator(),
                 _ => "A town in a unique terrain."
             };
         }

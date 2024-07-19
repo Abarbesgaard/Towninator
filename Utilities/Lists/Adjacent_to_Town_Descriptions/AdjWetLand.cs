@@ -1,6 +1,6 @@
 namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
 {
-    public class AdjSwamp
+    public class AdjWetLand
     {
         public static string DescriptionGenerator()
         {

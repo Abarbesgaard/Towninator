@@ -1,6 +1,6 @@
 namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
 {
-    public class AdjOcean
+    public class AdjFjord
     {
         public static string DescriptionGenerator()
         {

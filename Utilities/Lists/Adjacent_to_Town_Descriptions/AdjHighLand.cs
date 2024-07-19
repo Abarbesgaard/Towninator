@@ -1,6 +1,6 @@
 namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
 {
-    public class AdjHill
+    public class AdjHighLand
     {
         public static string DescriptionGenerator()
         {

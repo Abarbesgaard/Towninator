@@ -1,19 +1,21 @@
-namespace TowninatorCLI
+namespace TowninatorCLI.Model.MapModels
 {
     public enum MainTerrainType
     {
         None,
-        Desert,
+        Coastal,
+        Fjord,
         Forest,
         Grassland,
-        Hill,
-        Jungle,
+        Heath,
+        Highland,
+        Lake,
+        Marsh,
+        Meadow,
         LowMountain,
         MediumMountain,
         HighMountain,
-        Ocean,
-        Savannah,
-        Swamp,
         Tundra,
+        Wetland
     }
 }

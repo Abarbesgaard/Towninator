@@ -1,38 +1,29 @@
 namespace TowninatorCLI.Model.MapModels
 {
 
-    public class MapTile
+    public class MapTile(
+        int x,
+        int y,
+        MainTerrainType terrain,
+        SecondaryTerrainType secondaryTerrain,
+        MapEvent? mapEvent = null,
+        bool hasTown = false)
     {
-        public int X { get; }
-        public int Y { get; }
-        public MainTerrainType Terrain { get; set; }
-        public SecondaryTerrainType SecondaryTerrain { get; }
-        public MapEvent? Event { get; set; }
-        public string? Description { get; set; }
-        public bool HasTown { get; set; }
+        public int X { get; } = x;
+        public int Y { get; } = y;
+        public MainTerrainType Terrain { get; set; } = terrain;
+        public SecondaryTerrainType SecondaryTerrain { get; } = secondaryTerrain;
+        public MapEvent? Event { get; set; } = mapEvent;
+        public string? Description { get; set; } = null;
+        public bool HasTown { get; set; } = hasTown;
 
         // Directional flags
-        public bool IsNorthOfTown { get; set; }
-        public bool IsSouthOfTown { get; set; }
-        public bool IsEastOfTown { get; set; }
-        public bool IsWestOfTown { get; set; }
+        public bool IsNorthOfTown { get; set; } = false;
+        public bool IsSouthOfTown { get; set; } = false;
+        public bool IsEastOfTown { get; set; } = false;
+        public bool IsWestOfTown { get; set; } = false;
 
-        public MapTile(int x, int y, MainTerrainType terrain, SecondaryTerrainType secondaryTerrain, MapEvent? mapEvent = null, bool hasTown = false)
-        {
-            X = x;
-            Y = y;
-            Terrain = terrain;
-            SecondaryTerrain = secondaryTerrain;
-            Event = mapEvent;
-            Description = null;
-            HasTown = hasTown;
-
-            // Initialize directional flags to false by default
-            IsNorthOfTown = false;
-            IsSouthOfTown = false;
-            IsEastOfTown = false;
-            IsWestOfTown = false;
-        }
+        // Initialize directional flags to false by default
 
         public override string ToString()
         {
@@ -45,20 +36,23 @@ namespace TowninatorCLI.Model.MapModels
                 var random = new Random();
                 return Terrain switch
                 {
-                    MainTerrainType.Desert => "~",
+                    MainTerrainType.Coastal => "~",
                     MainTerrainType.Forest => random.Next(2) == 0 ? "♣" : "♠",
                     MainTerrainType.Grassland => random.Next(2) == 0 ? "." : "ⁿ",
-                    MainTerrainType.Hill => random.Next(2) == 0 ? "∩" : "n",
-                    MainTerrainType.Jungle => random.Next(2) == 0 ? "♣" : "Γ",
+                    MainTerrainType.Highland => random.Next(2) == 0 ? "∩" : "n",
+                    MainTerrainType.Marsh => random.Next(2) == 0 ? "≡" : "%",
+                    MainTerrainType.Meadow => "_",
                     MainTerrainType.LowMountain => "⌂",
                     MainTerrainType.MediumMountain => "▲",
                     MainTerrainType.HighMountain => "∆",
-                    MainTerrainType.Ocean => "≈",
-                    MainTerrainType.Savannah => "S",
-                    MainTerrainType.Swamp => "⌠",
-                    MainTerrainType.Tundra => "U",
+                    MainTerrainType.Fjord => "≈",
+                    MainTerrainType.Lake => "=",
+                    MainTerrainType.Wetland => "⌠",
+                    MainTerrainType.Tundra => ".",
+                    MainTerrainType.Heath => "«",
                     _ => "X" // Default symbol if no valid main terrain is provided
                 };
+                        
             }
         }
     }

@@ -1,4 +1,5 @@
 using TowninatorCLI.Model;
+using TowninatorCLI.Model.MapModels;
 
 namespace TowninatorCLI.Utilities.BuildingUtilities;
 
@@ -26,20 +27,25 @@ public static class BuildingNameGenerator
         var randomPrefix = prefix[randomIndex];
         var postfix = type switch
         {
-            MainTerrainType.Desert => "sandr",
+            MainTerrainType.Coastal => "fyrir",
             MainTerrainType.Forest => "viðr",
             MainTerrainType.Grassland => "græs",
-            MainTerrainType.Hill => "hæð",
-            MainTerrainType.Jungle => "viðr",
-            MainTerrainType.Ocean => "sund",
-            MainTerrainType.Savannah => "gœðalauss",
-            MainTerrainType.Swamp => "myrr",
+            MainTerrainType.Highland => "upplönd",
+            MainTerrainType.Lake => "særvar",
+            MainTerrainType.Fjord => "fjǫrðr",
+            MainTerrainType.Marsh => "más",
+            MainTerrainType.Wetland => "myrr",
             MainTerrainType.Tundra => "gœðalauss",
             MainTerrainType.HighMountain => "bjarg",
             MainTerrainType.LowMountain => "kaldbak",
             MainTerrainType.MediumMountain => "bjarg",
+            MainTerrainType.Meadow => "eng",
             _ => ""
         };
+        /* None, Coastal, Fjord,
+                Forest, Grassland, Heath, Highland, Lake, Marsh,
+                Meadow, LowMountain, MediumMountain, HighMountain, Tundra, Wetland
+                                */
         return $"{randomPrefix}{postfix}";
     }
 }

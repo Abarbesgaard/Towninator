@@ -1,4 +1,4 @@
-using TowninatorCLI.Model;
+using TowninatorCLI.Model.MapModels;
 namespace TowninatorCLI.Utilities.Profession
 {
     public class ProfessionAssignmentService
@@ -6,7 +6,7 @@ namespace TowninatorCLI.Utilities.Profession
         private readonly Dictionary<MainTerrainType, Dictionary<Model.Profession, double>> _professionWeights = new()
         {
             // Example weights based on terrain types
-            [MainTerrainType.Desert] = new Dictionary<Model.Profession, double>
+            [MainTerrainType.Coastal] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.3 },
                 { Model.Profession.Blacksmith, 0.2 },
@@ -26,13 +26,13 @@ namespace TowninatorCLI.Utilities.Profession
                 { Model.Profession.Hunter, 0.2 },
                 { Model.Profession.Hermit, 0.2 },
             },
-            [MainTerrainType.Hill] = new Dictionary<Model.Profession, double>
+            [MainTerrainType.Highland] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.3 },
                 { Model.Profession.Blacksmith, 0.2 },
                 { Model.Profession.Hunter, 0.4 },
             },
-            [MainTerrainType.Jungle] = new Dictionary<Model.Profession, double>
+            [MainTerrainType.Wetland] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
@@ -56,19 +56,19 @@ namespace TowninatorCLI.Utilities.Profession
                 { Model.Profession.Blacksmith, 0.1 },
                 { Model.Profession.Hunter, 0.4 },
             },
-            [MainTerrainType.Ocean] = new Dictionary<Model.Profession, double>
+            [MainTerrainType.Fjord] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Seafarer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
                 { Model.Profession.Hunter, 0.4 },
             },
-            [MainTerrainType.Savannah] = new Dictionary<Model.Profession, double>
+            [MainTerrainType.Heath] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
                 { Model.Profession.Hunter, 0.4 },
             },
-            [MainTerrainType.Swamp] = new Dictionary<Model.Profession, double>
+            [MainTerrainType.Marsh] = new Dictionary<Model.Profession, double>
             {
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
@@ -79,9 +79,21 @@ namespace TowninatorCLI.Utilities.Profession
                 { Model.Profession.Farmer, 0.2 },
                 { Model.Profession.Blacksmith, 0.1 },
                 { Model.Profession.Hunter, 0.4 },
+            },
+            [MainTerrainType.Lake] = new Dictionary<Model.Profession, double>()
+            {
+                {Model.Profession.Fisherman, 0.2},
+                {Model.Profession.Fisher, 0.2},
+                {Model.Profession.Skald, 0.2},
+            },
+            
+            [MainTerrainType.Meadow] = new Dictionary<Model.Profession, double>()
+            {
+                {Model.Profession.Farmer, 0.2},
+                {Model.Profession.Hermit, 0.2},
+                {Model.Profession.Trader, 0.2},
             }
         };
-
         // Initialize profession weights based on MainTerrainType
         // Example weights based on terrain types
         // Adjust weights as needed for each terrain type
