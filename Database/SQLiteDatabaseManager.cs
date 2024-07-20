@@ -1,18 +1,19 @@
+using Debugland;
 using Microsoft.Data.Sqlite;
 using TowninatorCLI.Utilities.misc;
 namespace TowninatorCLI.Database
 {
-    public class SqLiteDatabaseManager(string dbFileName, bool debug = false)
+    public class SqLiteDatabaseManager(string dbFileName)
     {
         private readonly string _connectionString = $"Data Source={dbFileName}; foreign keys=true;";
-
-
         public void CreateDatabase()
         {
-            if (debug) Debugging.WriteNColor("Creating database...", ConsoleColor.Green);
+            #region Debuggin
+            Debugger.MethodInitiated("CreateDatabase");
+            Debugger.SQLConnectionInitiated();
+            #endregion
             using var connection = new SqliteConnection(_connectionString);
             connection.Open();
-            if (debug) Debugging.WriteNColor("Initiating connection.", ConsoleColor.Green);
             // Enable foreign key constraints
             const string commandForeignKey = "PRAGMA foreign_keys = ON;";
             ExecuteNonQ(connection, commandForeignKey);
@@ -28,8 +29,6 @@ namespace TowninatorCLI.Database
 
                                           """;
             ExecuteNonQ(connection, dropTableQuery);
-            if (debug) Debugging.WriteNColor("Dropping Tables", ConsoleColor.Green); 
-                       // Create Towns table
             const string createTownQuery = """
                                            CREATE TABLE Towns(
                                            Id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -50,9 +49,6 @@ namespace TowninatorCLI.Database
                                            WestDescription TEXT); 
                                            """;
             ExecuteNonQ(connection, createTownQuery);
-            
-            if (debug) Debugging.WriteNColor("Creating Towns table.", ConsoleColor.Green);
-
             const string eventTableQuery = """
                                            CREATE TABLE Event (
                                            Id INTEGER PRIMARY KEY,
@@ -70,7 +66,6 @@ namespace TowninatorCLI.Database
                                            Consequences TEXT);
                                            """;
             ExecuteNonQ(connection, eventTableQuery);
-            if(debug) Debugging.WriteNColor("Creating Event Table", ConsoleColor.Green);
             
             const string buildTableQuery ="""
                                           CREATE TABLE Buildings( 
@@ -84,7 +79,6 @@ namespace TowninatorCLI.Database
                                           FOREIGN KEY(TownId) REFERENCES Towns(Id)); 
                                           """;
             ExecuteNonQ(connection, buildTableQuery);
-            if (debug) Debugging.WriteNColor("Creating Buildings table.", ConsoleColor.Green);
             
             // Create Townsfolk table
             const string createTownsfolkTable = """
@@ -108,11 +102,6 @@ namespace TowninatorCLI.Database
                                                 FOREIGN KEY(TownId) REFERENCES Towns(Id) );  
                                                 """;
             ExecuteNonQ(connection, createTownsfolkTable);
-
-
-
-                        if (debug) Debugging.WriteNColor("Creating Townsfolk table.", ConsoleColor.Green);
-            // Create Map table
             const string createMapTable = """
                                           CREATE TABLE Map( 
                                           Id INTEGER PRIMARY KEY,
@@ -122,10 +111,6 @@ namespace TowninatorCLI.Database
                                           FOREIGN KEY (TownId) REFERENCES Towns(Id)); 
                                           """;
             ExecuteNonQ(connection, createMapTable);
-
-            if (debug) Debugging.WriteNColor("Creating Map table.", ConsoleColor.Green);
-
-            // Create MapTile table
                       const string createMapTileTable = """
                                                         CREATE TABLE MapTile( 
                                                         Id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -144,19 +129,32 @@ namespace TowninatorCLI.Database
                                                         FOREIGN KEY(MapId) REFERENCES Map(Id)); 
                                                         """;
                       ExecuteNonQ(connection, createMapTileTable);
-          
-                      if (debug) Debugging.WriteNColor("Creating MapMapTile table.", ConsoleColor.Green);
             connection.Close();
+            #region Debuggin
+Debugger.SQLCommandTerminated();
+            Debugger.MethodTerminated($"{nameof(SqliteConnection)}");
+            #endregion
         }
 
         public static void ExecuteNonQ(SqliteConnection connection, string query)
         {
+            #region Debuggin
+            Debugger.MethodInitiated($"{nameof(ExecuteNonQ)}");
+            Debugger.MethodParameter($"{connection}, {query}");
+            #endregion
             using var command = connection.CreateCommand();
             command.CommandText = query;
             command.ExecuteNonQuery();
+            #region Debuggin
+            Debugger.MethodTerminated($"{nameof(ExecuteNonQ)}");
+            #endregion
         }
         public static void DeleteDatabase(string dbFileName)
         {
+            #region Debuggin
+    Debugger.MethodInitiated($"{nameof(DeleteDatabase)}");
+                 Debugger.MethodParameter($"{dbFileName}");
+            #endregion
             if (File.Exists(dbFileName))
             {
                 File.Delete(dbFileName);
@@ -165,6 +163,9 @@ namespace TowninatorCLI.Database
             {
                 Console.WriteLine("Database file does not exist.");
             }
+            #region Debuggin
+            Debugger.MethodTerminated($"{nameof(ExecuteNonQ)}");
+            #endregion
         }
     }
 }

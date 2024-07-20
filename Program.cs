@@ -3,6 +3,7 @@ using TowninatorCLI.Controller;
 using TowninatorCLI.Database;
 using TowninatorCLI.Utilities.misc;
 using TowninatorCLI.Repositories;
+using Debugger = Debugland.Debugger;
 
 namespace TowninatorCLI
 {
@@ -10,6 +11,8 @@ namespace TowninatorCLI
     {
         private static void Main(string[] args)
         {
+            Debugger.MethodInitiated("Main");
+            Debugger.MethodParameter($"{args}");
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(options =>
                 {
@@ -17,7 +20,7 @@ namespace TowninatorCLI
                     if (debug) Debugging.WriteNColor("Dig in!", ConsoleColor.Green);
 
                     var dbFileName = Path.Combine(AppContext.BaseDirectory, "town.sqlite");
-                    var database = new SqLiteDatabaseManager(dbFileName, debug);
+                    var database = new SqLiteDatabaseManager(dbFileName);
                     var databaseExists = File.Exists(dbFileName);
 
                     if (!databaseExists)
@@ -28,7 +31,7 @@ namespace TowninatorCLI
 
                     var townRepository = new TownRepository(dbFileName);
                     var townsfolkController = new TownsfolkController(dbFileName);
-                    var mapController = new MapController(dbFileName, debug);
+                    var mapController = new MapController(dbFileName);
                     var townController = new TownController(townRepository, mapController, dbFileName, debug);
                     var buildingController = new BuildingsController(dbFileName, debug);
 
@@ -77,7 +80,9 @@ namespace TowninatorCLI
                         Console.WriteLine("-_Debug End_-");
                     }
                 });
+            Debugger.MethodTerminated("Main");
         }
+        
     }
     public class Options
     {
