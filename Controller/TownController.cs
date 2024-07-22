@@ -5,6 +5,9 @@ using TowninatorCLI.View;
 using TowninatorCLI.Utilities.MapUtilities;
 using TowninatorCLI.Utilities.TownUtilities;
 using TowninatorCLI.Repositories;
+using Debugland;
+
+
 namespace TowninatorCLI.Controller
 {
     public enum Direction
@@ -32,22 +35,35 @@ namespace TowninatorCLI.Controller
 
         public Town GenerateTown()
         {
-            if (debug) Debugging.WriteNColor("[] TownController.GenerateTown() ", ConsoleColor.Green);
-          
+            #region Debuggin
+            Debugger.MethodInitiated($"{nameof(GenerateTown)}");
+            #endregion 
             var randomTown = _generateTown.GenerateRandomTown();
-
+            #region Debuggin
+            Debugger.Variable("randomTown", $"{randomTown}");
+            Debugger.MethodTerminated($"{nameof(GenerateTown)}");
+            #endregion
             return randomTown;
         }
 
         public void SaveTown(Town town, Map map)
         {
-            if (debug) Debugging.WriteNColor($"[] TownController.SaveTown( Town {town.Name}, map {map}) ", ConsoleColor.Green);
+            #region Debuggin
+            Debugger.MethodInitiated($"{nameof(SaveTown)}");
+            Debugger.MethodParameter($"Town {town.Name}, Map {map}");
+            #endregion
             _townRep.AddTown(town);
+            #region Debuggin
+            Debugger.MethodTerminated($"{nameof(SaveTown)}");
+            #endregion
         }
 
         public void UpdateTown(Town town)
         {
-            if (debug) Debugging.WriteNColor($"[] TownController.UpdateTown( Town {town.Name}) ", ConsoleColor.Green);
+            #region Debuggin
+            Debugger.MethodInitiated($"{nameof(UpdateTown)}");
+            Debugger.MethodParameter($"Town {town.Name}");
+            #endregion
             _townRep.GetLatestTown();
             _townDescriptionUpdater.UpdateTownDescriptions(town);
             try
@@ -58,12 +74,21 @@ namespace TowninatorCLI.Controller
             {
                 Console.WriteLine($"Failed to update town directional descriptions: {e.Message}");
             }
+            #region Debuggin
+            Debugger.MethodTerminated($"{nameof(UpdateTown)}");
+            #endregion
         }
 
         public void ViewLatestTown()
         {
-            if (debug) Debugging.WriteNColor("[] TownController.ViewLatestTown() ", ConsoleColor.Blue);
+            #region Debuggin
+            Debugger.MethodInitiated($"{nameof(ViewLatestTown)}");
+            #endregion
             _townVm.ViewLatestTown();
+
+            #region Debuggin
+            Debugger.MethodTerminated($"{nameof(ViewLatestTown)}");
+            #endregion
         }
 
         public void ViewTownWithTownsfolk(int id)

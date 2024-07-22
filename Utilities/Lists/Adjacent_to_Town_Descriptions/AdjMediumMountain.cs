@@ -1,6 +1,6 @@
 namespace TowninatorCLI.Utilities.Lists.Adjacent_To_Town_Descriptions
 {
-    public class AdjMediumMountain
+    public static class AdjMediumMountain
     {
         public static string DescriptionGenerator()
         {

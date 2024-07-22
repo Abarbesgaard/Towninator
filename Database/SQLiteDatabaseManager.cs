@@ -74,10 +74,26 @@ namespace TowninatorCLI.Database
                                           Description TEXT, 
                                           BuildingType INTEGER , 
                                           SpecificBuilding INTEGER, 
-                                          SpawnProbability INTEGER,
                                           TownId INTEGER, 
+                                            TownsfolkId INTEGER,
+                                            CoastalModifier REAL,
+                                            FjordModifier REAL,
+                                            ForestModifier REAL,
+                                            GrasslandModifier REAL,
+                                            HeathModifier REAL,
+                                            HighlandModifier REAL,
+                                            LakeModifier REAL,
+                                            MarshModifier REAL,
+                                            MeadowModifier REAL,
+                                            LowMountainModifier REAL,
+                                            MediumMountainModifier REAL,
+                                            HighMountainModifier REAL,
+                                            WetlandModifier REAL,
+                                            TundraModifier REAL,
                                           FOREIGN KEY(TownId) REFERENCES Towns(Id)); 
                                           """;
+       
+
             ExecuteNonQ(connection, buildTableQuery);
             
             // Create Townsfolk table

@@ -34,9 +34,21 @@ namespace TowninatorCLI.Controller
 
         public void SaveMap(Map map, int townId)
         {
+            #region Debuggin
+            Debugger.MethodInitiated($"{nameof(SaveMap)}");
+            Debugger.MethodParameter($"Map {map}, townId {townId}");
+            #endregion
             var town = _townRepository.GetLatestTown();
+            #region Debuggin
+
+            Debugger.Variable( "town", $"{town}");
+
+            #endregion
             town.Id = townId;
             _mapRepository.SaveMap(map, townId);
+            #region Debuggin
+            Debugger.MethodTerminated($"{nameof(SaveMap)}");
+            #endregion
         }
 
         public void DisplayMap(long mapId)
@@ -48,8 +60,22 @@ namespace TowninatorCLI.Controller
 
         public void DisplayLatestMap()
         {
+            #region Debuggin
+            Debugger.MethodInitiated($"{nameof(DisplayLatestMap)}");
+            #endregion
             var mapView = new MapView(_mapRepository);
+
+            #region Debuggin
+            Debugger.Variable($"MapView", $"{mapView}");
+
+            #endregion
             mapView.DisplayLatestMap();
+
+            #region Debuggin
+
+            Debugger.MethodTerminated( $"{nameof(DisplayLatestMap)}");
+
+            #endregion
         }
 
         public Map? GetMapForTown(int townId)
@@ -60,8 +86,19 @@ namespace TowninatorCLI.Controller
 
         public void DisplayMapLegend()
         {
+            #region Debuggin
+            Debugger.MethodInitiated($"{nameof(DisplayMapLegend)}");
+            #endregion
             var mapView = new MapView(_mapRepository);
+            
+            #region Debuggin
+            Debugger.Variable($"MapView", $"{mapView}");
+            #endregion
             mapView.DisplayMapLegend();
+            
+            #region Debuggin
+            Debugger.MethodTerminated($"{nameof(DisplayMapLegend)}");
+            #endregion
         }
 
     }

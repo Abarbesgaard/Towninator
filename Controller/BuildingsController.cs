@@ -1,26 +1,34 @@
-using TowninatorCLI.Model;
-using TowninatorCLI.Repositories;
+using Debugland;
 using TowninatorCLI.Utilities.BuildingUtilities;
 using TowninatorCLI.View;
-using TowninatorCLI.Utilities.misc;
 
 namespace TowninatorCLI.Controller
 {
-    public class BuildingsController(string dbFileName, bool debug = false)
+    public class BuildingsController(string dbFileName)
     {
-        private readonly BuildingGenerator _buildingGenerator = new(dbFileName, debug);
-        private readonly BuildingViewModel _buildingViewModel = new(dbFileName, debug);
-
+        private readonly BuildingGenerator _buildingGenerator = new(dbFileName);
+        private readonly BuildingViewModel _buildingViewModel = new(dbFileName);
         public void GenerateBuildings()
         {
-            if (debug) Debugging.WriteNColor("[] BuildingsController.GenerateBuilding() ", ConsoleColor.Green);
+            #region Debuggin
+            Debugger.MethodInitiated($"{nameof(GenerateBuildings)}");
+            #endregion
             _buildingGenerator.GenerateBuilding();
+            #region Debuggin
+Debugger.MethodTerminated($"{nameof(GenerateBuildings)}");
+            #endregion
         }
 
         public void ViewAllBuildings()
         {
-            if (debug) Debugging.WriteNColor("[] BuildingController.ViewAllBuildings()", ConsoleColor.Blue);
+            #region Debuggin
+            Debugger.MethodInitiated($"{nameof(ViewAllBuildings)}");
+            #endregion
             _buildingViewModel.ViewBuilding();
+            #region Debuggin
+            Debugger.MethodTerminated($"{nameof(ViewAllBuildings)}");
+
+            #endregion
 
         }
 

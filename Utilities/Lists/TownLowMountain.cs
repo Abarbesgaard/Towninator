@@ -1,6 +1,6 @@
 namespace TowninatorCLI.Utilities.Lists
 {
-    public class TownLowMountain
+    public static class TownLowMountain
     {
         public static string DescriptionGenerator()
         {

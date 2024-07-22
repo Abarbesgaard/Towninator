@@ -3,19 +3,18 @@ using TowninatorCLI.Utilities.misc;
 using Spectre.Console;
 namespace TowninatorCLI.View;
 
-public class BuildingViewModel(string dbFileName, bool debug = false)
+public class BuildingViewModel(string dbFileName)
 {
-    private readonly BuildingRepository _buildingRepository = new(dbFileName, debug);
+    private readonly BuildingRepository _buildingRepository = new(dbFileName);
 
     
         public void ViewBuilding()
         {
-            if (debug) Debugging.WriteNColor("ViewBuilding()", ConsoleColor.Blue);
             var buildings = _buildingRepository.GetAllBuildings();
-            Console.WriteLine($"Currently theres {buildings.Count} in this town:\n");
+            AnsiConsole.MarkupLine($"\nBuildings: [Green]{buildings.Count}[/]");
             foreach (var building in buildings)
             {
-                AnsiConsole.WriteLine($"{building.Name}");
+                AnsiConsole.Markup($"The {building.SpecificBuilding} called: [Green]{building.Name}[/]. It affects the {building.BuildingType} aspect of the town\n");
             }
             Console.WriteLine("\n");
         } 

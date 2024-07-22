@@ -92,7 +92,13 @@ namespace TowninatorCLI.Utilities.TownUtilities
                 MainTerrainType.Fjord => AdjFjord.DescriptionGenerator(),
                 MainTerrainType.Grassland => AdjGrassland.DescriptionGenerator(),
                 MainTerrainType.Wetland => AdjWetLand.DescriptionGenerator(),
-                MainTerrainType.Highland => AdjHighLand.DescriptionGenerator(),
+                MainTerrainType.Highland => AdjHighLand.DescriptionGenerator(), 
+                MainTerrainType.Coastal => AdjCoastal.DescriptionGenerator(),
+                MainTerrainType.Lake => AdjLake.DescriptionGenerator(),
+                MainTerrainType.Marsh => AdjMarsh.DescriptionGenerator(),
+                MainTerrainType.Tundra => AdjTundra.DescriptionGenerator(),
+                MainTerrainType.Meadow => AdjMeadow.DescriptionGenerator(),
+                MainTerrainType.Heath => AdjHeath.DescriptionGenerator(),
                 _ => "Unknown terrain"
             };
         }

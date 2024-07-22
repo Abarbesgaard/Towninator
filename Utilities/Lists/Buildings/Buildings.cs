@@ -5,18 +5,132 @@ namespace TowninatorCLI.Utilities.Lists.Buildings
 {
     public static class Buildings
     {
+        public static List<Building> CultureBuildings()
+        {
+            return[
+            new Building(1, null, null, BuildingType.Culture, SpecificBuilding.GreatHall, 3, 
+            null, 1.0f, 1.2f, 1.0f, 1.0f, 
+            0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+            0.5f, 0.4f, 0.1f, 1.4f, 
+            0.7f),
+            new Building(1, null, null, BuildingType.Culture, SpecificBuilding.MeadHall, 3, 
+            null, 1.0f, 1.2f, 1.0f, 1.0f, 
+            0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+            0.5f, 0.4f, 0.1f, 1.4f, 
+            0.7f),
+             new Building(1, null, null, BuildingType.Culture, SpecificBuilding.GreatHall, 3, 
+             null, 1.0f, 1.2f, 1.0f, 1.0f, 
+             0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+        0.5f, 0.4f, 0.1f, 1.4f, 
+     0.7f),
+            new Building(1, null, null, BuildingType.Culture, SpecificBuilding.SkaldsHall, 3, 
+              null, 1.0f, 1.2f, 1.0f, 1.0f, 
+              0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+              0.5f, 0.4f, 0.1f, 1.4f, 
+              0.7f),
+            new Building(1, null, null, BuildingType.Culture, SpecificBuilding.JarlsManor, 3, 
+                          null, 1.0f, 1.2f, 1.0f, 1.0f, 
+                          0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+                          0.5f, 0.4f, 0.1f, 1.4f, 
+                          0.7f),
+            new Building(1, null, null, BuildingType.Culture, SpecificBuilding.BattlefieldMemorial, 3, 
+                                   null, 1.0f, 1.2f, 1.0f, 1.0f, 
+                                   0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+                                   0.5f, 0.4f, 0.1f, 1.4f, 
+                                   0.7f),
+            new Building(1, null, null, BuildingType.Culture, SpecificBuilding.SagaHall, 3, 
+                                            null, 1.0f, 1.2f, 1.0f, 1.0f, 
+                                            0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+                                            0.5f, 0.4f, 0.1f, 1.4f, 
+                                            0.7f),
+                                                                        
+            
+        ];
+        }
+
+        public static List<Building> EducationBuildings()
+        {
+            return
+            [
+                new Building(1, null, null, BuildingType.Education, SpecificBuilding.SagaHall, 3, 
+                    null, 1.0f, 1.2f, 1.0f, 1.0f, 
+                    0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+                    0.5f, 0.4f, 0.1f, 1.4f, 
+                    0.7f),
+                new Building(1, null, null, BuildingType.Education, SpecificBuilding.GreatHall, 3, 
+                    null, 1.0f, 1.2f, 1.0f, 1.0f, 
+                    0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+                    0.5f, 0.4f, 0.1f, 1.4f, 
+                    0.7f),
+                new Building(1, null, null, BuildingType.Education, SpecificBuilding.AxethrowingArena, 3, 
+                    null, 1.0f, 1.2f, 1.0f, 1.0f, 
+                    0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+                    0.5f, 0.4f, 0.1f, 1.4f, 
+                    0.7f), 
+                new Building(1, null, null, BuildingType.Education, SpecificBuilding.WoodworkersWorkshop, 3, 
+                    null, 1.0f, 1.2f, 4.0f, 1.0f, 
+                    0.8f, 2.5f, 1.0f, 0.7f, 1.7f, 
+                    0.5f, 0.4f, 0.1f, 1.4f, 
+                    0.7f), 
+                new Building(1, null, null, BuildingType.Education, SpecificBuilding.StoneMason, 3, 
+                    null, 1.0f, 1.2f, 1.0f, 0.2f, 
+                    0.8f, 0.5f, 2.0f, 0.7f, 1.7f, 
+                    3.5f, 4.4f, 3.0f, 1.4f, 
+                    0.7f) 
+            ];
+        }
+        public static List<Building> RecreationBuildings()
+        {
+            return
+            [
+                new Building(1, null, null, BuildingType.Recreation, SpecificBuilding.Alehouse, 3,
+                    null, 1.0f, 1.2f, 1.0f, 1.0f,
+                    0.8f, 0.5f, 2.0f, 0.7f, 1.7f,
+                    0.5f, 0.4f, 0.1f, 1.4f,
+                    0.7f),
+                new Building(1, null, null, BuildingType.Recreation, SpecificBuilding.HermitsHut, 3,
+                    null, 0.4f, 0.4f, 3.0f, 1.0f,
+                    2.0f, 1.0f, 1.0f, 2.0f, 3.0f,
+                    0.3f, 0.2f, 0.1f, 3.0f,
+                    2.4f),
+                new Building(1, null, null, BuildingType.Recreation, SpecificBuilding.MeadHall, 3,
+                    null, 1.4f, 1.4f, 1.0f, 1.0f,
+                    1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+                    1.3f, 1.2f, 1.1f, 1.0f,
+                    1.4f),
+            ];
+        }
         public static List<Building> GetBuildings()
         {
             return
             [
-                new Building(1, null, null, BuildingType.Education, SpecificBuilding.Alehouse, 3, null, null),
-                new Building(2, null, null, BuildingType.Education, SpecificBuilding.Wharf, 5, null, null),
-                new Building(3, null, null, BuildingType.Culture, SpecificBuilding.Watchtower, 4, null, null),
-                new Building(4, null, null, BuildingType.Culture, SpecificBuilding.FishermansHut, 2, null, null),
-                new Building(5, null, null, BuildingType.Health, SpecificBuilding.HermitsHut, 3, null, null),
-                new Building(6, null, null, BuildingType.Trade, SpecificBuilding.MeadHall, 5, null, null),
-                new Building(7,null, null, BuildingType.Production, SpecificBuilding.Longhouse, 10,null,null),
-                new Building(8, null, null, BuildingType.Recreation, SpecificBuilding.Shipwright, 6, null, null)
+                
+                new Building(1, null, null, BuildingType.Production, SpecificBuilding.Wharf, 3, 
+                    null, 3.0f, 3.0f, 0.0f, 0.0f, 
+                    0.0f, 0.0f, 2.5f, 0.0f, 0.0f, 
+                    0.0f, 0.0f, 0.0f, 0.0f, 
+                    0.0f),
+                new Building(1, null, null, BuildingType.Military, SpecificBuilding.Watchtower, 3, 
+                    null, 2.0f, 1.8f, 0.7f, 2.1f, 
+                    1.0f, 2.0f, 1.5f, 1.7f, 1.0f, 
+                    2.0f, 3.0f, 3.0f, 1.0f, 
+                    0.5f),
+                 new Building(1, null, null, BuildingType.Production, SpecificBuilding.FishermansHut, 3, 
+                    null, 2.0f, 3.0f, 0.0f, 0.0f, 
+                    0.0f, 0.0f, 1.6f, 0.0f, 0.0f, 
+                    0.0f, 0.0f, 0.0f, 0.0f, 
+                    0.0f),
+               
+                new Building(1, null, null, BuildingType.Health, SpecificBuilding.Longhouse, 3, 
+                    null, 2.0f, 2.4f, 1.0f, 2.0f, 
+                    2.0f, 2.0f, 1.0f, 1.0f, 1.4f, 
+                    1.3f, 1.2f, 1.1f, 1.0f, 
+                    1.4f),
+                new Building(1, null, null, BuildingType.Production, SpecificBuilding.Shipwright, 3, 
+                    null, 2.0f, 2.4f, 0.0f, 0.0f, 
+                    0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 
+                    0.0f, 0.0f, 0.0f, 0.0f, 
+                    0.0f),
                 // Add more buildings as needed
             ];
         }

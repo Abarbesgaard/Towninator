@@ -33,7 +33,7 @@ namespace TowninatorCLI
                     var townsfolkController = new TownsfolkController(dbFileName);
                     var mapController = new MapController(dbFileName);
                     var townController = new TownController(townRepository, mapController, dbFileName, debug);
-                    var buildingController = new BuildingsController(dbFileName, debug);
+                    var buildingController = new BuildingsController(dbFileName);
 
                     if (options.Reset)
                     {

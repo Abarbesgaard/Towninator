@@ -1,3 +1,4 @@
+using Debugland;
 using TowninatorCLI.Model;
 using TowninatorCLI.Utilities.Lists.Buildings;
 using TowninatorCLI.Utilities.misc;
@@ -15,15 +16,33 @@ namespace TowninatorCLI.Utilities.BuildingUtilities
 
         public void GenerateBuilding()
         {
-            if (debug) Debugging.WriteNColor("[] BuildingGenerator.GenerateBuilding() ", ConsoleColor.Green);
+            #region Debugging
+
+            Debugger.MethodInitiated($"{nameof(GenerateBuilding)}");
+
+            #endregion
 
             var town = _townRep?.GetLatestTown();
+
+            #region Debugging
+
+            Debugger.Variable("town", $"{town}");
+
+            #endregion
+
             if (town == null)
             {
                 throw new Exception("No town data available.");
             }
 
             var mapPosition = _mapRepository?.GetTownPosition();
+
+            #region Debugging
+
+            Debugger.Variable("mapPosition", $"{mapPosition}");
+
+            #endregion
+
             if (mapPosition == null)
             {
                 throw new Exception("No map position data available.");
@@ -32,7 +51,7 @@ namespace TowninatorCLI.Utilities.BuildingUtilities
             var terrain = mapPosition.Terrain;
             var culture = town.Culture;
             var education = town.Education;
-            var crime = town.Order;
+            var crime = town.Crime;
             var worship = town.Worship;
             var health = town.Health;
             var military = town.Military;
@@ -41,146 +60,110 @@ namespace TowninatorCLI.Utilities.BuildingUtilities
             var trade = town.Trade;
             var recreation = town.Recreation;
             var wealth = town.Wealth;
-            var potentialBuildings = Buildings.GetBuildings();
+            var potentialCultureBuildings = Buildings.CultureBuildings();
+            var potentialEducationBuildings = Buildings.EducationBuildings();
+            var potentialRecreationBuildings = Buildings.RecreationBuildings();
 
-            if (debug)
+            
+            var availableBuildingSlotsForCulture = (int)Math.Floor(culture / 2f);
+            var availableBuildingSlotsForRecreation = (int)Math.Floor(recreation / 2f);
+            var availableBuildingSlotsForEducation = (int)Math.Floor(education / 2f);
+          
+            potentialCultureBuildings = FilterBuildingsByTerrain(potentialCultureBuildings, terrain);
+            potentialEducationBuildings = FilterBuildingsByTerrain(potentialEducationBuildings, terrain);
+            potentialRecreationBuildings = FilterBuildingsByTerrain(potentialRecreationBuildings, terrain);
+            
+            for (var i = 0; i < availableBuildingSlotsForCulture; i++)
             {
-                Debugging.WriteNColor($"    Potential buildings count: {potentialBuildings.Count}", ConsoleColor.Yellow);
+                var building = SelectBuildingUsingLogScale(potentialCultureBuildings, terrain);
+                building.Name = BuildingNameGenerator.GenerateName(building.SpecificBuilding, terrain);
+                _buildingRepository?.AddBuilding(building);
             }
-
-            var filteredBuildings = FilterBuildingsByTerrain(potentialBuildings, terrain);
-            if (debug)
+            for (var i = 0 ; i < availableBuildingSlotsForEducation; i++)
             {
-                Debugging.WriteNColor($"    Filtered buildings by terrain count: {filteredBuildings.Count}", ConsoleColor.Yellow);
+                var building = SelectBuildingUsingLogScale(potentialEducationBuildings, terrain);
+                building.Name = BuildingNameGenerator.GenerateName(building.SpecificBuilding, terrain);
+                _buildingRepository?.AddBuilding(building);
             }
-
-            filteredBuildings = FilterBuildingsByTownCharacteristics(filteredBuildings, culture, education, crime, worship, health,
-                military,order,production,trade,recreation,wealth);
-            if (debug)
+            for (var i = 0; i < availableBuildingSlotsForRecreation; i++)
             {
-                Debugging.WriteNColor($"    Filtered buildings by characteristics count: {filteredBuildings.Count}", ConsoleColor.Yellow);
-            }
-
-            if (filteredBuildings.Count == 0)
-            {
-                
-            }
-
-            var randomBuilding = filteredBuildings[_random.Next(filteredBuildings.Count)];
-            randomBuilding.Name = BuildingNameGenerator.GenerateName(randomBuilding.SpecificBuilding, mapPosition.Terrain);
-            _buildingRepository?.AddBuilding(randomBuilding);
-
-            if (debug)
-            {
-                Debugging.WriteNColor($"Added building: {randomBuilding.Name} {randomBuilding.Id}", ConsoleColor.Green);
+                var building = SelectBuildingUsingLogScale(potentialRecreationBuildings, terrain);
+                building.Name = BuildingNameGenerator.GenerateName(building.SpecificBuilding, terrain);
+                _buildingRepository?.AddBuilding(building);
             }
         }
-       
-        private List<Building> FilterBuildingsByTerrain(List<Building> buildings, MainTerrainType terrain)
+
+        private static List<Building> FilterBuildingsByTerrain(List<Building> buildings, MainTerrainType terrain)
         {
-            if (debug) Debugging.WriteNColor($"[] BuildingGenerator.FilterBuildingsByTerrain(building {buildings.Count} mainTerrain {terrain} ) ", ConsoleColor.Green);
-
-            var filteredBuildings = new List<Building>();
-
-            foreach (var building in buildings)
+            return terrain switch
             {
-                var isValid = terrain switch
-                {
-                    MainTerrainType.Fjord => building.SpecificBuilding == SpecificBuilding.Shipwright,
-                    MainTerrainType.Grassland or MainTerrainType.LowMountain => building.SpecificBuilding !=
-                        SpecificBuilding.Shipwright,
-                    _ => true
-                };
-
-                if (isValid)
-                {
-                    filteredBuildings.Add(building);
-                }
-                else if (debug)
-                {
-                    Debugging.WriteNColor($"Filtered out building {building.Name} for terrain {terrain}", ConsoleColor.Red);
-                }
-            }
-            if (filteredBuildings.Count == 0)
-            {
-                // For example, return the first building in the original list as a fallback
-                filteredBuildings.Add(buildings.FirstOrDefault() ?? throw new InvalidOperationException());
-            }
-            return filteredBuildings;
-        }
-
-        private List<Building> FilterBuildingsByTownCharacteristics(List<Building> buildings, int culture, int education, int crime, int worship, int health,
-            int military, int order, int production, int trade, int recreation, int wealth)
+                MainTerrainType.Coastal => buildings.Where(x => x.CoastalModifier != 0.0f).ToList(),
+                MainTerrainType.LowMountain => buildings.Where(x => x.LowMountainModifier != 0.0f).ToList(),
+                MainTerrainType.Forest => buildings.Where(x => x.ForestModifier != 0.0f).ToList(),
+                MainTerrainType.Meadow => buildings.Where(x => x.MeadowModifier != 0.0f).ToList(),
+                MainTerrainType.Fjord => buildings.Where(x => x.FjordModifier != 0.0f).ToList(),
+                MainTerrainType.Grassland => buildings.Where(x => x.GrasslandModifier != 0.0f).ToList(),
+                MainTerrainType.Heath => buildings.Where(x => x.HeathModifier != 0.0f).ToList(),
+                MainTerrainType.Highland => buildings.Where(x => x.HighlandModifier != 0.0f).ToList(),
+                MainTerrainType.Lake => buildings.Where(x => x.LakeModifier != 0.0f).ToList(),
+                MainTerrainType.Marsh => buildings.Where(x => x.MarshModifier != 0.0f).ToList(),
+                MainTerrainType.MediumMountain => buildings.Where(x => x.MediumMountainModifier != 0.0f).ToList(),
+                MainTerrainType.HighMountain => buildings.Where(x => x.HighMountainModifier != 0.0f).ToList(),
+                MainTerrainType.Tundra => buildings.Where(x => x.TundraModifier != 0.0f).ToList(),
+                MainTerrainType.Wetland => buildings.Where(x => x.WetlandModifier != 0.0f).ToList(),
+                MainTerrainType.None => throw new Exception("No terrain type available."),
+                _ => throw new ArgumentOutOfRangeException(nameof(terrain), terrain, null)
+            };
+        } 
+       private Building SelectBuildingUsingLogScale(List<Building> buildings, MainTerrainType terrain)
         {
-            if (debug) Debugging.WriteNColor($"[] BuildingGenerator.FilterBuildingsByTownCharacteristics(building {buildings.Count} culture {culture} education {education} crime {crime} worship {worship} ) ", ConsoleColor.Green);
+            var logScaledBuildings = buildings.ToDictionary(
+                b => b, 
+                b => Math.Log(GetTerrainModifier(b, terrain) + 1)
+            );
 
-            var filteredBuildings = new List<Building>();
-            const int adjustedSpawnRate = 10;
-            foreach (var building in buildings)
+            var sum = logScaledBuildings.Values.Sum();
+            var probabilities = logScaledBuildings.ToDictionary(
+                kvp => kvp.Key, 
+                kvp => kvp.Value / sum
+            );
+
+            var rand = _random.NextDouble();
+            var cumulative = 0.0;
+
+            foreach (var kvp in probabilities)
             {
-                var spawnChance = building.SpawnProbability + adjustedSpawnRate; // Increase base spawn chance by 10
-
-                // Adjust spawn chance based on town characteristics
-                switch (building.BuildingType)
+                cumulative += kvp.Value;
+                if (rand < cumulative)
                 {
-                    case BuildingType.Culture:
-                        spawnChance += culture * 2;
-                        break;
-                    case BuildingType.Education:
-                        spawnChance += education * 2;
-                        break;
-                    case BuildingType.Health:
-                        spawnChance -= health * 2;
-                        break;
-                    case BuildingType.Worship:
-                        spawnChance += worship * 2;
-                        break;
-                    case BuildingType.Crime:
-                        spawnChance += crime * 2;
-                        break;
-                    case BuildingType.Military:
-                        spawnChance += military * 2;
-                        break;
-                    case BuildingType.Order:
-                        spawnChance += order * 2;
-                        break;
-                    case BuildingType.Production:
-                        spawnChance += production * 2;
-                        break;
-                    case BuildingType.Trade:
-                        spawnChance += trade * 2;
-                        break;
-                    case BuildingType.Recreation:
-                        spawnChance += recreation * 2;
-                        break;
-                    case BuildingType.Wealth:
-                        spawnChance += wealth * 2;
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-               
-
-                // Ensure a minimum spawn chance to avoid filtering out all buildings
-                spawnChance = Math.Max(spawnChance, 20);
-
-                if (debug) Debugging.WriteNColor($"Building: {building.SpecificBuilding.ToString()}, Type: {building.BuildingType}, Initial SpawnChance: {building.SpawnProbability}, Adjusted SpawnChance: {spawnChance}", ConsoleColor.Yellow);
-
-                if (_random.Next(1, 101) <= spawnChance)
-                {
-                    filteredBuildings.Add(building);
-                }
-                else if (debug)
-                {
-                    Debugging.WriteNColor($"Filtered out building {building.Name} with spawn chance {spawnChance}", ConsoleColor.Red);
+                    return kvp.Key;
                 }
             }
 
-            return filteredBuildings;
+            throw new Exception("Failed to select a building using log scale.");
         }
 
-
-
-    }
+        private static float GetTerrainModifier(Building building, MainTerrainType terrain)
+        {
+            return terrain switch
+            {
+                MainTerrainType.Coastal => building.CoastalModifier,
+                MainTerrainType.LowMountain => building.LowMountainModifier,
+                MainTerrainType.Forest => building.ForestModifier,
+                MainTerrainType.Meadow => building.MeadowModifier,
+                MainTerrainType.Fjord => building.FjordModifier,
+                MainTerrainType.Grassland => building.GrasslandModifier,
+                MainTerrainType.Heath => building.HeathModifier,
+                MainTerrainType.Highland => building.HighlandModifier,
+                MainTerrainType.Lake => building.LakeModifier,
+                MainTerrainType.Marsh => building.MarshModifier,
+                MainTerrainType.MediumMountain => building.MediumMountainModifier,
+                MainTerrainType.HighMountain => building.HighMountainModifier,
+                MainTerrainType.Tundra => building.TundraModifier,
+                MainTerrainType.Wetland => building.WetlandModifier,
+                MainTerrainType.None => throw new Exception("No terrain type available."),
+                _ => throw new ArgumentOutOfRangeException(nameof(terrain), terrain, null)
+            };
+        }
+    } 
 }
