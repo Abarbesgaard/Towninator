@@ -49,6 +49,7 @@ namespace TowninatorCLI.Utilities.BuildingUtilities
             }
 
             var terrain = mapPosition.Terrain;
+            Console.WriteLine($" Terrain: {terrain}");
             var culture = town.Culture;
             var education = town.Education;
             var crime = town.Crime;
@@ -63,16 +64,37 @@ namespace TowninatorCLI.Utilities.BuildingUtilities
             var potentialCultureBuildings = Buildings.CultureBuildings();
             var potentialEducationBuildings = Buildings.EducationBuildings();
             var potentialRecreationBuildings = Buildings.RecreationBuildings();
+            var potentialHealthBuildings = Buildings.HealthBuildings();
+            var potentialMilitaryBuildings = Buildings.MilitaryBuildings();
+            var potentialOrderBuildings = Buildings.OrderBuildings();
+            var potentialProductionBuildings = Buildings.ProductionBuildings();
+            var potentialTradeBuildings = Buildings.TradeBuildings();
+            var potentialWealthBuildings = Buildings.WealthBuildings();
+            
 
             
             var availableBuildingSlotsForCulture = (int)Math.Floor(culture / 2f);
             var availableBuildingSlotsForRecreation = (int)Math.Floor(recreation / 2f);
             var availableBuildingSlotsForEducation = (int)Math.Floor(education / 2f);
+            var availableBuildingSlotsForHealth = (int)Math.Floor(health / 2f);
+            var availableBuildingSlotsForMilitary = (int)Math.Floor(military / 2f);
+            var availableBuildingSlotsForOrder = (int)Math.Floor(order / 2f);
+            var availableBuildingSlotsForProduction = (int)Math.Floor(production / 2f);
+            var availableBuildingSlotsForTrade = (int)Math.Floor(trade / 2f);
+            var availableBuildingSlotsForWealth = (int)Math.Floor(wealth / 2f);
+            
           
             potentialCultureBuildings = FilterBuildingsByTerrain(potentialCultureBuildings, terrain);
             potentialEducationBuildings = FilterBuildingsByTerrain(potentialEducationBuildings, terrain);
             potentialRecreationBuildings = FilterBuildingsByTerrain(potentialRecreationBuildings, terrain);
-            
+            potentialHealthBuildings = FilterBuildingsByTerrain(potentialHealthBuildings, terrain);
+            potentialMilitaryBuildings = FilterBuildingsByTerrain(potentialMilitaryBuildings, terrain);
+            potentialOrderBuildings = FilterBuildingsByTerrain(potentialOrderBuildings, terrain);
+            potentialProductionBuildings = FilterBuildingsByTerrain(potentialProductionBuildings, terrain);
+            potentialTradeBuildings = FilterBuildingsByTerrain(potentialTradeBuildings, terrain);
+            potentialWealthBuildings = FilterBuildingsByTerrain(potentialWealthBuildings, terrain);
+           
+             
             for (var i = 0; i < availableBuildingSlotsForCulture; i++)
             {
                 var building = SelectBuildingUsingLogScale(potentialCultureBuildings, terrain);
@@ -91,6 +113,44 @@ namespace TowninatorCLI.Utilities.BuildingUtilities
                 building.Name = BuildingNameGenerator.GenerateName(building.SpecificBuilding, terrain);
                 _buildingRepository?.AddBuilding(building);
             }
+            for (var i = 0; i < availableBuildingSlotsForHealth; i++)
+            {
+                var building = SelectBuildingUsingLogScale(potentialHealthBuildings, terrain);
+                building.Name = BuildingNameGenerator.GenerateName(building.SpecificBuilding, terrain);
+                _buildingRepository?.AddBuilding(building);
+            }
+            for (var i = 0; i < availableBuildingSlotsForMilitary; i++)
+            {
+                var building = SelectBuildingUsingLogScale(potentialMilitaryBuildings, terrain);
+                building.Name = BuildingNameGenerator.GenerateName(building.SpecificBuilding, terrain);
+                _buildingRepository?.AddBuilding(building);
+            }
+            for (var i = 0; i < availableBuildingSlotsForOrder; i++)
+            {
+                var building = SelectBuildingUsingLogScale(potentialOrderBuildings, terrain);
+                building.Name = BuildingNameGenerator.GenerateName(building.SpecificBuilding, terrain);
+                _buildingRepository?.AddBuilding(building);
+            }
+            for (var i = 0; i < availableBuildingSlotsForProduction; i++)
+            {
+                var building = SelectBuildingUsingLogScale(potentialProductionBuildings, terrain);
+                building.Name = BuildingNameGenerator.GenerateName(building.SpecificBuilding, terrain);
+                _buildingRepository?.AddBuilding(building);
+            }
+            for (var i = 0; i < availableBuildingSlotsForTrade; i++)
+            {
+                var building = SelectBuildingUsingLogScale(potentialTradeBuildings, terrain);
+                building.Name = BuildingNameGenerator.GenerateName(building.SpecificBuilding, terrain);
+                _buildingRepository?.AddBuilding(building);
+            }
+            for (var i = 0; i < availableBuildingSlotsForWealth; i++)
+            {
+                var building = SelectBuildingUsingLogScale(potentialWealthBuildings, terrain);
+                building.Name = BuildingNameGenerator.GenerateName(building.SpecificBuilding, terrain);
+                _buildingRepository?.AddBuilding(building);
+            }
+            
+            
         }
 
         private static List<Building> FilterBuildingsByTerrain(List<Building> buildings, MainTerrainType terrain)

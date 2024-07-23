@@ -102,19 +102,20 @@ public static class BuildingNameGenerator
     {
        var returnString = terrain switch
                 {
-                    MainTerrainType.Coastal => "fyrir",
-                    MainTerrainType.Forest => "viðr",
-                    MainTerrainType.Grassland => "græs",
-                    MainTerrainType.Highland => "upplönd",
-                    MainTerrainType.Lake => "særvar",
-                    MainTerrainType.Fjord => "fjǫrðr",
-                    MainTerrainType.Marsh => "más",
-                    MainTerrainType.Wetland => "myrr",
-                    MainTerrainType.Tundra => "gœðalauss",
-                    MainTerrainType.HighMountain => "bjarg",
-                    MainTerrainType.LowMountain => "kaldbak",
-                    MainTerrainType.MediumMountain => "bjarg",
-                    MainTerrainType.Meadow => "eng",
+                    MainTerrainType.Coastal => Random.Next(2) == 0 ? "fyrir" : "strǫnd",
+                    MainTerrainType.Forest => Random.Next(2) == 0 ? "fýri" : "skógr",
+                    MainTerrainType.Grassland => Random.Next(2) == 0 ? "eng" : "völlr",
+                    MainTerrainType.Highland => Random.Next(2) == 0 ? "háls" : "fjall",
+                    MainTerrainType.Lake => Random.Next(2) == 0 ? "vatn" : "sjór",
+                    MainTerrainType.Fjord => Random.Next(2) == 0 ? "fjǫrðr" : "vatn",
+                    MainTerrainType.Marsh => Random.Next(2) == 0 ? "mýrr" : "vatn",
+                    MainTerrainType.Wetland => Random.Next(2) == 0 ? "myrr" : "vatn",
+                    MainTerrainType.Tundra => Random.Next(2) == 0 ? "frost" : "snjór",
+                    MainTerrainType.HighMountain => Random.Next(2) == 0 ? "fjall" : "háls",
+                    MainTerrainType.LowMountain => Random.Next(2) == 0 ? "fjall" : "háls",
+                    MainTerrainType.MediumMountain => Random.Next(2) == 0 ? "fjall" : "háls",
+                    MainTerrainType.Meadow => Random.Next(2) == 0 ? "eng" : "völlr", 
+                    MainTerrainType.Heath => Random.Next(2) == 0 ? "heiðr" : "lyng",
                     _ => ""
                 };
                 return returnString;
