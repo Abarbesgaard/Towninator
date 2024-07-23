@@ -4,12 +4,12 @@ using TowninatorCLI.Model.EventModel;
 
 namespace TowninatorCLI.Repositories
 {
-    public class EventRepository(string dbFileName, bool debug = false)
+    public class EventRepository(string dbFileName)
     {
         private readonly string _connectionString = $"Data Source={dbFileName}";
-        public EventModel GetEventById(int id)
+        public EventModel? GetEventById(int id)
         {
-            EventModel eventModel = null;
+            EventModel? eventModel = null;
 
             using var connection = new SqliteConnection(_connectionString);
             connection.Open();
@@ -29,13 +29,13 @@ namespace TowninatorCLI.Repositories
                 if (reader.Read())
                 {
                     eventModel = new EventModel(
-                        id = reader.GetInt32(reader.GetOrdinal("id")),
+                        reader.GetInt32(reader.GetOrdinal("id")),
                         name: reader.GetString(reader.GetOrdinal("name")),
                         description: reader.GetString(reader.GetOrdinal("description")),
                         eventSeverity: Enum.Parse<EventSeverity>(reader.GetString(reader.GetOrdinal("eventSeverity"))),
                         eventType: Enum.Parse<EventType>(reader.GetString(reader.GetOrdinal("eventType"))),
                         mapTileId: reader.GetInt32(reader.GetOrdinal("mapTileId")),
-                        townsfolkId: reader.IsDBNull(reader.GetOrdinal("townsfolkId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("townsfolkId")),
+                        townsfolkId: reader.IsDBNull(reader.GetOrdinal("townsfolkId")) ? null : reader.GetInt32(reader.GetOrdinal("townsfolkId")),
                         isFinished: reader.GetBoolean(reader.GetOrdinal("isFinished")),
                         inProgress: reader.GetBoolean(reader.GetOrdinal("inProgress")),
                         impact: reader.GetString(reader.GetOrdinal("impact")),
@@ -63,7 +63,7 @@ namespace TowninatorCLI.Repositories
         }
 
 
-        public int AddEvent(EventModel eventModel)
+        public void AddEvent(EventModel eventModel)
 {
     using var connection = new SqliteConnection(_connectionString);
     connection.Open();
@@ -77,22 +77,21 @@ namespace TowninatorCLI.Repositories
     try
     {
         using var command = new SqliteCommand(query, connection);
-        command.Parameters.AddWithValue("@name", eventModel.Name ?? "");
-        command.Parameters.AddWithValue("@description", eventModel.Description ?? "");
+        command.Parameters.AddWithValue("@name", eventModel.Name);
+        command.Parameters.AddWithValue("@description", eventModel.Description);
         command.Parameters.AddWithValue("@eventSeverity", eventModel.EventSeverity.ToString());
         command.Parameters.AddWithValue("@eventType", eventModel.EventType.ToString());
         command.Parameters.AddWithValue("@mapTileId", eventModel.MapTileId);
         command.Parameters.AddWithValue("@townsfolkId", (object?)eventModel.TownsfolkId ?? DBNull.Value);
         command.Parameters.AddWithValue("@isFinished", eventModel.IsFinished);
         command.Parameters.AddWithValue("@inProgress", eventModel.InProgress);
-        command.Parameters.AddWithValue("@impact", eventModel.Impact ?? "");
+        command.Parameters.AddWithValue("@impact", eventModel.Impact);
         command.Parameters.AddWithValue("@priority", eventModel.Priority);
-        command.Parameters.AddWithValue("@resourcesNeeded", eventModel.ResourcesNeeded ?? "");
-        command.Parameters.AddWithValue("@consequences", eventModel.Consequences ?? "");
+        command.Parameters.AddWithValue("@resourcesNeeded", eventModel.ResourcesNeeded);
+        command.Parameters.AddWithValue("@consequences", eventModel.Consequences);
 
         // Retrieve the ID of the newly inserted event
-        var id = (long)command.ExecuteScalar();
-        return (int)id;
+        _ = (long)(command.ExecuteScalar() ?? throw new InvalidOperationException());
     }
     catch (Exception ex)
     {
@@ -133,7 +132,7 @@ namespace TowninatorCLI.Repositories
                             eventSeverity: Enum.Parse<EventSeverity>(reader.GetString(reader.GetOrdinal("eventSeverity"))),
                             eventType: Enum.Parse<EventType>(reader.GetString(reader.GetOrdinal("eventType"))),
                             mapTileId: reader.GetInt32(reader.GetOrdinal("mapTileId")),
-                            townsfolkId: reader.IsDBNull(reader.GetOrdinal("townsfolkId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("townsfolkId")),
+                            townsfolkId: reader.IsDBNull(reader.GetOrdinal("townsfolkId")) ? null : reader.GetInt32(reader.GetOrdinal("townsfolkId")),
                             isFinished: reader.GetBoolean(reader.GetOrdinal("isFinished")),
                             inProgress: reader.GetBoolean(reader.GetOrdinal("inProgress")),
                             impact: reader.GetString(reader.GetOrdinal("impact")),
@@ -182,18 +181,18 @@ namespace TowninatorCLI.Repositories
             {
                 using var command = new SqliteCommand(query, connection);
                 command.Parameters.AddWithValue("@id", eventModel.Id);
-                command.Parameters.AddWithValue("@name", eventModel.Name ?? "");
-                command.Parameters.AddWithValue("@description", eventModel.Description ?? "");
+                command.Parameters.AddWithValue("@name", eventModel.Name);
+                command.Parameters.AddWithValue("@description", eventModel.Description);
                 command.Parameters.AddWithValue("@eventSeverity", eventModel.EventSeverity.ToString());
                 command.Parameters.AddWithValue("@eventType", eventModel.EventType.ToString());
                 command.Parameters.AddWithValue("@mapTileId", eventModel.MapTileId);
                 command.Parameters.AddWithValue("@townsfolkId", (object?)eventModel.TownsfolkId ?? DBNull.Value);
                 command.Parameters.AddWithValue("@isFinished", eventModel.IsFinished);
                 command.Parameters.AddWithValue("@inProgress", eventModel.InProgress);
-                command.Parameters.AddWithValue("@impact", eventModel.Impact ?? "");
+                command.Parameters.AddWithValue("@impact", eventModel.Impact);
                 command.Parameters.AddWithValue("@priority", eventModel.Priority);
-                command.Parameters.AddWithValue("@resourcesNeeded", eventModel.ResourcesNeeded ?? "");
-                command.Parameters.AddWithValue("@consequences", eventModel.Consequences ?? "");
+                command.Parameters.AddWithValue("@resourcesNeeded", eventModel.ResourcesNeeded);
+                command.Parameters.AddWithValue("@consequences", eventModel.Consequences);
 
             var rowsAffected = command.ExecuteNonQuery();
 
