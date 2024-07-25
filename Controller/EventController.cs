@@ -1,12 +1,14 @@
 using TowninatorCLI.Model.EventModel;
+using TowninatorCLI.View;
 using TowninatorCLI.Repositories;
+using TowninatorCLI.Utilities.Events;
 
 namespace TowninatorCLI.Controller;
 
 public class EventController(string dbFileName)
 {
     private readonly EventRepository _eventRepository = new(dbFileName);
-    private readonly EventViewModel _eventViewModel = new();
+    private readonly EventViewModel _eventViewModel = new(dbFileName);
     private readonly EventGenerator _eventGenerator = new();
     public void AddEvent(EventModel eventModel)
     {
