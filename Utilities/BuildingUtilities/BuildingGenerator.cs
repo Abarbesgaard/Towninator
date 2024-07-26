@@ -7,7 +7,7 @@ using TowninatorCLI.Model.MapModels;
 
 namespace TowninatorCLI.Utilities.BuildingUtilities
 {
-    public class BuildingGenerator(string dbFileName, bool debug = false)
+    public class BuildingGenerator(string dbFileName)
     {
         private readonly TownRepository? _townRep = new(dbFileName);
         private readonly MapRepository? _mapRepository = new(dbFileName);

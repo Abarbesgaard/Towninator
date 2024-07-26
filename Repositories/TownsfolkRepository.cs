@@ -1,6 +1,7 @@
 
 using Microsoft.Data.Sqlite;
 using TowninatorCLI.Model;
+using TowninatorCLI.Model.MapModels;
 using TowninatorCLI.Utilities.misc;
 
 namespace TowninatorCLI.Repositories
@@ -9,6 +10,28 @@ namespace TowninatorCLI.Repositories
     public class TownsfolkRepository(string dbFileName, bool debug = false)
     {
         private readonly string _connectionString = $"Data Source={dbFileName}";
+
+        public MainTerrainType? GetTerrainForTownsfolk(int townsfolkId)
+        {
+            // Example implementation: replace with actual logic
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            const string query = "SELECT Terrain FROM Townsfolk WHERE Id = @Id";
+            using var command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@Id", townsfolkId);
+
+            var result = command.ExecuteScalar();
+            if (result == DBNull.Value || result == null)
+            {
+                return null; // No terrain data available
+            }
+
+            // Assuming Terrain is stored as an integer representing the enum value
+            Console.WriteLine($"{result}");
+            return (MainTerrainType)Enum.Parse(typeof(MainTerrainType), result.ToString());
+        }
+
 
 
         public void Add(Townsfolk townsfolk)
@@ -19,7 +42,14 @@ namespace TowninatorCLI.Repositories
 
 
 
-            const string query = " INSERT INTO Townsfolk (Age, FirstName, LastName, Gender, Profession, SkillLevel, IsAlive, Description, IsMarried, TownId, Origin, Region, Country, IsParent, IsChild)VALUES (@Age, @FirstName, @LastName, @Gender, @Profession, @SkillLevel, @IsAlive, @Description, @IsMarried, @TownId, @Origin, @Region, @Country, @IsParent, @IsChild) ";
+            const string query = """
+                                  INSERT INTO Townsfolk (Age, FirstName, LastName, Gender, Profession, SkillLevel, 
+                                 IsAlive, Description, IsMarried, TownId, Origin, Region, Country, IsParent, 
+                                 IsChild, Terrain)
+                                 VALUES (@Age, @FirstName, @LastName, @Gender, @Profession, @SkillLevel, @IsAlive, 
+                                 @Description, @IsMarried, @TownId, @Origin, @Region, @Country, @IsParent, 
+                                 @IsChild, @Terrain) 
+                                 """;
 
             using var command = connection.CreateCommand();
             command.CommandText = query;
@@ -38,6 +68,7 @@ namespace TowninatorCLI.Repositories
             command.Parameters.AddWithValue("@Country", townsfolk.Country ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@IsParent", townsfolk.IsParent ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@IsChild", townsfolk.IsChild ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@Terrain", townsfolk.Terrain);
 
             command.ExecuteNonQuery();
         }

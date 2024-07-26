@@ -63,7 +63,8 @@ namespace TowninatorCLI.Database
                                            Impact TEXT,
                                            Priority INTEGER NOT NULL,
                                            ResourcesNeeded TEXT,
-                                           Consequences TEXT);
+                                           Consequences TEXT,
+                                           Reward TEXT);
                                            """;
             ExecuteNonQ(connection, eventTableQuery);
             
@@ -115,8 +116,21 @@ namespace TowninatorCLI.Database
                                                 IsParent INTEGER, 
                                                 IsChild INTEGER,
                                                 TownId INTEGER, 
+                                                Intelligence INTEGER,
+                                                Strength INTEGER,
+                                                Charisma INTEGER,
+                                                Wisdom INTEGER,
+                                                Dexterity INTEGER,
+                                                Constitution INTEGER,
+                                                Luck INTEGER,
+                                                Sanity INTEGER,
+                                                Perception INTEGER,
+                                                Willpower INTEGER,
+                                                Faith INTEGER,
+                                                Terrain TEXT,
                                                 FOREIGN KEY(TownId) REFERENCES Towns(Id) );  
                                                 """;
+             
             ExecuteNonQ(connection, createTownsfolkTable);
             const string createMapTable = """
                                           CREATE TABLE Map( 
@@ -145,6 +159,15 @@ namespace TowninatorCLI.Database
                                                         FOREIGN KEY(MapId) REFERENCES Map(Id)); 
                                                         """;
                       ExecuteNonQ(connection, createMapTileTable);
+                      const string createSubEventTable = """
+                                                        CREATE TABLE SubEvent( 
+                                                        Id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                                                        Name TEXT, 
+                                                        Description TEXT, 
+                                                        EventId INTEGER, 
+                                                        FOREIGN KEY(EventId) REFERENCES Event(Id)); 
+                                                        """;
+                      ExecuteNonQ(connection, createSubEventTable);
             connection.Close();
             #region Debuggin
 Debugger.SQLCommandTerminated();

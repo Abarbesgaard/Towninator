@@ -17,9 +17,14 @@ namespace TowninatorCLI.Utilities.TownsfolkUtilities
             {
                 Gender = gender,
                 FirstName = name,
+                SkillLevel = (ProfessionSkillLevel)random.Next(1, 6),
                 Profession = (Model.Profession)random.Next(1, 9),
-                Age = random.Next(1, 100)
+                Age = random.Next(1, 100),
+           
+                
+                
             };
+                     
         }
     }
 }

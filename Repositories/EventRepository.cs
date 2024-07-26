@@ -63,7 +63,9 @@ namespace TowninatorCLI.Repositories
                         impact: reader.GetString(reader.GetOrdinal("impact")),
                         priority: reader.GetInt32(reader.GetOrdinal("priority")),
                         resourcesNeeded: reader.GetString(reader.GetOrdinal("resourcesNeeded")),
-                        consequences: reader.GetString(reader.GetOrdinal("consequences"))
+                        consequences: reader.GetString(reader.GetOrdinal("consequences")),
+                        reward: reader.GetString(reader.GetOrdinal("reward")),
+                        subEvent: GetSubEventsForEvent(reader.GetInt32(reader.GetOrdinal("id")))
                     );
                     events.Add(eventModel);
               }
@@ -83,6 +85,7 @@ namespace TowninatorCLI.Repositories
 
           return events;
         }
+        
         public EventModel? GetEventById(int id)
         {
             EventModel? eventModel = null;
@@ -117,7 +120,9 @@ namespace TowninatorCLI.Repositories
                         impact: reader.GetString(reader.GetOrdinal("impact")),
                         priority: reader.GetInt32(reader.GetOrdinal("priority")),
                         resourcesNeeded: reader.GetString(reader.GetOrdinal("resourcesNeeded")),
-                        consequences: reader.GetString(reader.GetOrdinal("consequences"))
+                        consequences: reader.GetString(reader.GetOrdinal("consequences")),
+                        reward: reader.GetString(reader.GetOrdinal("reward")),
+                        subEvent: GetSubEventsForEvent(id)
                     );
                 }
                 else
@@ -139,7 +144,7 @@ namespace TowninatorCLI.Repositories
         }
 
 
-        public void AddEvent(EventModel eventModel)
+        public int AddEvent(EventModel? eventModel)
         {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
@@ -165,9 +170,10 @@ namespace TowninatorCLI.Repositories
             command.Parameters.AddWithValue("@priority", eventModel.Priority);
             command.Parameters.AddWithValue("@resourcesNeeded", eventModel.ResourcesNeeded);
             command.Parameters.AddWithValue("@consequences", eventModel.Consequences);
-
+            command.Parameters.AddWithValue("@subEvent", eventModel.SubEvent);
+            
             // Retrieve the ID of the newly inserted event
-            _ = (long)(command.ExecuteScalar() ?? throw new InvalidOperationException());
+            return Convert.ToInt32(command.ExecuteScalar());
         }
         catch (Exception ex)
         {
@@ -236,6 +242,57 @@ namespace TowninatorCLI.Repositories
                 connection.Close();
             }
         }
+        private List<SubEvent> GetSubEventsForEvent(int eventId)
+        {
+            List<SubEvent> subEvents = [];
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+            const string query = "SELECT * FROM SubEvent WHERE EventId = @EventId";
+
+            using var command = new SqliteCommand(query, connection);
+            command.Parameters.AddWithValue("@EventId", eventId);
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                var subEvent = new SubEvent(
+                    name: reader.GetString(reader.GetOrdinal("name")),
+                    description: reader.GetString(reader.GetOrdinal("description"))
+                );
+                subEvents.Add(subEvent);
+            }
+
+            return subEvents;
+        }
+        public void AddSubEvent(SubEvent subEvent, int eventId)
+        {
+            const string insertSubEventQuery = """
+                                                       INSERT INTO SubEvent (Name, Description, EventId) 
+                                                       VALUES (@Name, @Description, @EventId);
+                                               """;
+
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            using var command = new SqliteCommand(insertSubEventQuery, connection);
+            command.Parameters.AddWithValue("@Name", subEvent.Name);
+            command.Parameters.AddWithValue("@Description", subEvent.Description);
+            command.Parameters.AddWithValue("@EventId", eventId);
+
+            try
+            {
+                command.ExecuteNonQuery();
+                Console.WriteLine($"SubEvent '{subEvent.Name}' added successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while adding SubEvent: {ex.Message}");
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
 
     } 
 }

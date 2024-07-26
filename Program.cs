@@ -16,8 +16,6 @@ namespace TowninatorCLI
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(options =>
                 {
-                    var debug = options.Debug;
-                    if (debug) Debugging.WriteNColor("Dig in!", ConsoleColor.Green);
 
                     var dbFileName = Path.Combine(AppContext.BaseDirectory, "town.sqlite");
                     var database = new SqLiteDatabaseManager(dbFileName);
@@ -32,7 +30,7 @@ namespace TowninatorCLI
                     var townRepository = new TownRepository(dbFileName);
                     var townsfolkController = new TownsfolkController(dbFileName);
                     var mapController = new MapController(dbFileName);
-                    var townController = new TownController(townRepository, mapController, dbFileName, debug);
+                    var townController = new TownController(townRepository, mapController, dbFileName);
                     var buildingController = new BuildingsController(dbFileName);
 
                     if (options.Reset)
@@ -57,27 +55,24 @@ namespace TowninatorCLI
                     }
                     else if (options.TownWithTownsfolk)
                     {
-                        if (debug) Console.WriteLine("Viewing town information with townsfolk...");
                         townsfolkController.ViewAllTownsfolk();
                     }
                     else if (options.ViewMap)
                     {
-                        if (debug) Console.WriteLine("Viewing map...");
                         mapController.DisplayLatestMap();
                     }
                     else if (options.MapLegend)
                     {
-                        if (debug) Console.WriteLine("Viewing map legend...");
                         mapController.DisplayMapLegend();
                     }
                     else if (options.Buildings)
                     {
-                        if(debug) Debugging.WriteNColor("[] Options.Buildings", ConsoleColor.Green);
                         buildingController.ViewAllBuildings();
                     }
-                    if (debug)
+                    else if (options.GameLoop)
                     {
-                        Console.WriteLine("-_Debug End_-");
+                        var gameController = new GameController(dbFileName);
+                        gameController.StartGameLoop();
                     }
                 });
             Debugger.MethodTerminated("Main");
@@ -106,6 +101,9 @@ namespace TowninatorCLI
         
         [Option('D', "Debug", Required = false, HelpText = "print debug information.")]
         public bool Debug { get; set; }
+        
+        [Option('G', "GameLoop", Required = false, HelpText = "Start the game loop.")]
+        public bool GameLoop { get; set; }
         
     }
 }

@@ -2,22 +2,24 @@ using TowninatorCLI.Repositories;
 using TowninatorCLI.View;
 using TowninatorCLI.Utilities.TownsfolkUtilities;
 using TowninatorCLI.Model;
+using System.Linq;
+using TowninatorCLI.Model.MapModels;
 using TowninatorCLI.Utilities.misc;
 using TowninatorCLI.Utilities.Profession;
 namespace TowninatorCLI.Controller
 {
-    public class TownsfolkController(string dbFileName,bool debug = false )
+    public class TownsfolkController(string dbFileName)
     {
 
         private readonly TownRepository _townRepository = new(dbFileName);
         private readonly TownsfolkRepository _townsfolkRepository = new(dbFileName);
         private readonly MapRepository _mapRepository = new(dbFileName);
         private readonly TownsfolkView _townsfolkView = new(dbFileName);
+        private readonly Random _random = new();
 
 
         public void GenerateFamilies(int numberOfFamilies, int townId)
         {
-            if (debug) Debugging.WriteNColor($"TownsfolkController.GenerateFamilies(numberOfFamilies {numberOfFamilies},townId {townId}", ConsoleColor.Green);
             if (_townRepository.GetTownById(townId) == null)
             {
                 throw new Exception($"Town with Id {townId} does not exist.");
@@ -48,9 +50,26 @@ namespace TowninatorCLI.Controller
                     parent.Profession = professionAssignmentService.AssignProfession(mainTerrainType, random);
                     if (parent.Age <= 25 || (parent.Gender != Gender.Male && parent.Gender != Gender.Female)) continue;
                     parent.IsParent = true;
+                    parent.IsAlive = true;
+                    parent.SkillLevel = (ProfessionSkillLevel)_random.Next(1, 6);
+                    parent.Charisma = _random.Next(4, 10);
+                    parent.Strength = _random.Next(4, 10);
+                    parent.Intelligence = _random.Next(4, 10);
+                    parent.Wisdom = _random.Next(4, 10);
+                    parent.Dexterity = _random.Next(4, 10);
+                    parent.Constitution = _random.Next(4, 10);
+                    parent.Luck = _random.Next(4, 10);
+                    parent.Sanity = _random.Next(7, 10);
+                    parent.Perception = _random.Next(4, 10);
+                    parent.Willpower = _random.Next(4, 10);
+                    parent.Faith = _random.Next(4, 10);
+                    parent.Terrain = GetMapTerrain();
+                    
                     familyMembers.Add(parent);
                     numAdults++;
                 }
+
+               
 
                 // Generate children
                 var numChildren = familySize - numAdults;
@@ -59,9 +78,23 @@ namespace TowninatorCLI.Controller
                     var child = TownsfolkGenerator.GenerateRandomTownsfolk();
                     child.Profession = Profession.None;
                     child.IsChild = true;
+                    child.IsAlive = true;
+                    child.SkillLevel = ProfessionSkillLevel.None;
+                    child.Charisma = _random.Next(1, 5);
+                    child.Strength = _random.Next(1, 5);
+                    child.Intelligence = _random.Next(1, 5);
+                    child.Wisdom = _random.Next(1, 5);
+                    child.Dexterity = _random.Next(1, 5);
+                    child.Constitution = _random.Next(1, 5);
+                    child.Luck = _random.Next(1, 5);
+                    child.Sanity = _random.Next(1, 5);
+                    child.Perception = _random.Next(1, 5);
+                    child.Willpower = _random.Next(1, 5);
+                    child.Faith = _random.Next(1, 5);
+                    child.Terrain =  GetMapTerrain();
                     familyMembers.Add(child);
                 }
-
+  
                 // Assign last name, town ID, and other properties
                 var lastName = TownsfolkNameGenerator.GenerateLastName();
                 foreach (var member in familyMembers)
@@ -76,10 +109,22 @@ namespace TowninatorCLI.Controller
             }
         }
 
+        private MainTerrainType GetMapTerrain()
+        {
+            // Retrieve the latest map from the repository
+            var map = _mapRepository.GetTownPosition();
+            // Check if the map has a town and return its ID
+            if (map != null && map.HasTown)
+            {
+                return map.Terrain;
+            }
+
+            // Handle the case where no map tile with HasTown = true was found
+            throw new InvalidOperationException("No map tile with HasTown = true found.");
+        }
 
         public void ViewAllTownsfolk()
         {
-            if (debug) Debugging.WriteNColor("ViewAllTownsFolk()", ConsoleColor.Blue);
             _townsfolkView.Display();
         }
 

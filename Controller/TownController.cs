@@ -21,14 +21,13 @@ namespace TowninatorCLI.Controller
     public class TownController(
         TownRepository townRep,
         MapController mapController,
-        string dbFileName,
-        bool debug = false)
+        string dbFileName)
     {
-        private readonly TownRepository _townRep = new(dbFileName, debug);
-        private readonly TownViewModel _townVm = new(townRep, debug);
+        private readonly TownRepository _townRep = new(dbFileName);
+        private readonly TownViewModel _townVm = new(townRep);
         private readonly MapUtilities _mapUtilities = new(dbFileName);
         private readonly TownsfolkRepository _townsfolkRepository = new(dbFileName);
-        private readonly GenerateTown _generateTown = new(debug);
+        private readonly GenerateTown _generateTown = new();
         private readonly TownDescriptionUpdater _townDescriptionUpdater = new(dbFileName);
         private readonly MapController _mapController = mapController;
         private Random _random = new Random();
@@ -94,7 +93,6 @@ namespace TowninatorCLI.Controller
         public void ViewTownWithTownsfolk(int id)
         {
 
-            if (debug) Debugging.WriteNColor($"TownController.ViewTownWithTownsfolk(id {id})", ConsoleColor.Blue); 
             var town = _townRep.GetTownById(id);
 
             if (town == null)

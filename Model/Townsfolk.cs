@@ -1,3 +1,5 @@
+using TowninatorCLI.Model.MapModels;
+
 namespace TowninatorCLI.Model
 {
     public enum Profession
@@ -56,13 +58,27 @@ namespace TowninatorCLI.Model
         public string? Country { get; set; }
         public bool? IsParent { get; set; }
         public bool? IsChild { get; set; }
-        // TODO : Add position on map via Maptile id in db, 
+        
+        public int Intelligence { get; set; }
+        public int Strength { get; set; }
+        public int Charisma { get; set; }
+        public int Wisdom { get; set; }
+        public int Dexterity { get; set; }
+        public int Constitution { get; set; }
+        public int Luck { get; set; }
+        public int Sanity { get; set; }
+        public int Perception { get; set; }
+        public int Willpower { get; set; }
+        public int Faith { get; set; }
+        public MainTerrainType Terrain { get; set; }
         public Townsfolk()
         {
         }
 
         public Townsfolk(int id, string firstName, string lastName, int age, Gender gender, Profession profession, ProfessionSkillLevel skillLevel
-            , bool isAlive, string description, bool isMarried, int townId, string origin, string region, string country, bool isParent, bool isChild)
+            , bool isAlive, string description, bool isMarried, int townId, string origin, string region, string country, bool isParent, bool isChild,
+             int intelligence, int strength, int charisma, int wisdom, int dexterity, int constitution, int luck, int sanity, 
+            int perception, int willpower, int faith, MainTerrainType terrain)
     : this()
         {
             Id = id;
@@ -81,6 +97,18 @@ namespace TowninatorCLI.Model
             Country = country;
             IsParent = isParent;
             IsChild = isChild;
+            Intelligence = intelligence;
+            Strength = strength;
+            Charisma = charisma;
+            Wisdom = wisdom;
+            Dexterity = dexterity;
+            Constitution = constitution;
+            Luck = luck;
+            Sanity = sanity;
+            Perception = perception;
+            Willpower = willpower;
+            Faith = faith;
+            Terrain = terrain; 
         }
     }
 }

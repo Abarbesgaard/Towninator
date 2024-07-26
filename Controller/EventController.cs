@@ -1,4 +1,6 @@
+using TowninatorCLI.Model;
 using TowninatorCLI.Model.EventModel;
+using TowninatorCLI.Model.MapModels;
 using TowninatorCLI.View;
 using TowninatorCLI.Repositories;
 using TowninatorCLI.Utilities.Events;
@@ -9,8 +11,10 @@ public class EventController(string dbFileName)
 {
     private readonly EventRepository _eventRepository = new(dbFileName);
     private readonly EventViewModel _eventViewModel = new(dbFileName);
-    private readonly EventGenerator _eventGenerator = new();
-    public void AddEvent(EventModel eventModel)
+    private readonly EventGenerator _eventGenerator = new(dbFileName);
+    private readonly TownsfolkRepository _townsfolkRepository = new(dbFileName);
+
+    public void AddEvent(EventModel? eventModel)
     {
         _eventRepository.AddEvent(eventModel);
     }
@@ -31,12 +35,24 @@ public class EventController(string dbFileName)
         _eventRepository.UpdateEvent(eventModel);
     }
     
-    public void GenerateEvents()
-    {
-        _eventGenerator.GenerateEvents();
-    }
+   
     public void GetEventById(int id)
     {
         _eventRepository.GetEventById(id);
     }
-}
+    
+    public EventModel GenerateEventForTownsfolk(Townsfolk townsfolk)
+    {
+        var terrain = _townsfolkRepository.GetTerrainForTownsfolk(townsfolk.Id);
+    
+        if (terrain == null)
+        {
+            throw new InvalidOperationException($"No terrain found for townsfolk with ID {townsfolk.Id}");
+        }
+    
+        return _eventGenerator.GenerateEvents(terrain.Value); // Use .Value to get the non-nullable type
+    }
+    }
+
+
+
